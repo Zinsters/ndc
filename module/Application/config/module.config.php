@@ -70,4 +70,38 @@ return [
             'ViewJsonStrategy',
         ],
     ],
+    'navigation' => [
+        'default' => [
+            [
+                'label'  => 'Klant',
+                'route'  => 'customer',
+                'pages' => [
+                    [
+                        'label'  => 'Nieuwe klant',
+                        'route'  => 'customer',
+                        'action' => 'new',
+                    ],
+                    [
+                        'label'  => 'Kies een klant',
+                        'route'  => 'customer',
+                    ],
+                    [
+                        'label'  => 'Profiel',
+                        'route'  => 'customer',
+                        'action' => 'view',
+                    ],
+                    [
+                        'label'  => 'Afrekenen',
+                        'route'  => 'customer',
+                        'action' => 'invoice',
+                    ],
+                    [
+                        'label'  => 'Rekeningen',
+                        'route'  => 'customer',
+                        'action' => 'invoices',
+                    ],
+                ],
+            ],
+        ],
+    ],
 ];

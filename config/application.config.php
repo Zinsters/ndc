@@ -65,4 +65,9 @@ return [
    // Initial configuration with which to seed the ServiceManager.
    // Should be compatible with Zend\ServiceManager\Config.
    // 'service_manager' => [],
+    'service_manager' => [
+        'factories' => [
+            'navigation' => Zend\Navigation\Service\DefaultNavigationFactory::class,
+        ],
+    ],
 ];

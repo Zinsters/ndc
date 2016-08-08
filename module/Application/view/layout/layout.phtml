@@ -27,42 +27,13 @@
 				</div>
 			</div>
         	<div id="menu">
-				<ul>
-					<li>Klant</li>
-					<ul>
-						<li
-							<?php
-							if ($this->currentControllerName == 'Application\Controller\CustomerController' && $this->currentActionName == 'new')
-								echo ' class="selected"';
-							?>><a href="<?= $this->url('customer', ['action' => 'new']) ?>">Nieuwe klant</a></li>
-						<li
-							<?php
-							if ($this->currentControllerName == 'Application\Controller\CustomerController' && $this->currentActionName == 'index')
-								echo ' class="selected"';
-							?>><a href="<?= $this->url('customer') ?>">Kies een klant</a></li>
-						<li
-							<?php
-							if ($this->currentControllerName == 'Application\Controller\CustomerController' && ($this->currentActionName == 'view' || $this->currentActionName == 'contact' || $this->currentActionName == 'customer' || $this->currentActionName == 'intake' || $this->currentActionName == 'diet' || $this->currentActionName == 'medical' || $this->currentActionName == 'measurements' || $this->currentActionName == 'measurementedit' || $this->currentActionName == 'newconsult' || $this->currentActionName == 'consult'))
-								echo ' class="selected"';
-							?>><a href="<?= $this->url('customer', ['action' => 'view']) ?>">Profiel</a></li>
-						<?php
-							if (isset ( $this->location )) {
-						?>
-						<li
-							<?php
-							if ($this->currentControllerName == 'Application\Controller\CustomerController' && $this->currentActionName == 'invoice')
-								echo ' class="selected"';
-							?>><a href="<?= $this->url('customer', ['action' => 'invoice']) ?>">Afrekenen</a></li>
-						<?php
-							}
-						?>
-						<li
-							<?php
-							if ($this->currentControllerName == 'Application\Controller\CustomerController' && $this->currentActionName == 'invoices')
-								echo ' class="selected"';
-							?>><a href="<?= $this->url('customer', ['action' => 'invoices']) ?>">Rekeningen</a></li>
-					</ul>
-				</ul>
+				<?php
+					$menu = $this->navigation('Zend\Navigation\Default')->menu()->setUlClass('')->setLiActiveClass('selected');
+					if ( ! isset( $this->location ) ) {
+						$menu->findOneBy( 'label', 'Klant' )->removePage( $menu->findOneBy( 'label', 'Afrekenen' ) );
+					}
+					echo $menu;
+				?>
         	</div>
         	<div id="content">
             	<?= $this->content; ?>

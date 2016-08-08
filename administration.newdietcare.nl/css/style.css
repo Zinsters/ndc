@@ -353,14 +353,14 @@ table.menu td {
 	background: #bbb;;
 }
 
-#menu li.selected a {
+#menu ul ul li.selected a {
 	color: #fff;
 }
 
 #menu ul li {
 	font-weight: bold;
 	list-style: none;
-	padding: 2px 9px;
+	padding: 2px 0;
 	margin: 0;
 }
 
@@ -374,6 +374,7 @@ table.menu td {
 	color: #444444;
 	text-decoration: none;
 	display: block;
+	padding: 0 9px;
 }
 
 #menu ul ul li a {

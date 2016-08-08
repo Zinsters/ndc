@@ -24,12 +24,22 @@ return [
                     ],
                 ],
             ],
-            'application' => [
+            'index' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/application[/:action]',
+                    'route'    => '/index[/:action]',
                     'defaults' => [
                         'controller'    => Controller\IndexController::class,
+                        'action'        => 'index',
+                    ],
+                ],
+            ],
+            'customer' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/customer[/:action]',
+                    'defaults' => [
+                        'controller'    => Controller\CustomerController::class,
                         'action'        => 'index',
                     ],
                 ],
@@ -55,6 +65,9 @@ return [
         ],
         'template_path_stack' => [
             __DIR__ . '/../view',
+        ],
+		'strategies' => [
+            'ViewJsonStrategy',
         ],
     ],
 ];

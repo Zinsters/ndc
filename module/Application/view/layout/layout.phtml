@@ -2,54 +2,73 @@
 
 <html lang="en">
     <head>
-        <meta charset="utf-8">
-        <?= $this->headTitle('ZF Skeleton Application')->setSeparator(' - ')->setAutoEscape(false) ?>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <?= $this->headTitle('NewDiet Care')->setSeparator(' - ')->setAutoEscape(false) ?>
 
-        <?= $this->headMeta()
-            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
-            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+        <!-- Styles -->
+        <?= $this->headLink()
+            ->prependStylesheet($this->basePath('css/jqGrid/grid.css'))
+            ->prependStylesheet($this->basePath('css/style.css'))
         ?>
 
-        <!-- Le styles -->
-        <?= $this->headLink(['rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'])
-                        ->prependStylesheet($this->basePath('css/style.css'))
-                        ->prependStylesheet($this->basePath('css/bootstrap-theme.min.css'))
-                        ->prependStylesheet($this->basePath('css/bootstrap.min.css'))
-        ?>
-
-        <!-- Scripts -->
+        <!-- Head Scripts -->
         <?= $this->headScript()
-            ->prependFile($this->basePath('js/bootstrap.min.js'))
-            ->prependFile($this->basePath('js/jquery-2.2.4.min.js'))
+            ->prependFile($this->basePath('scripts/jquery.jqGrid.js'))
+            ->prependFile($this->basePath('scripts/jquery.js'))
         ?>
     </head>
     <body>
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="<?php echo $this->url('home') ?>">
-                        <img src="<?= $this->basePath('img/zf-logo.png') ?>" alt="Zend Framework <?= \Application\Module::VERSION ?>"/>&nbsp;Skeleton Application
-                    </a>
-                </div>
-                <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="<?= $this->url('home') ?>">Home</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <div class="container">
-            <?= $this->content; ?>
-            <hr>
-            <footer>
-                <p>&copy; 2005 - <?= date('Y') ?> by Zend Technologies Ltd. All rights reserved.</p>
-            </footer>
+        <div id="container">
+			<div id="header">
+				<div id="logo">
+					<h1>NewDiet Care</h1>
+				</div>
+				<div id="info">
+				</div>
+			</div>
+        	<div id="menu">
+				<ul>
+					<li>Klant</li>
+					<ul>
+						<li
+							<?php
+							if ($this->currentControllerName == 'Application\Controller\CustomerController' && $this->currentActionName == 'new')
+								echo ' class="selected"';
+							?>><a href="<?= $this->url('customer', ['action' => 'new']) ?>">Nieuwe klant</a></li>
+						<li
+							<?php
+							if ($this->currentControllerName == 'Application\Controller\CustomerController' && $this->currentActionName == 'index')
+								echo ' class="selected"';
+							?>><a href="<?= $this->url('customer') ?>">Kies een klant</a></li>
+						<li
+							<?php
+							if ($this->currentControllerName == 'Application\Controller\CustomerController' && ($this->currentActionName == 'view' || $this->currentActionName == 'contact' || $this->currentActionName == 'customer' || $this->currentActionName == 'intake' || $this->currentActionName == 'diet' || $this->currentActionName == 'medical' || $this->currentActionName == 'measurements' || $this->currentActionName == 'measurementedit' || $this->currentActionName == 'newconsult' || $this->currentActionName == 'consult'))
+								echo ' class="selected"';
+							?>><a href="<?= $this->url('customer', ['action' => 'view']) ?>">Profiel</a></li>
+						<?php
+							if (isset ( $this->location )) {
+						?>
+						<li
+							<?php
+							if ($this->currentControllerName == 'Application\Controller\CustomerController' && $this->currentActionName == 'invoice')
+								echo ' class="selected"';
+							?>><a href="<?= $this->url('customer', ['action' => 'invoice']) ?>">Afrekenen</a></li>
+						<?php
+							}
+						?>
+						<li
+							<?php
+							if ($this->currentControllerName == 'Application\Controller\CustomerController' && $this->currentActionName == 'invoices')
+								echo ' class="selected"';
+							?>><a href="<?= $this->url('customer', ['action' => 'invoices']) ?>">Rekeningen</a></li>
+					</ul>
+				</ul>
+        	</div>
+        	<div id="content">
+            	<?= $this->content; ?>
+        	</div>
         </div>
+        <!-- Body Scripts -->
         <?= $this->inlineScript() ?>
     </body>
 </html>

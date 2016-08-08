@@ -1,0 +1,199 @@
+#agenda {
+	padding: 0px;
+	margin: 0px;
+	border-collapse: collapse;
+	font-size: 11px;
+}
+
+#agenda tr:hover {
+	background: #dee4ed;
+}
+
+#agenda td:hover {
+	background: #dee4ed;
+}
+
+td.selected {
+	background: #dee4ed;
+}
+
+#agenda th.employees {
+	border: 1px solid #97aed0;
+	background: #97aed0;
+	font-weight: bold;
+	color: #fff;
+}
+
+.corner {
+	background: #ffffff;
+}
+
+.cells {
+	border: 1px solid #aaa;
+	width: 120px;
+	height: 20px;
+	padding: 2px 5px;
+	background: #ffffff;
+}
+
+.time {
+	border: none;
+	color: #999;
+	background: #ffffff;
+	text-align: right;
+	vertical-align: top;
+	padding: 5px;
+}
+
+.timediv {
+	position: relative;
+	top: -12px;
+}
+
+.appointment {
+	border: 1px solid #aaa;
+	width: 120px;
+	height: 20px;
+	padding: 2px 5px;
+	background: #d0d7dd;
+}
+
+.appointment1 {
+	border: 1px solid #aaa;
+	width: 120px;
+	height: 20px;
+	padding: 2px 5px;
+	background: #ffc1ab;
+}
+
+.appointment2 {
+	border: 1px solid #aaa;
+	width: 120px;
+	height: 20px;
+	padding: 2px 5px;
+	background: #c3ffba;
+}
+
+.appointment3 {
+	border: 1px solid #aaa;
+	width: 120px;
+	height: 20px;
+	padding: 2px 5px;
+	background: #c9e6ff;
+}
+
+.appointment_other {
+	border: 1px solid #aaa;
+	width: 120px;
+	height: 20px;
+	padding: 2px 5px;
+	background: #ddd url(../images/hatched.gif);
+	color: #888;
+}
+
+.appointment_other1 {
+	border: 1px solid #aaa;
+	width: 120px;
+	height: 20px;
+	padding: 2px 5px;
+	background: #ddd url(../images/hatched-pink.gif);
+	color: #888;
+}
+
+.appointment_other2 {
+	border: 1px solid #aaa;
+	width: 120px;
+	height: 20px;
+	padding: 2px 5px;
+	background: #ddd url(../images/hatched-green.gif);
+	color: #888;
+}
+
+.appointment_other3 {
+	border: 1px solid #aaa;
+	width: 120px;
+	height: 20px;
+	padding: 2px 5px;
+	background: #ddd url(../images/hatched-blue.gif);
+	color: #888;
+}
+
+th.past {
+	color: #ccc;
+}
+
+th.now {
+	color: #333;
+}
+
+#agenda .appointment1:hover {
+	background: #ffd3c2;
+}
+
+#agenda .appointment2:hover {
+	background: #dbffd6;
+}
+
+#agenda .appointment3:hover {
+	background: #e0f0ff;
+}
+
+#agenda .appointment_other:hover {
+	background: #ddd url(../images/hatched-over.gif);
+}
+
+#agenda .appointment_other1:hover {
+	background: #ddd url(../images/hatched-pink-over.gif);
+}
+
+#agenda .appointment_other2:hover {
+	background: #ddd url(../images/hatched-green-over.gif);
+}
+
+#agenda .appointment_other3:hover {
+	background: #ddd url(../images/hatched-blue-over.gif);
+}
+
+table.smallagenda td.full {
+	background: #eeeffb;
+}
+
+/* Edit dialog */
+div.edit_appointment {
+	font-size: 10px;
+	display: none;
+	position: absolute;
+	margin: 0;
+	padding: 4px;
+	list-style-type: none;
+	border: 0;
+}
+
+ul.SimpleContextMenu li a:hover {
+	text-decoration: none;
+	color: #ffffff;
+	background: #ff0000;
+}
+
+div.edit_appointment .appointment_customer {
+	font-size: 12px;
+	font-weight: bold;
+}
+
+div.edit_appointment .appointment_employee {
+	margin-bottom: 5px
+}
+
+div.edit_appointment .appointment_buttons {
+	margin-top: 5px
+}
+
+div.edit_appointment .appointment_field {
+	width: 70px;
+}
+
+textarea.appointment_note {
+	font-size: 10px;
+	height: 50px;
+	width: 153px;
+}

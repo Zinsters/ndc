@@ -1,0 +1,52 @@
+.list{
+	width: 780px;
+	border-collapse: collapse;
+}
+
+.list th{
+	background: #97aed0;
+	text-align: center;
+	padding: 2px 5px;
+}
+
+.list td{
+	height: 20px;
+	text-align: center;
+	padding: 2px 5px;
+}
+
+.light{
+	background: #ffffff;
+}
+
+.dark {
+	background: #eeeffb;
+}
+
+tr.measurements input {
+	width: 50px;
+	text-align: right;
+}
+
+.search input{
+	width: 80px;
+}
+
+tr.dark:hover, tr.light:hover {
+	background: #dee4ed;
+}
+
+td.right{
+	text-align: right;
+}
+
+td.center{
+	text-align: center;
+}
+
+table.narrow{
+	position: relative;
+	left: 460px;
+	top: -588px;
+	width: 350px;
+}

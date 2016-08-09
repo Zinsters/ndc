@@ -54,4 +54,17 @@ class UserTable
 	    
 	    return $result;
     }
+    
+    public function getForExport($params)
+    {
+        $result = $this->tableGateway->select(function(Select $select) use ($params) {
+			$select->where ( '`group` = 19' );
+			$select->where ( 'active = 1' );
+		
+			$select->order ( 'userid' );
+			$select->group ( 'userid' );
+	    });
+	    
+	    return $result;
+    }
 }

@@ -121,45 +121,38 @@ $this->inlineScript()->captureEnd();
 <br />
 <br />
 
-<form action="<?=$this->baseUrl?>/customer/export/" method="post">
+<?php
+$form->setAttribute('action', $this->url('customer', ['action' => 'export']));
+$form->prepare();
+echo $this->form()->openTag($form);
+?>
 	<table>
 		<tr class="noborder">
 			<td>Started in:</td>
 			<td>
-				<select name="reg_date_year">
-					<option></option>
-					<?php for( $i = date( 'Y' ); $i >= 2009; $i-- ) { ?>
-					<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-					<?php } ?>
-				</select>
+				<?= $this->formRow($form->get('reg_date_year')) ?>
 			</td>
 		</tr>
 		<tr class="noborder">
 			<td>Started: from</td>
-			<td><input type="text" name="reg_date_from" id="reg_date_from" /> to <input type="text" name="reg_date_to" id="reg_date_to" /></td>
+			<td><?= $this->formRow($form->get('reg_date_from')) ?> to <?= $this->formRow($form->get('reg_date_to')) ?></td>
 		</tr>
 		<tr class="noborder">
 			<td>No measurements:</td>
 			<td>
-				<select name="no_measurements">
-					<option></option>
-					<option value="2">2 months</option>
-					<option value="4">4 months</option>
-					<option value="6">6 months</option>
-					<option value="8">8 months</option>
-					<option value="10">10 months</option>
-					<option value="12">12 months</option>
-				</select>
+				<?= $this->formRow($form->get('no_measurements')) ?>
 			</td>
 		</tr>
 		<tr class="noborder">
 			<td>With birthday:</td>
-			<td><input type="checkbox" name="with_birthday" /></td>
+			<td><?= $this->formRow($form->get('with_birthday')) ?></td>
 		</tr>
 	</table>
 	<br />
-	<input type="submit" value="Export" />
-</form>
+	<?= $this->formSubmit($form->get('submit')) ?>
+<?php
+echo $this->form()->closeTag();
+?>
 
 <br />
 <br />

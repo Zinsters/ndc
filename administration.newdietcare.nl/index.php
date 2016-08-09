@@ -3,6 +3,9 @@
 use Zend\Mvc\Application;
 use Zend\Stdlib\ArrayUtils;
 
+date_default_timezone_set('Europe/Amsterdam');
+set_include_path ( __DIR__ . '/../module/Application/src/Library/dompdf' . PATH_SEPARATOR . get_include_path () );
+
 /**
  * Display all errors when APPLICATION_ENV is development.
  */

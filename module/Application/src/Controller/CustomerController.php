@@ -8,6 +8,7 @@ use Application\Model\UserTable;
 use Application\Model\InvoiceTable;
 use Application\Filter\PrepareDate;
 use Application\Filter\PrintDate;
+use Application\Form\CustomerExportForm;
 use Exception;
 use stdClass;
 
@@ -24,7 +25,8 @@ class CustomerController extends AbstractActionController
 
     public function indexAction()
     {
-        return new ViewModel();
+        $form = new CustomerExportForm();
+        return new ViewModel( ['form' => $form] );
     }
     
     public function searchAction()
@@ -66,12 +68,12 @@ class CustomerController extends AbstractActionController
 			$params->rows = ( int ) $this->params()->fromPost ( 'rows' );
 		
 			$sampleData = $this->userTable->getByRequest ( clone $params );
-			$responce = array();
+			$response = array();
 		
 			if (count ( $sampleData ) > 0) {
-				$responce['page'] = $params->page;
-				$responce['total'] = $params->rows ? ceil ( count ( $allData ) / $params->rows ) : 0;
-				$responce['records'] = count ( $allData );
+				$response['page'] = $params->page;
+				$response['total'] = $params->rows ? ceil ( count ( $allData ) / $params->rows ) : 0;
+				$response['records'] = count ( $allData );
 				$i = 0;
 				foreach ( $sampleData as $row ) {
 					$customerInvoices = $this->invoiceTable->getCustomerInvoices( $row->userid );
@@ -87,15 +89,81 @@ class CustomerController extends AbstractActionController
 						';
 					}
 
-					$responce['rows'] [$i] ['id'] = $row->userid;
-					$responce['rows'] [$i] ['cell'] = array (htmlentities ( $row->achternaam ), htmlentities ( $row->voornaam ), htmlentities ( $row->tussenvoegsel ), $printDate->filter ( $row->geboortedatum ), htmlentities ( $row->thuisadres ), htmlentities ( $row->thuisplaats ), htmlentities ( $row->thuispostcode ), htmlentities ( $row->email ), $buttonString );
+					$response['rows'] [$i] ['id'] = $row->userid;
+					$response['rows'] [$i] ['cell'] = array (htmlentities ( $row->achternaam ), htmlentities ( $row->voornaam ), htmlentities ( $row->tussenvoegsel ), $printDate->filter ( $row->geboortedatum ), htmlentities ( $row->thuisadres ), htmlentities ( $row->thuisplaats ), htmlentities ( $row->thuispostcode ), htmlentities ( $row->email ), $buttonString );
 					$i ++;
 				}
 			}
 
-    		return new JsonModel($responce);
+    		return new JsonModel($response);
 		} else {
 			throw new Exception ( 'Access Denied!' );
 		}
-    }    
+    }
+    
+	public function exportAction() {
+		set_time_limit ( 180 );
+
+		$params = new stdClass ( );
+		
+		$buffer = fopen( 'php://temp', 'r+' );
+
+		$data = array(
+			'Userid',
+			'Username',
+			'E-mail',
+			'Voornaam',
+			'Voorletters',
+			'Tussenvoegsel',
+			'Achternaam',
+			'Geslacht',
+			'Geb. datum',
+			'Adres',
+			'Postcode',
+			'Woonplaats',
+			'Telefoon',
+			'Mobiel',
+			'Registratie datum'
+		);
+		fputcsv( $buffer, $data, ';', '"', '\\' );
+
+		$sampleData = $this->userTable->getForExport ( $params );
+
+		if (count ( $sampleData ) > 0) {
+			foreach ( $sampleData as $row ) {
+				$data = array(
+					$row->userid,
+					$row->username,
+					$row->email,
+					$row->voornaam,
+					$row->initials,
+					$row->tussenvoegsel,
+					$row->achternaam,
+					$row->geslacht,
+					$row->geboortedatum,
+					$row->thuisadres,
+					$row->thuispostcode,
+					$row->thuisplaats,
+					$row->telefoon,
+					$row->mobiel,
+					( $row->reg_date ? date( 'd-m-Y', $row->reg_date ) : '' )
+				);
+					
+				fputcsv( $buffer, $data, ';', '"', '\\' );
+			}
+		}
+			
+		rewind( $buffer );
+		$content = stream_get_contents( $buffer );
+		fclose( $buffer );
+
+		$response = $this->getResponse();
+		$response->getHeaders()
+			->addHeaderLine('Content-Type', 'text/csv')
+			->addHeaderLine('Content-Disposition', "attachment; filename=\"customers.csv\"")
+			->addHeaderLine('Content-Length', strlen($content));
+
+		$response->setContent( $content );
+		return $response;
+	}    
 }

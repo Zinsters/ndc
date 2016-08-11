@@ -9,7 +9,7 @@ class CustomerExportForm extends Form
     {
         parent::__construct('application');
 
-        $years = array( '' => '' );
+        $years = array( '0' => '' );
 		for( $i = date( 'Y' ); $i >= 2009; $i-- ) {
 			$years[ $i ] = $i;
 		}
@@ -40,7 +40,7 @@ class CustomerExportForm extends Form
             'type' => 'select',
             'options' => array(
             	'value_options' => array(
-            		'' => '',
+            		'0' => '',
             		'2' => '2 months',
             		'4' => '4 months',
             		'6' => '6 months',

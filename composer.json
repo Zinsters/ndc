@@ -22,7 +22,8 @@
         "zendframework/zend-log": "^2.9",
         "zendframework/zend-mvc-plugins": "^1.0.1",
         "zendframework/zend-session": "^2.7.1",
-        "zendframework/zend-navigation": "^2.8"
+        "zendframework/zend-navigation": "^2.8",
+        "bjyoungblood/bjy-profiler": "^1.1"
     },
     "autoload": {
         "psr-4": {

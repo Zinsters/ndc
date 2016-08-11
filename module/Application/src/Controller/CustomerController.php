@@ -9,6 +9,7 @@ use Application\Model\InvoiceTable;
 use Application\Filter\PrepareDate;
 use Application\Filter\PrintDate;
 use Application\Form\CustomerExportForm;
+use Application\Model\CustomerExport;
 use Exception;
 use stdClass;
 
@@ -104,7 +105,23 @@ class CustomerController extends AbstractActionController
 	public function exportAction() {
 		set_time_limit ( 180 );
 
-		$params = new stdClass ( );
+		$form = new CustomerExportForm();
+
+		$request = $this->getRequest();
+
+        if (! $request->isPost()) {
+            $this->redirect()->toRoute('customer');
+        }
+        		
+        $customerExport = new CustomerExport();
+        $form->setInputFilter($customerExport->getInputFilter());
+        $form->setData($request->getPost());
+
+        if (! $form->isValid()) {
+            $this->redirect()->toRoute('customer');
+        }
+
+        $customerExport->exchangeArray($form->getData());
 		
 		$buffer = fopen( 'php://temp', 'r+' );
 
@@ -127,7 +144,7 @@ class CustomerController extends AbstractActionController
 		);
 		fputcsv( $buffer, $data, ';', '"', '\\' );
 
-		$sampleData = $this->userTable->getForExport ( $params );
+		$sampleData = $this->userTable->getForExport ( $customerExport );
 
 		if (count ( $sampleData ) > 0) {
 			foreach ( $sampleData as $row ) {

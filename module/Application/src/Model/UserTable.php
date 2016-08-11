@@ -15,6 +15,21 @@ class UserTable
         $this->tableGateway = $tableGateway;
     }
 
+    public function getByUserid($userid)
+    {
+        $userid = (int) $userid;
+        $rowset = $this->tableGateway->select(function(Select $select) use ($userid) {
+        	$select->where ( '`group` = 19' );
+        	$select->where ( sprintf( 'userid = %d', $userid ) );
+        });
+        $row = $rowset->current();
+        if (! $row) {
+			return null;
+        }
+
+        return $row;
+    }
+
     public function getByRequest($params)
     {
         $result = $this->tableGateway->select(function(Select $select) use ($params) {

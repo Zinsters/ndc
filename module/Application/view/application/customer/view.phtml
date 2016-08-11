@@ -1,0 +1,17 @@
+<?php
+// module/Application/view/application/customer/view.phtml:
+
+$title = 'Profiel';
+$this->headTitle($title);
+?>
+
+<?php
+$menu = $this->navigation('Zend\Navigation\Top')->menu();
+$partial = $menu->getPartial();
+$menu->setPartial('partial/top');
+echo $menu;
+$menu->setPartial($partial);
+?>
+
+<h2><?= $this->escapeHtml($title) ?></h2>
+<?php echo $this->currentCustomer->achternaam; ?>

@@ -10,6 +10,7 @@ namespace Application;
 use Zend\Router\Http\Literal;
 use Zend\Router\Http\Segment;
 use Zend\ServiceManager\Factory\InvokableFactory;
+use Zend\Navigation\Service\NavigationAbstractServiceFactory;
 
 return [
     'router' => [
@@ -43,6 +44,21 @@ return [
                         'action'        => 'index',
                     ],
                 ],
+                'may_terminate' => true,
+				'child_routes' => array(
+					'view' => array(
+						'type' => 'segment',
+						'options' => array(
+							'route'    => '/:userid',
+							'defaults' => array(
+								'action'     => 'view',
+							),
+							'constraints' => array(
+								'userid' => '\d+'
+							)
+						),
+					),
+				),
             ],
         ],
     ],
@@ -84,6 +100,7 @@ return [
                     [
                         'label'  => 'Kies een klant',
                         'route'  => 'customer',
+                        'action' => 'index',
                     ],
                     [
                         'label'  => 'Profiel',
@@ -102,6 +119,53 @@ return [
                     ],
                 ],
             ],
+        ],
+        'top' => [
+            [
+                'label'  => 'Profiel',
+                'route'  => 'customer',
+                'action' => 'view',
+            ],
+            [
+                'label'  => 'Contact',
+                'route'  => 'customer',
+                'action' => 'contact',
+            ],
+            [
+                'label'  => 'Klant',
+                'route'  => 'customer',
+                'action' => 'customer',
+            ],
+            [
+                'label'  => 'Intake',
+                'route'  => 'customer',
+                'action' => 'intake',
+            ],
+            [
+                'label'  => 'Dieet',
+                'route'  => 'customer',
+                'action' => 'diet',
+            ],
+            [
+                'label'  => 'Medisch',
+                'route'  => 'customer',
+                'action' => 'medical',
+            ],
+            [
+                'label'  => 'Metingen',
+                'route'  => 'customer',
+                'action' => 'measurements',
+            ],
+            [
+                'label'  => 'Consult',
+                'route'  => 'customer',
+                'action' => 'newconsult',
+            ],
+        ],
+    ],
+    'service_manager' => [
+        'abstract_factories' => [
+            NavigationAbstractServiceFactory::class,
         ],
     ],
 ];

@@ -12,6 +12,7 @@ use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\Mvc\MvcEvent;
+use Zend\Session\Container;
 
 class Module implements ConfigProviderInterface
 {
@@ -67,6 +68,7 @@ class Module implements ConfigProviderInterface
     public function onBootstrap(MvcEvent $e)
     {
         $sm = $e->getApplication()->getServiceManager();
+        $view = $e->getViewModel();
 
         $router = $sm->get('router');
         $request = $sm->get('request');
@@ -82,7 +84,7 @@ class Module implements ConfigProviderInterface
 
         $route = $matchedRoute->getMatchedRouteName();
 
-        $e->getViewModel()->setVariables(
+        $view->setVariables(
             array(
                 'currentModuleName' => $module,
                 'currentControllerName' => $controller,
@@ -90,5 +92,17 @@ class Module implements ConfigProviderInterface
                 'currentRouteName' => $route,
             )
         );
+
+        $container = new Container( 'default' );        
+        if ( isset ( $container->currentCustomerUserid ) ) {
+        	$userTable = $sm->get(Model\UserTable::class);
+        	$currentCustomer = $userTable->getByUserid( $container->currentCustomerUserid );
+
+        	$view->setVariables(
+            	array(
+                	'currentCustomer' => $currentCustomer,
+            	)
+        	);
+        }
     }
 }

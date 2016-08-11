@@ -4,6 +4,7 @@ namespace Application\Controller;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
+use Zend\Session\Container;
 use Application\Model\UserTable;
 use Application\Model\InvoiceTable;
 use Application\Filter\PrepareDate;
@@ -28,6 +29,28 @@ class CustomerController extends AbstractActionController
     {
         $form = new CustomerExportForm();
         return new ViewModel( ['form' => $form] );
+    }
+
+    public function viewAction()
+    {
+		$container = new Container( 'default' );
+		
+		if ( $this->params('userid') ) {
+			$currentCustomer = $this->userTable->getByUserid ( $this->params('userid') );
+			if ( $currentCustomer ) {
+				$container->currentCustomerUserid = $currentCustomer->userid;
+				$this->redirect()->toRoute('customer', array('action' => 'view'));
+			} else {
+				unset ( $container->currentCustomerUserid );
+			}
+		}
+		
+		if ( empty ( $container->currentCustomerUserid ) )
+			$this->redirect()->toRoute('customer', array('action' => 'index'));
+
+		$currentCustomer = $this->userTable->getByUserid ( $container->currentCustomerUserid );
+
+        return new ViewModel( ['currentCustomer' => $currentCustomer] );
     }
     
     public function searchAction()
@@ -110,7 +133,7 @@ class CustomerController extends AbstractActionController
 		$request = $this->getRequest();
 
         if (! $request->isPost()) {
-            $this->redirect()->toRoute('customer');
+            $this->redirect()->toRoute('customer', array('action' => 'index'));
         }
         		
         $customerExport = new CustomerExport();
@@ -118,7 +141,7 @@ class CustomerController extends AbstractActionController
         $form->setData($request->getPost());
 
         if (! $form->isValid()) {
-            $this->redirect()->toRoute('customer');
+            $this->redirect()->toRoute('customer', array('action' => 'index'));
         }
 
         $customerExport->exchangeArray($form->getData());

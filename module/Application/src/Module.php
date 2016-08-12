@@ -13,6 +13,7 @@ use Zend\Db\TableGateway\TableGateway;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\Mvc\MvcEvent;
 use Zend\Session\Container;
+use Locale;
 
 class Module implements ConfigProviderInterface
 {
@@ -27,25 +28,45 @@ class Module implements ConfigProviderInterface
     {
         return [
             'factories' => [
-                Model\UserTable::class => function($container) {
-                    $tableGateway = $container->get(Model\UserTableGateway::class);
-                    return new Model\UserTable($tableGateway);
+                Model\Db\UserTable::class => function($container) {
+                    $tableGateway = $container->get(Model\Db\UserTableGateway::class);
+                    return new Model\Db\UserTable($tableGateway);
                 },
-                Model\UserTableGateway::class => function ($container) {
+                Model\Db\UserTableGateway::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);
                     $resultSetPrototype = new ResultSet();
-                    $resultSetPrototype->setArrayObjectPrototype(new Model\User());
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\Db\Row\User());
                     return new TableGateway('users_data', $dbAdapter, null, $resultSetPrototype);
                 },
-                Model\InvoiceTable::class => function($container) {
-                    $tableGateway = $container->get(Model\InvoiceTableGateway::class);
-                    return new Model\InvoiceTable($tableGateway);
+                Model\Db\InvoiceTable::class => function($container) {
+                    $tableGateway = $container->get(Model\Db\InvoiceTableGateway::class);
+                    return new Model\Db\InvoiceTable($tableGateway);
                 },
-                Model\InvoiceTableGateway::class => function ($container) {
+                Model\Db\InvoiceTableGateway::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);
                     $resultSetPrototype = new ResultSet();
-                    $resultSetPrototype->setArrayObjectPrototype(new Model\Invoice());
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\Db\Row\Invoice());
                     return new TableGateway('ndc_invoices', $dbAdapter, null, $resultSetPrototype);
+                },
+                Model\Db\ConsultTable::class => function($container) {
+                    $tableGateway = $container->get(Model\Db\ConsultTableGateway::class);
+                    return new Model\Db\ConsultTable($tableGateway);
+                },
+                Model\Db\ConsultTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\Db\Row\Consult());
+                    return new TableGateway('ndc_consults', $dbAdapter, null, $resultSetPrototype);
+                },
+                Model\Db\EmployeeTable::class => function($container) {
+                    $tableGateway = $container->get(Model\Db\EmployeeTableGateway::class);
+                    return new Model\Db\EmployeeTable($tableGateway);
+                },
+                Model\Db\EmployeeTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\Db\Row\Employee());
+                    return new TableGateway('ndc_employees', $dbAdapter, null, $resultSetPrototype);
                 },
             ],
         ];
@@ -57,8 +78,10 @@ class Module implements ConfigProviderInterface
             'factories' => [
                 Controller\CustomerController::class => function($container) {
                     return new Controller\CustomerController(
-                        $container->get(Model\UserTable::class),
-                        $container->get(Model\InvoiceTable::class)
+                        $container->get(Model\Db\UserTable::class),
+                        $container->get(Model\Db\InvoiceTable::class),
+                        $container->get(Model\Db\ConsultTable::class),
+                        $container->get(Model\Db\EmployeeTable::class)
                     );
                 },
             ],
@@ -67,6 +90,9 @@ class Module implements ConfigProviderInterface
     
     public function onBootstrap(MvcEvent $e)
     {
+		date_default_timezone_set('Europe/Amsterdam');
+		setlocale(LC_TIME, 'nl_NL.utf8');
+		
         $sm = $e->getApplication()->getServiceManager();
         $view = $e->getViewModel();
 
@@ -95,8 +121,8 @@ class Module implements ConfigProviderInterface
 
         $container = new Container( 'default' );        
         if ( isset ( $container->currentCustomerUserid ) ) {
-        	$userTable = $sm->get(Model\UserTable::class);
-        	$currentCustomer = $userTable->getByUserid( $container->currentCustomerUserid );
+        	$userTable = $sm->get(Model\Db\UserTable::class);
+        	$currentCustomer = $userTable->getCustomer( $container->currentCustomerUserid );
 
         	$view->setVariables(
             	array(

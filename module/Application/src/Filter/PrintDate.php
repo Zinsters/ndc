@@ -7,7 +7,7 @@ use DateTime;
 class PrintDate implements FilterInterface {
 	private $format;
 
-	public function __construct($format = 'd-m-Y') {
+	public function __construct($format = '%d-%m-%Y') {
 		$this->format = $format;
 	}
 	
@@ -20,7 +20,7 @@ class PrintDate implements FilterInterface {
 		if (( int ) $dateParts [0] && ( int ) $dateParts [1] && ( int ) $dateParts [2]) {
 			$date->setDate( $dateParts [0], $dateParts [1], $dateParts [2] );
 			
-			return $date->format ( $this->format );
+			return strftime( $this->format, $date->getTimestamp() );
 		} else
 			return '';
 	}

@@ -1,6 +1,6 @@
 <?php
 // module/Application/src/Model/CustomerExport.php:
-namespace Application\Model;
+namespace Application\Model\InputFilter;
 
 use DomainException;
 use Zend\Filter\StringTrim;

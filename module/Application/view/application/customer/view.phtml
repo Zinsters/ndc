@@ -14,4 +14,33 @@ $menu->setPartial($partial);
 ?>
 
 <h2><?= $this->escapeHtml($title) ?></h2>
-<?php echo $this->currentCustomer->achternaam; ?>
+
+<table class="list fullwidth">
+	<tr>
+		<th width="33%">Laatste Consult</th>
+		<th width="33%">Volgende afspraak</th>
+		<th width="34%">Notities</th>
+	</tr>
+	<tr>
+		<td class="noborder">
+		<?php if ( ! empty( $this->lastConsult ) ) { ?>
+			<?=$this->lastConsult->dateFormat ( 'created', '%e %b %Y' )?><br />
+			<?=$this->lastConsult->dateFormat ( 'created', '%H:%M' )?><br />
+			<?= ! empty( $this->lastConsultEmployee ) ? $this->escapeHtml( $this->lastConsultEmployee->name ) : '' ?><br />
+			<a href="<?= $this->url('customer', ['action' => 'consult', 'id' => $this->lastConsult->id]) ?>">Bekijk</a>
+		<?php } ?>
+		<br />
+		<br />
+		</td>
+		<td class="noborder">
+
+		<br />
+		</td>
+		<td class="noborder">
+
+		<br />
+		<br />
+		</td>
+	</tr>
+</table>
+<br />

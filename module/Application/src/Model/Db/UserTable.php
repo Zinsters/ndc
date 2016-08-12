@@ -1,24 +1,31 @@
 <?php
-namespace Application\Model;
+namespace Application\Model\Db;
 
 use RuntimeException;
 use Zend\Db\TableGateway\TableGatewayInterface;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Expression;
 
-class UserTable
+class UserTable extends AbstractTable
 {
-    private $tableGateway;
-
-    public function __construct(TableGatewayInterface $tableGateway)
-    {
-        $this->tableGateway = $tableGateway;
-    }
-
-    public function getByUserid($userid)
+    public function getById($userid)
     {
         $userid = (int) $userid;
-        $rowset = $this->tableGateway->select(function(Select $select) use ($userid) {
+        $rowset = $this->_tableGateway->select(function(Select $select) use ($userid) {
+        	$select->where ( sprintf( 'userid = %d', $userid ) );
+        });
+        $row = $rowset->current();
+        if (! $row) {
+			return null;
+        }
+
+        return $row;
+    }
+
+    public function getCustomer($userid)
+    {
+        $userid = (int) $userid;
+        $rowset = $this->_tableGateway->select(function(Select $select) use ($userid) {
         	$select->where ( '`group` = 19' );
         	$select->where ( sprintf( 'userid = %d', $userid ) );
         });
@@ -30,9 +37,9 @@ class UserTable
         return $row;
     }
 
-    public function getByRequest($params)
+    public function getCustomersByRequest($params)
     {
-        $result = $this->tableGateway->select(function(Select $select) use ($params) {
+        $result = $this->_tableGateway->select(function(Select $select) use ($params) {
 			if ( empty( $params->order ) )
 				$params->order = 'achternaam';
 			if ( empty( $params->direction ) )
@@ -71,9 +78,9 @@ class UserTable
 	    return $result;
     }
     
-    public function getForExport($customerExport)
+    public function getCustomersForExport($customerExport)
     {
-        $result = $this->tableGateway->select(function(Select $select) use ($customerExport) {
+        $result = $this->_tableGateway->select(function(Select $select) use ($customerExport) {
 			$select->join ( 'ndc_mijn_ndc_points', 'userid = ndc_mijn_ndc_points.user_id', array ('last_measurement' => new Expression( 'max(ndc_mijn_ndc_points.date)' ) ), $select::JOIN_LEFT );
 
 			$select->where ( '`group` = 19' );

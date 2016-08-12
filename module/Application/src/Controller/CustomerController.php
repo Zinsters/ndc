@@ -5,24 +5,30 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Session\Container;
-use Application\Model\UserTable;
-use Application\Model\InvoiceTable;
+use Application\Model\Db\UserTable;
+use Application\Model\Db\InvoiceTable;
+use Application\Model\Db\ConsultTable;
+use Application\Model\Db\EmployeeTable;
 use Application\Filter\PrepareDate;
 use Application\Filter\PrintDate;
 use Application\Form\CustomerExportForm;
-use Application\Model\CustomerExport;
+use Application\Model\InputFilter\CustomerExport;
 use Exception;
 use stdClass;
 
 class CustomerController extends AbstractActionController
 {
-    private $userTable;
-    private $invoiceTable;
+    private $_userTable;
+    private $_invoiceTable;
+    private $_consultTable;
+    private $_employeeTable;
     
-    public function __construct( UserTable $userTable, InvoiceTable $invoiceTable )
+    public function __construct( UserTable $userTable, InvoiceTable $invoiceTable, ConsultTable $consultTable, EmployeeTable $employeeTable )
     {
-        $this->userTable = $userTable;
-        $this->invoiceTable = $invoiceTable;        
+        $this->_userTable = $userTable;
+        $this->_invoiceTable = $invoiceTable;
+        $this->_consultTable = $consultTable;
+        $this->_employeeTable = $employeeTable;
     }
 
     public function indexAction()
@@ -35,8 +41,8 @@ class CustomerController extends AbstractActionController
     {
 		$container = new Container( 'default' );
 		
-		if ( $this->params('userid') ) {
-			$currentCustomer = $this->userTable->getByUserid ( $this->params('userid') );
+		if ( $this->params('id') ) {
+			$currentCustomer = $this->_userTable->getCustomer ( $this->params('id') );
 			if ( $currentCustomer ) {
 				$container->currentCustomerUserid = $currentCustomer->userid;
 				$this->redirect()->toRoute('customer', array('action' => 'view'));
@@ -48,16 +54,55 @@ class CustomerController extends AbstractActionController
 		if ( empty ( $container->currentCustomerUserid ) )
 			$this->redirect()->toRoute('customer', array('action' => 'index'));
 
-		$currentCustomer = $this->userTable->getByUserid ( $container->currentCustomerUserid );
+		$currentCustomer = $this->_userTable->getCustomer ( $container->currentCustomerUserid );
 
-        return new ViewModel( ['currentCustomer' => $currentCustomer] );
+		$lastConsult = $this->_consultTable->getLastConsult ( $currentCustomer->userid );
+		if ( ! empty( $lastConsult ) ) {
+			$lastConsultEmployee = $this->_employeeTable->getById ( $lastConsult->employee_id );
+		} else {
+			$lastConsultEmployee = null;
+		}
+		
+		/*
+		$measurements = new Model_Table_Measurements ( );
+		$sampleData = $measurements->getByUserId ( $customer->userid, 'date DESC' );
+
+		if (count ( $sampleData ) > 0) {
+			$paginator = Zend_Paginator::factory ( $sampleData );
+			$paginator->setItemCountPerPage ( 10 );
+			$paginator->setPageRange ( 10 );
+			
+			$currentPage = ( int ) $this->_request->getParam ( 'page' );
+			if ($currentPage > 0 and $currentPage <= $paginator->count ())
+				$paginator->setCurrentPageNumber ( $currentPage );
+			else
+				$paginator->setCurrentPageNumber ( 1 );
+			
+			Zend_View_Helper_PaginationControl::setDefaultViewPartial ( 'paginator.phtml' );
+			
+			$this->view->p_control = $this->view->paginationControl ( $paginator );
+			$this->view->paginator = $paginator;
+			$this->view->count = count ( $sampleData );
+		} else
+			$this->view->count = 0;
+
+		$this->view->xml = $this->measurementsToXml ( $customer->userid );
+		*/
+
+        return new ViewModel(
+        	[
+        		'currentCustomer' => $currentCustomer,
+        		'lastConsult' => $lastConsult,
+        		'lastConsultEmployee' => $lastConsultEmployee
+        	]
+        );
     }
     
     public function searchAction()
     {
 		if ($this->getRequest()->isXmlHttpRequest()) {
-			$prepareDate = new PrepareDate;
-			$printDate = new PrintDate;
+			$prepareDate = new PrepareDate();
+			$printDate = new PrintDate();
 			$params = new stdClass ( );
 
 			if ($this->params()->fromQuery ( 'achternaam' ))
@@ -86,12 +131,12 @@ class CustomerController extends AbstractActionController
 				$params->direction = 'ASC';
 			}
 		
-			$allData = $this->userTable->getByRequest ( clone $params );
+			$allData = $this->_userTable->getCustomersByRequest ( clone $params );
 		
 			$params->page = ( int ) $this->params()->fromPost ( 'page' );
 			$params->rows = ( int ) $this->params()->fromPost ( 'rows' );
 		
-			$sampleData = $this->userTable->getByRequest ( clone $params );
+			$sampleData = $this->_userTable->getCustomersByRequest ( clone $params );
 			$response = array();
 		
 			if (count ( $sampleData ) > 0) {
@@ -100,7 +145,7 @@ class CustomerController extends AbstractActionController
 				$response['records'] = count ( $allData );
 				$i = 0;
 				foreach ( $sampleData as $row ) {
-					$customerInvoices = $this->invoiceTable->getCustomerInvoices( $row->userid );
+					$customerInvoices = $this->_invoiceTable->getCustomerInvoices( $row->userid );
 					if (count ( $customerInvoices ) > 0) {
 						$buttonString = '';
 					} else {
@@ -167,7 +212,7 @@ class CustomerController extends AbstractActionController
 		);
 		fputcsv( $buffer, $data, ';', '"', '\\' );
 
-		$sampleData = $this->userTable->getForExport ( $customerExport );
+		$sampleData = $this->_userTable->getCustomersForExport ( $customerExport );
 
 		if (count ( $sampleData ) > 0) {
 			foreach ( $sampleData as $row ) {

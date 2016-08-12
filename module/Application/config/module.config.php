@@ -38,27 +38,15 @@ return [
             'customer' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/customer[/:action]',
+                    'route'    => '/customer[/:action][/:id]',
                     'defaults' => [
                         'controller'    => Controller\CustomerController::class,
                         'action'        => 'index',
                     ],
+					'constraints' => [
+						'id' => '\d+'
+					],
                 ],
-                'may_terminate' => true,
-				'child_routes' => array(
-					'view' => array(
-						'type' => 'segment',
-						'options' => array(
-							'route'    => '/:userid',
-							'defaults' => array(
-								'action'     => 'view',
-							),
-							'constraints' => array(
-								'userid' => '\d+'
-							)
-						),
-					),
-				),
             ],
         ],
     ],

@@ -1372,6 +1372,7 @@ class Default_CustomerController extends Controller_Default {
 	}
 
 	public function exportAction() {
+		/*
 		$customers = new Model_Table_Users();
 		
 		$prepareDate = new Controller_Filter_PrepareDate();
@@ -1455,6 +1456,7 @@ class Default_CustomerController extends Controller_Default {
 		}
 
 		$xls->close ();
+		*/
 	}
 
 	///////////////////////

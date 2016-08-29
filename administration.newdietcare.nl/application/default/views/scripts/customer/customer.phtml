@@ -1,0 +1,71 @@
+<?=$this->partial ( 'customer/partial/menu.phtml', array ('baseUrl' => $this->baseUrl, 'actionName' => $this->actionName ) )?>
+
+<h2>Klant - <?=htmlentities ( $this->currentCustomer->getName () )?></h2>
+
+<p>
+	<?php
+	if (isset ( $this->messages ['username'] )) {
+		foreach ( $this->messages ['username'] as $message ) {
+			?><span class="errorMessage"><b>Loginnaam:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['password'] )) {
+		foreach ( $this->messages ['password'] as $message ) {
+			?><span class="errorMessage"><b>Wachtwoord:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['discount_percent'] )) {
+		foreach ( $this->messages ['discount_percent'] as $message ) {
+			?><span class="errorMessage"><b>Korting in %:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['relatives'] )) {
+		foreach ( $this->messages ['relatives'] as $message ) {
+			?><span class="errorMessage"><b>Familie of kennis:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['notes'] )) {
+		foreach ( $this->messages ['notes'] as $message ) {
+			?><span class="errorMessage"><b>Notities:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	?>
+</p>
+
+<?=$this->partial ( 'customer/partial/notes.phtml', array ('baseUrl' => $this->baseUrl, 'customer' => $this->customer, 'growlMessage' => (isset ( $this->growlMessage ) ? $this->growlMessage : '') ) )?>
+
+<form method="post">
+<table class="notes">
+	<tr>
+		<th colspan="2">Klant login</th>
+	</tr>
+	<tr>
+		<td>Loginnaam:</td>
+		<td><input type="text" name="username"
+			value="<?=isset ( $this->customer->username ) ? htmlentities ( $this->customer->username ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Wachtwoord:</td>
+		<td><input type="text" name="password"
+			value="" /></td>
+	</tr>
+	<tr>
+		<th colspan="2">Speciale klant</th>
+	</tr>
+	<tr>
+		<td>Korting in %:</td>
+		<td><input type="text" name="discount_percent"
+			value="<?=isset ( $this->customer->discount_percent ) ? htmlentities ( $this->printFloat->filter ( $this->customer->discount_percent ) ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Familie of<br />
+		kennis:</td>
+		<td><textarea name="relatives" class="verysmalltext"><?=isset ( $this->customer->relatives ) ? htmlentities ( $this->customer->relatives ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+<input type="submit" name="submitButton" value="OK" /> <input
+	type="submit" name="submitButton" value="OK + Intake" /></form>

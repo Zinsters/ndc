@@ -1,0 +1,169 @@
+<?php
+if (isset ( $this->xml )) {
+	?>
+<script type="text/javascript"
+	src="<?=$this->baseUrl?>/scripts/swfobject.js"></script>
+<script type="text/javascript">
+	function getChartXml1()
+	{
+		return document.getElementById("xmlcontent1").innerHTML;
+	}
+	
+	function getChartXml2()
+	{
+		return document.getElementById("xmlcontent2").innerHTML;
+	}
+	
+	function getChartXml3()
+	{
+		return document.getElementById("xmlcontent3").innerHTML;
+	}
+</script>
+<script type="text/javascript">
+	swfobject.embedSWF("<?=$this->baseUrl?>/flash/dietcare.swf", "flashcontent1", "250", "90", "9.0.0", "<?=$this->baseUrl?>/flash/expressinstall.swf", {xmlReturnFunction : "getChartXml1"});
+</script>
+<script type="text/javascript">
+	swfobject.embedSWF("<?=$this->baseUrl?>/flash/dietcare.swf", "flashcontent2", "250", "90", "9.0.0", "<?=$this->baseUrl?>/flash/expressinstall.swf", {xmlReturnFunction : "getChartXml2"});
+</script>
+<script type="text/javascript">
+	swfobject.embedSWF("<?=$this->baseUrl?>/flash/dietcare.swf", "flashcontent3", "250", "90", "9.0.0", "<?=$this->baseUrl?>/flash/expressinstall.swf", {xmlReturnFunction : "getChartXml3"});
+</script>
+<?php
+}
+?>
+
+<?=$this->partial ( 'customer/partial/menu.phtml', array ('baseUrl' => $this->baseUrl, 'actionName' => $this->actionName ) )?>
+
+<h2>Profiel - <?=htmlentities ( $this->currentCustomer->getName () )?></h2>
+<?php
+if ($this->currentCustomer->getRealStartWeight () > 0) {
+	if ($this->currentCustomer->getRealStartWeight () >= $this->currentCustomer->getCurrentWeight ()) {
+		?>
+<b>Totaal gewichtsverlies: <?=$this->printFloat->filter ( $this->currentCustomer->getRealStartWeight () - $this->currentCustomer->getCurrentWeight () )?> kg</b>
+<?php
+	} else {
+		?>
+<b>Totaal gewichtstoename: <?=$this->printFloat->filter ( $this->currentCustomer->getCurrentWeight () - $this->currentCustomer->getRealStartWeight () )?> kg</b>
+<?php
+	}
+	?>
+<br />
+<br />
+<?php
+}
+?>
+
+<table class="list fullwidth">
+	<tr>
+		<th width="33%">Laatste Consult</th>
+		<th width="33%">Volgende afspraak</th>
+		<th width="34%">Notities</th>
+	</tr>
+	<tr>
+		<td class="noborder">
+		<?php
+		if ($this->lastConsult) {
+			?>
+		<?=$this->lastConsult->dateFormat ( 'created', '%e %b %Y' )?><br />
+		<?=$this->lastConsult->dateFormat ( 'created', '%H:%i' )?><br />
+		<?=$this->lastConsult->getEmployee () ? htmlentities ( $this->lastConsult->getEmployee ()->name ) : ''?><br />
+		<a
+			href="<?=$this->baseUrl?>/customer/consult/id/<?=$this->lastConsult->id?>/">Bekijk</a><?php
+		}
+		?><br />
+		<br />
+		</td>
+		<td class="noborder">
+		<?=$this->nextAppointment instanceof Model_Table_Row_Appointment ? $this->nextAppointment->dateFormat ( 'date' ) . '<br />' . substr ( $this->nextAppointment->time_start, 0, 5 ) . '<br />' . ($this->nextAppointment->getEmployee () instanceof Model_Table_Row_Employee ? htmlentities ( $this->nextAppointment->getEmployee ()->name ) . '<br />' : '') : '&nbsp;'?>		
+		<?=$this->nextAppointment instanceof Model_Table_Row_Appointment && $this->nextAppointment->getLocation () instanceof Model_Table_Row_User ? '<a href="' . $this->baseUrl . '/location/index/id/' . $this->nextAppointment->getLocation ()->userid . '/date/' . $this->nextAppointment->date . '/">Bekijk</a><br />' : ''?>
+		<br />
+		</td>
+		<td class="noborder">
+		<?=htmlentities ( $this->currentCustomer->notes )?>
+		<br />
+		<br />
+		</td>
+	</tr>
+</table>
+<br />
+
+<table class="list fullwidth">
+	<tr>
+		<th>Datum</th>
+		<th>Gewicht kg</th>
+		<th>Vetmassa kg</th>
+		<th>Spiermassa</th>
+		<th>Vetmassa %</th>
+		<th>Vocht kg</th>
+		<th>BMI</th>
+		<th>Dieetfase</th>
+	</tr>
+	<?php
+	if (isset ( $this->paginator )) {
+		$i = true;
+		foreach ( $this->paginator->getCurrentItems () as $measurement ) {
+			?>
+	<tr class="<?=($i ? 'dark' : 'light')?>"
+		onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')">
+		<td><?=$measurement->dateFormat ( 'date', '%d-%m-%Y' )?></td>
+		<td><?=htmlentities ( $this->printFloat->filter ( $measurement->weight ) )?></td>
+		<td><?=htmlentities ( $this->printFloat->filter ( $measurement->fat ) )?></td>
+		<td><?=htmlentities ( $this->printFloat->filter ( $measurement->spiermassa ) )?></td>
+		<td><?=htmlentities ( $this->printFloat->filter ( $measurement->fat_p ) )?></td>
+		<td><?=htmlentities ( $this->printFloat->filter ( $measurement->damp ) )?></td>
+		<td><?=htmlentities ( $measurement->bmi )?></td>
+		<td><?=htmlentities ( $measurement->start )?></td>
+	</tr>
+	<?php
+			$i = ! $i;
+		}
+	}
+	?>
+</table>
+<?php
+if (isset ( $this->paginator ) && $this->paginator->count () > 1) {
+	?>
+	<?=$this->p_control?>
+	<?php
+}
+?>
+<br />
+
+<?php
+if (isset ( $this->xml )) {
+	?>
+<table width="100%">
+	<tr>
+		<td class="noborder">
+		<div class="header">Gewicht</div>
+		<div class="graphic">
+		<div id="xmlcontent1" style="display: none"><?=$this->xml->weight?></div>
+		<div id="flashcontent1">
+		<h4>You need to upgrade your Flash Player</h4>
+		<p>This is replaced by the Flash content. Place your alternate content
+		here and users without the Flash plugin or with Javascript turned off
+		will see this. Content here allows you to leave out <code>noscript</code>
+		tags. Include a link to <a href="index.html?detectflash=false">bypass
+		the detection</a> if you wish.</p>
+		</div>
+		</div>
+		</td>
+		<td class="noborder">
+		<div class="header">BMI</div>
+		<div class="graphic">
+		<div id="xmlcontent2" style="display: none"><?=$this->xml->bmi?></div>
+		<div id="flashcontent2"></div>
+		</div>
+		</td>
+		<td class="noborder">
+		<div class="header">Vet en vocht in kilo's</div>
+		<div class="graphic">
+		<div id="xmlcontent3" style="display: none"><?=$this->xml->fatdamp?></div>
+		<div id="flashcontent3"></div>
+		</div>
+		</td>
+	</tr>
+</table>
+<?php
+}
+?>

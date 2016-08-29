@@ -1,0 +1,92 @@
+<html>
+<body style="background: #ffffff; font-family: sans-serif">
+
+	<?php
+	global $name;
+	global $thuisadres;
+	global $thuispostcodethuisplaats;
+	$name = htmlentities ( $this->contentData ['currentCustomer']->getName () );
+	$thuisadres = htmlentities ( $this->contentData ['currentCustomer']->thuisadres );
+	$thuispostcodethuisplaats = htmlentities ( $this->contentData ['currentCustomer']->thuispostcode . ' ' . $this->contentData ['currentCustomer']->thuisplaats );
+	?>
+
+<script type="text/php">
+if ( isset($pdf) ) {
+  $font = Font_Metrics::get_font("sans-serif");
+
+  $size = 12;
+  $color = array(0,0,0);
+  $text_height = Font_Metrics::get_font_height($font, $size);
+
+  $y=150;  
+
+  $text = "<?=$name?>";
+  $width = Font_Metrics::get_text_width($text, $font, $size);
+  $pdf->text(60, $y, $text, $font, $size, $color);
+  $y += $text_height;
+
+  $text = "<?=$thuisadres?>";
+  $width = Font_Metrics::get_text_width($text, $font, $size);
+  $pdf->text(60, $y, $text, $font, $size, $color);
+  $y += $text_height;
+
+  $text = "<?=$thuispostcodethuisplaats?>";
+  $width = Font_Metrics::get_text_width($text, $font, $size);
+  $pdf->text(60, $y, $text, $font, $size, $color);
+  $y += $text_height;
+
+  $pdf->image(getcwd().'/images/invoice/ndc.jpg', 'jpg', 25, 60, 220, 42);  
+  $foot = $pdf->open_object();
+  //$pdf->image(getcwd().'/images/invoice/ndc.jpg', 'jpg', 25, 60, 220, 42);
+  $pdf->close_object();
+  $pdf->add_object($foot, "all");
+
+  $size = 10;
+  $color = array(0.5,0.5,0.5);
+  $text_height = Font_Metrics::get_font_height($font, $size);
+
+  $w = $pdf->get_width();
+  $h = $pdf->get_height();
+
+  $y = $h - 5 * $text_height - 30;
+
+  $foot = $pdf->open_object();
+  $text = "Zorg & Zekerheid vergoedt de consulten uit de aanvullende verzekering!";
+  $width = Font_Metrics::get_text_width($text, $font, $size);
+  $pdf->text($w / 2 - $width / 2, $y, $text, $font, $size, $color);
+  $y += $text_height;
+
+  $text = "AGB code - B. den Haan 90-038368 | AGB code Praktijk - 90-016912";
+  $width = Font_Metrics::get_text_width($text, $font, $size);
+  $pdf->text($w / 2 - $width / 2, $y, $text, $font, $size, $color);
+  $y += $text_height;
+  $y += $text_height;
+
+  $text = "KvK 27361390 | BTW Nr. NL 122230760B01";
+  $width = Font_Metrics::get_text_width($text, $font, $size);
+  $pdf->text($w / 2 - $width / 2, $y, $text, $font, $size, $color);
+  $y += $text_height;
+  
+  $text = "IBAN NL53ABNA0492771634 | BIC ABNANL2A";
+  $width = Font_Metrics::get_text_width($text, $font, $size);
+  $pdf->text($w / 2 - $width / 2, $y, $text, $font, $size, $color);
+  $y += $text_height;
+
+  $text = "De Kempenaerstraat 23a | 2341 GG Oegstgeest | Tel. 071- 30 148 03 | E-mail: info@newdietcare.nl";
+  $width = Font_Metrics::get_text_width($text, $font, $size);
+  $pdf->text($w / 2 - $width / 2, $y, $text, $font, $size, $color);
+  $pdf->close_object();
+  $pdf->add_object($foot, "all");
+}
+</script>
+
+<div style="margin: 150px 25px 100px 25px; width: 100%">
+
+<div style="height: 75px; margin: 0; padding: 0"></div>
+<div>
+	<?=$this->partial ( 'customer/invoicepdf/content.phtml', $this->contentData )?>
+</div>
+</div>
+
+</body>
+</html>

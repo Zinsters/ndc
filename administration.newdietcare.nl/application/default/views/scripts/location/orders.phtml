@@ -1,0 +1,388 @@
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+	jQuery("#list").jqGrid({
+		url:'<?=$this->baseUrl?>/json/productssearch/type/orders/',
+		datatype: "json",
+		colNames:['Code', 'Product', 'Categorie', 'Inhoud', 'Leverancier'],
+		colModel:[
+		  		{name:'productcode',index:'productcode', width:150},
+		  		{name:'name',index:'name', width:220},
+		  		{name:'category',index:'category', width:150},		  		
+		  		{name:'size',index:'size', width:150},
+		  		{name:'supplier',index:'supplier', width:110}
+		],
+		rowNum:10,
+		imgpath: '<?=$this->baseUrl?>/images/jqGrid',
+		mtype: "POST",		
+		pager: jQuery('#pager'),
+		sortname: 'id',
+		viewrecords: true,
+		sortorder: "asc",
+		multiselect: false, 		
+		width: 760,
+		height: "auto",
+		onSelectRow: function(ids) {
+			if(ids != null)
+				$.getJSON('<?=$this->baseUrl?>/json/getproductbyid/', {id: ids}, onSelectSuccess);
+		}
+	});
+	});
+
+	/////////////////////
+	// Products search //
+	/////////////////////
+	
+	var timeoutHnd;
+	 	
+	function doSearch(ev){
+		if(timeoutHnd)
+			clearTimeout(timeoutHnd);
+		timeoutHnd = setTimeout(gridReload,500);
+	}
+	
+	function gridReload(){
+		var productcode = jQuery("#productcode").val();
+		var name = jQuery("#name").val();
+		var category = jQuery("#category").val();
+		var size = jQuery("#size").val();
+		var supplier = jQuery("#supplier").val();		
+		jQuery("#list").setGridParam({
+			url:"<?=$this->baseUrl?>/json/productssearch/type/orders/?productcode="+productcode+"&name="+name+"&category="+category+"&size="+size+"&supplier="+supplier,page:1
+		}).trigger("reloadGrid");
+	}
+
+	//////////////////////////
+	// Orders functionality //
+	//////////////////////////
+	
+	var productTimeoutHnd;
+	var productCount= new Object();
+	var evenRow= new Object();	
+	<?php
+	foreach ( $this->orders as $order ) {
+		?>
+		productCount["supplier<?=( int ) $order->supplier_id?>"]=<?=count ( $this->orderlines->getByOrderId ( $order->id ) ) + 1?>;
+		evenRow["supplier<?=( int ) $order->supplier_id?>"]=<?=count ( $this->orderlines->getByOrderId ( $order->id ) ) % 2 == 0 ? 'true' : 'false'?>;		
+	<?php
+	}
+	?>
+	var rowOperated='';
+
+	function findProduct(){
+		if(productTimeoutHnd)
+			clearTimeout(productTimeoutHnd);
+		productTimeoutHnd = setTimeout(getProductByCode,500);
+	}
+	
+	function getProductByCode() {
+		$.getJSON('<?=$this->baseUrl?>/json/getproductbycode/', {productcode: $('#codeToSearch').val()}, onSearchSuccess);
+	}
+
+	function onSearchSuccess(obj)	{
+		$("#s_product").val(obj.id);
+		$("#s_code").val(obj.code);
+		$("#s_supplier").val(obj.supplier_id);
+		$("#s_supplier_name").val(obj.supplier);		
+		$("#s_name").text(obj.name);
+		$("#s_quantity").val('');
+	}
+
+	function onSelectSuccess(obj)	{
+		$("#codeToSearch").val(obj.code);
+		$("#s_product").val(obj.id);
+		$("#s_code").val(obj.code);
+		$("#s_supplier").val(obj.supplier_id);
+		$("#s_supplier_name").val(obj.supplier);		
+		$("#s_name").text(obj.name);
+		$("#s_quantity").val('');
+	}
+
+	function addProductToOrder() {
+		if ($("#s_product").val()) {
+			$.post('<?=$this->baseUrl?>/json/addproducttoorder/', {location: <?=$this->locationId?>,id: $("#s_product").val(), number: $("#s_quantity").val()}, onAddSuccess);
+		}
+	}
+
+	function onAddSuccess(result) {
+		var quantity=prepareFloat($("#s_quantity").val());
+		if (quantity)
+			quantity=printFloat(quantity,1);
+		else
+			quantity='';
+					
+		if (!productCount["supplier"+$("#s_supplier").val()]) {
+			productCount["supplier"+$("#s_supplier").val()]=0;
+			evenRow["supplier"+$("#s_supplier").val()]=false;
+			newBlockText='<tr class="noborder left"><td colspan="4"><h3>'+$("#s_supplier_name").val()+'</h3></td></tr><tr class="dark"><th class="left">Code</th><th class="left" width="100%">Product</th><th>Aantal</th><th>Bewerken</th></tr><tr class="noborder" id="footer'+$("#s_supplier").val()+'"><td class="left"><b>Totaal</b></td><td class="left"></td><td id="supplier'+$("#s_supplier").val()+'t_quantity"></td><td></td></tr><tr class="noborder"><td></td></tr><tr class="noborder left"><td colspan="4"><form method="post"><input type="hidden" name="supplier_id" value="'+$("#s_supplier").val()+'" /><input type="submit" name="action"	value="Order" /> <input type="submit" name="action" value="Delete" /></form></td></tr>';
+			$(newBlockText).insertBefore("#footer");				
+		}
+		productCount["supplier"+$("#s_supplier").val()]++;
+		var stringId='supplier'+$("#s_supplier").val()+'orderstring'+productCount["supplier"+$("#s_supplier").val()];
+		if(evenRow["supplier"+$("#s_supplier").val()])
+			var newRowText='<tr class="dark supplier'+$("#s_supplier").val()+'orderstring" id="'+stringId+'">';
+		else
+			var newRowText='<tr class="light supplier'+$("#s_supplier").val()+'orderstring" id="'+stringId+'">';
+		evenRow["supplier"+$("#s_supplier").val()]=!evenRow["supplier"+$("#s_supplier").val()];
+		newRowText+='<td class="left" id="'+stringId+'code">'+$("#s_code").val()+'</td><td class="left" id="'+stringId+'name">'+$("#s_name").text()+'</td><td class="supplier'+$("#s_supplier").val()+'quantity" id="'+stringId+'quantity">'+quantity+'</td><td><input type="hidden" id="'+stringId+'supplier" value="'+$("#s_supplier").val()+'" /><input type="hidden" id="'+stringId+'lineid" value="'+result+'" /><input type="submit" class="delete" value="" onclick="deleteRow('+"'"+stringId+"'"+'); return false;" /> <input type="submit" class="edit" value=""  onclick="editRow('+"'"+stringId+"'"+'); return false;"></td></tr>';
+		$(newRowText).insertBefore("#footer"+$("#s_supplier").val());
+
+		var orderQuantity=0;
+		$("td.supplier"+$("#s_supplier").val()+"quantity").each(function() {
+			var quantity=prepareFloat(this.innerHTML);
+			if (quantity)
+				orderQuantity+=quantity;
+		});
+
+		if (orderQuantity) {
+			orderQuantity=prepareFloat(orderQuantity.toFixed(1));
+			$("#supplier"+$("#s_supplier").val()+"t_quantity").text(printFloat(orderQuantity,1));
+		} else {
+			$("#supplier"+$("#s_supplier").val()+"t_quantity").text('');
+		}
+
+		$("#codeToSearch").val('');
+		$("#s_product").val('');
+		$("#s_code").val('');
+		$("#s_supplier").val('');
+		$("#s_supplier_name").val('');		
+		$("#s_name").text('');
+		$("#s_quantity").val('');
+		$("#s_price").val('');			
+		$("#s_total").val('');
+		$("#codeToSearch").focus();
+	}
+
+	function deleteRow(rowId) {
+		rowOperated=rowId;
+		$.post('<?=$this->baseUrl?>/json/deletelinefromorder/', {id: $("#"+rowId+"lineid").val()}, onDeleteSuccess);
+	}
+
+	function onDeleteSuccess(result) {
+		rowId=rowOperated;
+		rowOperated='';
+					
+		var supplier=$("#"+rowId+"supplier").val();
+		
+		$("#"+rowId).remove();
+
+		evenRow["supplier"+supplier]=true;
+		$("tr.supplier"+supplier+"orderstring").each(function() {
+			if (evenRow["supplier"+supplier]) {
+				this.className="dark supplier"+supplier+"orderstring";
+			} else {
+				this.className="light supplier"+supplier+"orderstring";
+			}
+			evenRow["supplier"+supplier]=!evenRow["supplier"+supplier];
+		});
+		
+		var orderQuantity=0;
+		$("td.supplier"+supplier+"quantity").each(function() {
+			var quantity=prepareFloat(this.innerHTML);
+			if (quantity)
+				orderQuantity+=quantity;
+		});
+
+		if (orderQuantity) {
+			orderQuantity=prepareFloat(orderQuantity.toFixed(1));
+			$("#supplier"+supplier+"t_quantity").text(printFloat(orderQuantity,1));
+		} else {
+			$("#supplier"+supplier+"t_quantity").text('');
+		}
+	}
+
+	function editRow(rowId) {
+		var supplier=$("#"+rowId+"supplier").val();
+
+		$("#editstring").remove();
+		$("tr.supplier"+supplier+"orderstring").each(function() {
+			$(this).show();
+		});
+				
+		var editRowText='<tr id="editstring"><td class="left">'+$("#"+rowId+"code").text()+'</td><td class="left">'+$("#"+rowId+"product").text()+'</td><td><input type="text" id="e_quantity" value="'+$("#"+rowId+"quantity").text()+'" style="width: 60px;" /></td><td><input type="submit" value="OK" onclick="eOnClose('+"'"+rowId+"'"+')" /></td></tr>';
+		$(editRowText).insertBefore("#"+rowId);
+		$("#"+rowId).hide();
+	}
+	
+	function eOnClose(rowId) {
+		rowOperated=rowId;
+		$.post('<?=$this->baseUrl?>/json/editorderline/', {id: $("#"+rowId+"lineid").val(), number: $("#e_quantity").val()}, onEditSuccess);
+	}
+
+	function onEditSuccess(result) {
+		rowId=rowOperated;
+		rowOperated='';
+				
+		var supplier=$("#"+rowId+"supplier").val();
+
+		var quantity=prepareFloat($("#e_quantity").val());
+		if (quantity)
+			quantity=printFloat(quantity,1);
+		else
+			quantity='';
+		
+		$("#"+rowId+"quantity").text(quantity);		
+		$("#"+rowId).show();
+		
+		$("#editstring").remove();
+
+		var orderQuantity=0;
+		$("td.supplier"+supplier+"quantity").each(function() {
+			var quantity=prepareFloat(this.innerHTML);
+			if (quantity)
+				orderQuantity+=quantity;
+		});
+
+		if (orderQuantity) {
+			orderQuantity=prepareFloat(orderQuantity.toFixed(1));
+			$("#supplier"+supplier+"t_quantity").text(printFloat(orderQuantity,1));
+		} else {
+			$("#supplier"+supplier+"t_quantity").text('');
+		}
+	} 
+	
+	/////////////////////////
+	// Auxiliary functions //
+	/////////////////////////
+
+	function printFloat(floatValue,precision) {
+		return replace('.',',',floatValue.toFixed(precision));
+	}
+
+	function prepareFloat(stringValue) {
+		return parseFloat(replace(',','.',stringValue));
+	}
+
+	function replace(search, replace, subject){
+		var ra = replace instanceof Array,
+			sa = subject instanceof Array,
+			l = (search = [].concat(search)).length,
+			replace = [].concat(replace),
+			i = (subject = [].concat(subject)).length;
+		while(j = 0, i--)
+		   while(subject[i] = subject[i].split(search[j]).join(ra ? replace[j] || "" : replace[0]), ++j < l);
+		return sa ? subject : subject[0];
+	}
+</script>
+
+<h2>Bestellingen</h2>
+
+<h3>Nieuw</h3>
+<form method="post"
+	onsubmit="return(confirm('Verwijder alle bestelling en genereer automatisch nieuwe?'))">
+<input name="action" type="hidden" value="new" /> <input type="submit"
+	value="Stel bestellijst op" /></form>
+
+<table class="list fullwidth">
+<?php
+foreach ( $this->orders as $order ) {
+	?>
+	<tr class="noborder left">
+		<td colspan="4">
+		<h3><?=$order->supplier ? $order->supplier : 'No supplier'?></h3>
+		</td>
+	</tr>
+	<tr class="dark">
+		<th class="left">Code</th>
+		<th class="left" width="100%">Product</th>
+		<th>Aantal</th>
+		<th>Bewerken</th>
+	</tr>
+	<?php
+	$productCount = 2;
+	$i = true;
+	$number = 0;
+	foreach ( $this->orderlines->getByOrderId ( $order->id ) as $orderline ) {
+		$stringId = 'supplier' . ( int ) $order->supplier_id . 'orderstring' . $productCount;
+		?>
+	<tr
+		class="<?=$i ? 'dark' : 'light'?> supplier<?=( int ) $order->supplier_id?>orderstring"
+		id="<?=$stringId?>">
+		<td class="left" id="<?=$stringId?>code"><?=htmlentities ( $orderline->getProduct ()->productcode )?></td>
+		<td class="left" id="<?=$stringId?>product"><?=htmlentities ( $orderline->getProduct ()->name )?></td>
+		<td class="supplier<?=( int ) $order->supplier_id?>quantity"
+			id="<?=$stringId?>quantity"><?=$this->printFloat->filter ( $orderline->number )?></td>
+		<td><input type="hidden" id="<?=$stringId?>supplier"
+			value="<?=( int ) $order->supplier_id?>" /><input type="hidden"
+			id="<?=$stringId?>lineid" value="<?=$orderline->id?>" /><input
+			type="submit" class="delete" value=""
+			onclick="deleteRow('<?=$stringId?>'); return false;" /> <input
+			type="submit" class="edit" value=""
+			onclick="editRow('<?=$stringId?>'); return false;"></td>
+	</tr>
+	<?php
+		$productCount ++;
+		$i = ! $i;
+		$number += $orderline->number;
+	}
+	?>
+	<tr class="noborder" id="footer<?=( int ) $order->supplier_id?>">
+		<td class="left"><b>Totaal</b></td>
+		<td class="left"></td>
+		<td id="supplier<?=( int ) $order->supplier_id?>t_quantity"><?=$this->printFloat->filter ( $number )?></td>
+		<td></td>
+	</tr>
+	<tr class="noborder">
+		<td></td>
+	</tr>
+	<tr class="noborder left">
+		<td colspan="4">
+		<form method="post"><input type="hidden" name="supplier_id"
+			value="<?=$order->supplier_id?>" /><input type="submit" name="action"
+			value="Order" /> <input type="submit" name="action" value="Delete" /></form>
+		</td>
+	</tr>
+	<?php
+}
+?>
+	<tr class="noborder" id="footer">
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="noborder">
+		<td class="left">Voeg toe aan bestelling:</td>
+	</tr>
+	<form onsubmit="addProductToOrder(); return false;">
+	
+	
+	<tr class="noborder">
+		<td class="left"><input type="text" style="width: 90px;" name="code"
+			id="codeToSearch" onkeydown="findProduct()" /></td>
+		<td class="left" id="s_name"></td>
+		<td><input type="text" id="s_quantity" style="width: 60px;" /></td>
+		<td style="width: 50px"><input type="submit" value="Voeg toe" /></td>
+	</tr>
+	<input type="hidden" id="s_product" />
+	<input type="hidden" id="s_code" />
+	<input type="hidden" id="s_supplier" />
+	<input type="hidden" id="s_supplier_name" />
+	</form>
+</table>
+<br />
+
+<table class="list left" width="100%">
+	<tr class="noborder">
+		<td>Code</td>
+		<td>Product</td>
+		<td>Type</td>
+		<td>Size</td>
+		<td>Supplier</td>
+	</tr>
+	<tr class="noborder">
+		<td><input type="text" name="productcode" id="productcode"
+			style="width: 90px;" onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td><input type="text" name="name" id="name"
+			onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td><input type="text" name="category" id="category"
+			style="width: 90px;" onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td><input type="text" name="size" id="size" style="width: 90px;"
+			onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td><input type="text" name="supplier" id="supplier"
+			style="width: 90px;" onkeydown="doSearch(arguments[0]||event)" /></td>
+	</tr>
+</table>
+<br />
+
+<table id="list" class="scroll" cellpadding="0" cellspacing="0"></table>
+<div id="pager" class="scroll" style="text-align: left;"></div>
+
+<br />
+<br />

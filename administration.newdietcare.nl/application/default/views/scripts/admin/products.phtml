@@ -1,0 +1,91 @@
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+	jQuery("#list").jqGrid({
+		url:'<?=$this->baseUrl?>/json/productssetup/',
+		datatype: "json",
+		colNames:['Code', 'Product', 'Categorie', 'Inhoud', '', 'Prijs', 'Leverancier', ''],
+		colModel:[
+		  		{name:'productcode',index:'productcode', width:140},
+		  		{name:'name',index:'name', width:200},
+		  		{name:'category',index:'category', width:110},		  		
+		  		{name:'size',index:'size', width:110},
+		  		{width:20,sortable:false},		  		
+		  		{name:'price',index:'price', width:80, align:"right"},
+		  		{name:'supplier',index:'supplier', width:120},
+		  		{width:40,sortable:false}		  		
+		],
+		rowNum:10,
+		imgpath: '<?=$this->baseUrl?>/images/jqGrid',
+		mtype: "POST",		
+		pager: jQuery('#pager'),
+		sortname: 'id',
+		viewrecords: true,
+		sortorder: "asc",
+		multiselect: false, 		
+		width: 760,
+		height: "auto"
+	});
+	});
+
+	/////////////////////
+	// Products search //
+	/////////////////////
+	
+	var timeoutHnd;
+	 	
+	function doSearch(ev){
+		if(timeoutHnd)
+			clearTimeout(timeoutHnd);
+		timeoutHnd = setTimeout(gridReload,500);
+	}
+	
+	function gridReload(){
+		var productcode = jQuery("#productcode").val();
+		var name = jQuery("#name").val();
+		var category = jQuery("#category").val();
+		var size = jQuery("#size").val();
+		var price = jQuery("#price").val();		
+		var supplier = jQuery("#supplier").val();		
+		jQuery("#list").setGridParam({
+			url:"<?=$this->baseUrl?>/json/productssetup/?productcode="+productcode+"&name="+name+"&category="+category+"&size="+size+"&price="+price+"&supplier="+supplier,page:1
+		}).trigger("reloadGrid");
+	}
+</script>
+
+<h2>Producten</h2>
+
+<table class="list left" style="width: 735px">
+	<tr class="noborder">
+		<td>Code</td>
+		<td>Product</td>
+		<td>Type</td>
+		<td>Size</td>
+		<td>Price</td>
+		<td>Supplier</td>
+	</tr>
+	<tr class="noborder">
+		<td><input type="text" name="productcode" id="productcode"
+			style="width: 90px;" onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td><input type="text" name="name" id="name" style="width: 150px;"
+			onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td><input type="text" name="category" id="category"
+			style="width: 75px;" onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td><input type="text" name="size" id="size" style="width: 75px;"
+			onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td><input type="text" name="price" id="price" style="width: 75px;"
+			class="number" onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td><input type="text" name="supplier" id="supplier"
+			style="width: 75px;" onkeydown="doSearch(arguments[0]||event)" /></td>
+	</tr>
+</table>
+<br />
+
+<table id="list" class="scroll" cellpadding="0" cellspacing="0"></table>
+<div id="pager" class="scroll" style="text-align: left;"></div>
+<br />
+
+<form action="<?=$this->baseUrl?>/admin/productadd/"><input
+	type="submit" value="Add product" /></form>
+
+<br />
+<br />

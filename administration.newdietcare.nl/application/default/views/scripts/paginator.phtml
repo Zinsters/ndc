@@ -1,0 +1,40 @@
+<?php
+if ($this->pageCount) {
+	?>
+<div><?php
+	if ($this->first != $this->current) {
+		?><a href="<?=$this->url ( array ('page' => $this->first ) )?>">&lt;&lt;</a><?php
+	} else {
+		?>&lt;&lt;<?php
+	}
+	?>
+&nbsp;|&nbsp;<?php
+	if (isset ( $this->previous )) {
+		?><a href="<?=$this->url ( array ('page' => $this->previous ) )?>">&lt;</a>&nbsp;|&nbsp;<?php
+	} else {
+		?>&lt;&nbsp;|&nbsp;<?php
+	}
+	foreach ( $this->pagesInRange as $page ) {
+		if ($page != $this->current) {
+			?><a href="<?=$this->url ( array ('page' => $page ) )?>"><?=($page - 1) * $this->itemCountPerPage + 1?>&nbsp;-&nbsp;<?=min ( array (($page - 1) * $this->itemCountPerPage + $this->itemCountPerPage, $this->totalItemCount ) )?></a>&nbsp;|&nbsp;<?php
+		} else {
+			?><?=($page - 1) * $this->itemCountPerPage + 1?>&nbsp;-&nbsp;<?=min ( array (($page - 1) * $this->itemCountPerPage + $this->itemCountPerPage, $this->totalItemCount ) )?>&nbsp;|&nbsp;<?php
+		}
+	}
+	if (isset ( $this->next )) {
+		?><a href="<?=$this->url ( array ('page' => $this->next ) )?>">&gt;</a><?php
+	} else {
+		?>&gt;<?php
+	}
+	?>
+&nbsp;|&nbsp;<?php
+	if ($this->last != $this->current) {
+		?><a href="<?=$this->url ( array ('page' => $this->last ) )?>">&gt;&gt;</a><?php
+	} else {
+		?>&gt;&gt;</span><?php
+	}
+	?>
+</div>
+<?php
+}
+?>

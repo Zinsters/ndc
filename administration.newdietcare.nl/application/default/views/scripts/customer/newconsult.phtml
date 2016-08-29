@@ -1,0 +1,129 @@
+<script type="text/javascript">
+$(document).ready(function(){
+	<?php
+	if ($this->growlMessage) {
+		?>
+		$.jGrowl.defaults.position = 'bottom-right';		
+		$.jGrowl("<?=$this->growlMessage?>");
+				
+	<?php
+	}
+	?>
+    $('#notesSubmit').click(function(){
+		$.post('<?=$this->baseUrl?>/json/setnotes/', {id: "<?=$this->currentCustomer->userid?>", notes: $("#notes").val()}, onAjaxSuccess);
+		return false;
+	})
+
+	function onAjaxSuccess(result) {
+		$.jGrowl.defaults.position = 'bottom-right';		
+		$.jGrowl("Data saved successfully");
+    }
+})
+</script>
+
+<?=$this->partial ( 'customer/partial/menu.phtml', array ('baseUrl' => $this->baseUrl, 'actionName' => $this->actionName ) )?>
+
+<h2>Consult - <?=htmlentities ( $this->currentCustomer->getName () )?></h2>
+
+<div class="narrow">Notities:<br>
+<textarea name="notes" id="notes" class="smalltext"><?=isset ( $this->currentCustomer->notes ) ? htmlentities ( $this->currentCustomer->notes ) : ''?></textarea>
+<input type="submit" id="notesSubmit" value="OK" /><br />
+<br />
+<table class="list narrow">
+	<tr>
+		<th>Datum</th>
+		<th>Tijd</th>
+		<th>Medewerker</th>
+		<th>Bewerk</th>
+	</tr>
+	<?php
+	$i = true;
+	foreach ( $this->consults as $consult ) {
+		?>
+	<tr class="<?=($i ? 'dark' : 'light')?>">
+		<td
+			onClick="location.replace('<?=$this->baseUrl?>/customer/consult/id/<?=$consult->id?>/')"><?=$consult->dateFormat ( 'created', '%d-%m-%Y' )?></td>
+		<td
+			onClick="location.replace('<?=$this->baseUrl?>/customer/consult/id/<?=$consult->id?>/')"><?=$consult->dateFormat ( 'created', '%H:%i' )?></td>
+		<td
+			onClick="location.replace('<?=$this->baseUrl?>/customer/consult/id/<?=$consult->id?>/')"><?=$consult->getEmployee ()->name?></td>
+		<td class="nopadding">
+		<form method="post"
+			action="<?=$this->baseUrl?>/customer/consultdelete/"
+			onsubmit="return confirm('consult verwijderen?')"><input
+			type="submit" class="delete" value="" title="verwijder"><input
+			type="hidden" name="id" value="<?=$consult->id?>"></form>
+		</td>
+	</tr>
+	<?php
+		$i = ! $i;
+	}
+	?>
+</table>
+</div>
+
+<form method="post">
+<table class="notes">
+	<tr>
+		<th colspan="2">Consult door</th>
+	</tr>
+	<tr>
+		<td>Werknemer:</td>
+		<td><?=htmlentities ( $this->currentEmployee ? $this->currentEmployee->name : '' )?></td>
+	</tr>
+	<tr>
+		<td>Location</td>
+		<td><?=htmlentities ( $this->currentLocation ? $this->currentLocation->bedrijfsnaam : '' )?></td>
+	</tr>
+	<tr>
+		<td>Datum</td>
+		<td><?=htmlentities ( $this->date->get ( 'd MMMM yyyy', 'nl_NL' ) )?></td>
+	</tr>
+	<tr>
+		<th colspan="2">Anamnese</th>
+	</tr>
+	<tr>
+		<td>Duur</td>
+		<td><select name="product_id">
+		<?php
+		foreach ( $this->consultTypes as $consultType ) {
+			?>
+			<option value="<?=$consultType->id?>"
+				<?=$consultType->consult_duration == 30 ? selected : ''?>><?=$consultType->consult_duration?></option>
+		<?php
+		}
+		?>
+		</select>minuten</td>
+	</tr>
+	<tr>
+		<td>Rapport:</td>
+		<td><textarea name="report" class="bigtext"></textarea></td>
+	</tr>
+	<tr>
+		<td>Plan:</td>
+		<td><textarea name="plan" class="bigtext"></textarea></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+<?php
+if ($this->currentEmployee) {
+	?>
+<input type="hidden" name="employee_id"
+	value="<?=$this->currentEmployee->id?>" />
+	<?php
+}
+?>
+
+<?php
+if ($this->currentLocation) {
+	?>
+<input type="hidden" name="location_id"
+	value="<?=$this->currentLocation->userid?>" />
+	<?php
+}
+?>
+<input type="submit" name="submitButton" value="OK" /> <input
+	type="submit" name="submitButton" value="OK + Afspraak" /></form>

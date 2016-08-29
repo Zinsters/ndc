@@ -1,0 +1,32 @@
+<h2>Factuur details</h2>
+<form method="post">
+<table class="notes">
+	<tr>
+		<th colspan="2">Betaalcondities</th>
+	</tr>
+	<tr>
+		<td>Contant:</td>
+		<td><textarea name="cash_header"><?=htmlentities ( $this->invoicedetailsRow->cash_header )?></textarea></td>
+	</tr>
+	<tr>
+		<td>PIN:</td>
+		<td><textarea name="pin_header"><?=htmlentities ( $this->invoicedetailsRow->pin_header )?></textarea></td>
+	</tr>
+	<tr>
+		<td>Op rekening:</td>
+		<td><textarea name="invoice_header"><?=htmlentities ( $this->invoicedetailsRow->invoice_header )?></textarea></td>
+	</tr>
+	<tr>
+		<th colspan="2">Extra</th>
+	</tr>
+	<tr>
+		<td>Voetnoot</td>
+		<td><textarea name="footer"><?=htmlentities ( $this->invoicedetailsRow->footer )?></textarea></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+
+</table>
+<br />
+<input type="submit" value="OK" /></form>

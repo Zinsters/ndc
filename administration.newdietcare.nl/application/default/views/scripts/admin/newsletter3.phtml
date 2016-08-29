@@ -1,0 +1,31 @@
+<h2>Nieuwsbrief - Stap 3 - Selecteer doelgroep</h2>
+<form method="post" action="<?=$this->baseUrl?>/admin/newsletter4/">
+<table class="notes">
+<?php
+foreach ( $this->groups as $group ) {
+	?>
+	<tr>
+		<td><input type="checkbox" name="group_ids[]"
+			value="<?php
+	echo $group->id;
+	?>" /></td>
+		<td></td>
+		<td width="100%"><?php
+	echo $this->escape ( $group->name );
+	?> ( <?php
+	echo $group->getNumberOfSubscribers ();
+	?> )</td>
+	</tr>
+<?php
+}
+?>
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+<br />
+<input type="submit" value="&lt; Stap 2"
+	onclick="this.form.action='<?=$this->baseUrl?>/admin/newsletter2/'" />&nbsp;<input
+	type="submit" value="Verstuur" /></form>

@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<link rel="stylesheet" href="<?=$this->baseUrl?>/css/style.css"
+	type="text/css" />
+
+<script type="text/javascript"
+	src="<?=$this->baseUrl?>/scripts/jquery.js"></script>
+
+<script type="text/javascript"
+	src="<?=$this->baseUrl?>/scripts/jquery.jqGrid.js"></script>
+<link rel="stylesheet" type="text/css" media="screen"
+	href="<?=$this->baseUrl?>/css/jqGrid/grid.css" />
+
+<?=$this->headcontent ? $this->partial ( $this->headcontent, array ('baseUrl' => $this->baseUrl ) ) : ''?>
+
+<title>NewDiet Care</title>
+</head>
+
+<body>
+<div id="container">
+
+<div id="header">
+<div id="logo">
+<h1>NewDiet Care</h1>
+<div class="location">
+<h3 class="white">Locatie
+<?php
+if (isset ( $this->locations )) {
+	?>
+<form method="post" id="locationForm" style="display: inline">
+<input type="hidden" name="locationSet" value="1" />
+<select name="location" id="hLocation"
+	onchange="document.getElementById('locationForm').submit()">
+	<option value="0">&nbsp</option>
+	<?php
+	foreach ( $this->locations as $location ) {
+		?>
+	<option value="<?=$location->userid?>"
+		<?=$this->location && $location->userid == $this->location->userid ? 'selected' : ''?>><?=$location->bedrijfsnaam?></option>
+		<?php
+	}
+	?>
+</select>
+</form>
+<?php
+} elseif (isset ( $this->location )) {
+	echo $this->location->bedrijfsnaam;
+}
+?>
+</h3>
+<form method="post" id="employeeForm">
+<input type="hidden" name="employeeSet" value="1" />
+<select name="employee" id="hEmployee"
+	onchange="document.getElementById('employeeForm').submit()">
+	<?php
+	if (isset ( $this->employees )) {
+		foreach ( $this->employees as $employee ) {
+			?>
+	<option value="<?=$employee->id?>"
+		<?=$employee->id == $this->currentEmployee->id ? 'selected' : ''?>><?=$employee->name?></option>
+	<?php
+		}
+	}
+	?>
+</select>
+</form>
+</div>
+</div>
+<div id="info">
+<div class="customer">
+<table>
+	<tr class="noborder">
+		<th colspan=3 class="left">
+		<h4><?=isset ( $this->currentCustomer ) ? htmlentities ( $this->currentCustomer->getName () ) : ''?></h4>
+		</th>
+		<th class="space"></th>
+		<td class="wide right"
+			style="border-bottom: 1px solid #97aed0; font-weight: bold;"><a
+			href="<?=$this->baseUrl?>/customer/">Kies&nbsp;klant</a></td>
+	</tr>
+	<tr class="noborder">
+		<td class="left" style="vertical-align: top"><b>Lengte:</b></td>
+		<td class="wide" style="vertical-align: top"><?=isset ( $this->currentCustomer ) ? $this->printPrice->filter ( $this->currentCustomer->getLength () ) : ''?>&nbsp;m</td>
+		<td class="space"></td>
+		<td class="left" style="vertical-align: top"><b>Leeftijd:</b></td>
+		<td class="wide" style="vertical-align: top"><?=isset ( $this->currentCustomer ) ? $this->currentCustomer->getAge () : ''?>&nbsp;jaar</td>
+	</tr>
+	<tr class="noborder">
+		<td class="left" style="vertical-align: top"><b>Huidig:</b></td>
+		<td class="wide" style="vertical-align: top"><?=isset ( $this->currentCustomer ) ? $this->printFloat->filter ( $this->currentCustomer->getCurrentWeight () ) : ''?>&nbsp;kg</td>
+		<td class="space"></td>
+		<td class="left" style="vertical-align: top"><b>Telefoon:</b></td>
+		<td class="wide" style="vertical-align: top"><nobr><?=isset ( $this->currentCustomer ) ? $this->currentCustomer->telefoon : ''?></nobr></td>
+	</tr>
+	<tr class="noborder">
+		<td class="left" style="vertical-align: top"><b>Streef:</b></td>
+		<td class="wide" style="vertical-align: top"><?=isset ( $this->currentCustomer ) ? $this->printFloat->filter ( $this->currentCustomer->getTargetWeight () ) : ''?>&nbsp;kg</td>
+		<td class="space"></td>
+		<td class="left" style="vertical-align: top"><b>Afspraak:</b></td>
+		<td class="wide" style="vertical-align: top"><?=$this->nextAppointment instanceof Model_Table_Row_Appointment ? $this->nextAppointment->dateFormat ( 'date', '%d-%m-%Y' ) . '<br />' . substr ( $this->nextAppointment->time_start, 0, 5 ) : '&nbsp;'?></td>
+	</tr>
+</table>
+</div>
+</div>
+</div>
+<div id="menu">
+<ul>
+	<li>Klant</li>
+	<ul>
+		<li
+			<?php
+			if ($this->controllerName == 'customer' && $this->actionName == 'new')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/new/">Nieuwe klant</a></li>
+		<li
+			<?php
+			if ($this->controllerName == 'customer' && $this->actionName == 'index')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/">Kies een klant</a></li>
+		<li
+			<?php
+			if ($this->controllerName == 'customer' && ($this->actionName == 'view' || $this->actionName == 'contact' || $this->actionName == 'customer' || $this->actionName == 'intake' || $this->actionName == 'diet' || $this->actionName == 'medical' || $this->actionName == 'measurements' || $this->actionName == 'measurementedit' || $this->actionName == 'newconsult' || $this->actionName == 'consult'))
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/view/">Profiel</a></li>
+		<?php
+		if (isset ( $this->location )) {
+			?>
+		<li
+			<?php
+			if ($this->controllerName == 'customer' && $this->actionName == 'invoice')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/invoice/">Afrekenen</a></li>
+		<?php
+		}
+		?>
+		<li
+			<?php
+			if ($this->controllerName == 'customer' && $this->actionName == 'invoices')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/invoices/">Rekeningen</a></li>
+	</ul>
+	<?php
+	if (isset ( $this->location )) {
+		?>
+		  <li>Locatie</li>
+	<ul>
+		<?php
+		if (! $this->currentDay) {
+			?>
+		<li
+			<?php
+			if ($this->controllerName == 'location' && $this->actionName == 'openday')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/location/openday/">Dag openen</a></li>
+		<?php
+		}
+		if ($this->currentDay & $this->currentDay->status == 'opened') {
+			?>
+		<li
+			<?php
+			if ($this->controllerName == 'location' && $this->actionName == 'closeday')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/location/closeday/">Dag sluiten</a></li>
+		<?php
+		}
+		?>
+		<li
+			<?php
+		if ($this->controllerName == 'location' && $this->actionName == 'invoicesday')
+			echo ' class="selected"';
+		?>><a href="<?=$this->baseUrl?>/location/invoicesday/">Dagoverzicht</a></li>
+		<li
+			<?php
+		if ($this->controllerName == 'location' && $this->actionName == 'index')
+			echo ' class="selected"';
+		?>><a href="<?=$this->baseUrl?>/location/">Agenda</a></li>
+		<li
+			<?php
+		if ($this->controllerName == 'location' && $this->actionName == 'orders')
+			echo ' class="selected"';
+		?>><a href="<?=$this->baseUrl?>/location/orders/">Bestellingen</a></li>
+	</ul>
+	<?php
+	}
+	if (isset ( $this->admin )) {
+		if (! $this->limited) {
+			?>
+		  <li>Overzicht</li>
+	<ul>
+		<li
+			<?php
+			if ($this->controllerName == 'admin' && $this->actionName == 'invoices')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/admin/invoices/">Rekeningen</a></li>
+		<li
+			<?php
+			if ($this->controllerName == 'admin' && $this->actionName == 'index')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/admin/">Verkoop</a></li>
+		<li
+			<?php
+			if ($this->controllerName == 'admin' && $this->actionName == 'productstop')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/admin/productstop/">Producten&nbsp;Top</a></li>
+		<li
+			<?php
+			if ($this->controllerName == 'admin' && $this->actionName == 'year')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/admin/year/">Jaaroverzicht</a></li>
+	</ul>
+	<?php
+		}
+		?>
+	<li>Setup</li>
+	<ul>
+		<li
+			<?php
+			if ($this->controllerName == 'admin' && $this->actionName == 'suppliers')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/admin/suppliers/">Leveranciers</a></li>
+		<li
+			<?php
+			if ($this->controllerName == 'admin' && $this->actionName == 'employees')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/admin/employees/">Medewerkers</a></li>
+		<li
+			<?php
+		if ($this->controllerName == 'admin' && $this->actionName == 'invoicesetup')
+			echo ' class="selected"';
+		?>><a href="<?=$this->baseUrl?>/admin/invoicesetup/">Factuur&nbsp;details</a></li>
+		<?php
+		if (! $this->limited) {
+			?>
+		<li
+			<?php
+			if ($this->controllerName == 'admin' && $this->actionName == 'ordersetup')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/admin/ordersetup/">Bestellen&nbsp;details</a></li>
+		<?php
+		}
+		?>
+	</ul>
+	<?php
+	} else {
+		?>
+	<li><a href="<?=$this->baseUrl?>/index/login/?link=">Extra</a></li>	
+	<?php
+	}
+	?>
+	<li><a href="<?=$this->baseUrl?>/index/logout/">Log out</a></li>
+</ul>
+</div>
+<div id="content">
+	<?=$this->layout ()->content?>
+</div>
+
+</div>
+</body>
+</html>

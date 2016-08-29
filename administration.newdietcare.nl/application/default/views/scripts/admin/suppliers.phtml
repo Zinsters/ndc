@@ -1,0 +1,70 @@
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+	jQuery("#list").jqGrid({
+		url:'<?=$this->baseUrl?>/json/supplierssetup/',
+		datatype: "json",
+		colNames:['Naam', 'E-mail', ''],
+		colModel:[
+		  		{name:'name',index:'name',width:120},
+		  		{name:'email',index:'email',width:120},
+		  		{width:40,sortable:false}		  		
+		],
+		rowNum:10,
+		imgpath: '<?=$this->baseUrl?>/images/jqGrid',
+		mtype: "POST",		
+		pager: jQuery('#pager'),
+		sortname: 'id',
+		viewrecords: true,
+		sortorder: "asc",
+		multiselect: false, 		
+		width: 280,
+		height: "auto"
+	});
+	});
+
+	/////////////////////
+	// Products search //
+	/////////////////////
+	
+	var timeoutHnd;
+	 	
+	function doSearch(ev){
+		if(timeoutHnd)
+			clearTimeout(timeoutHnd);
+		timeoutHnd = setTimeout(gridReload,500);
+	}
+	
+	function gridReload(){
+		var name = jQuery("#name").val();
+		var email = jQuery("#email").val();
+		jQuery("#list").setGridParam({
+			url:"<?=$this->baseUrl?>/json/supplierssetup/?name="+name+"&email="+email,page:1
+		}).trigger("reloadGrid");
+	}
+</script>
+
+<h2>Leveranciers</h2>
+
+<table class="list left" width="280">
+	<tr class="noborder">
+		<td>Naam</td>
+		<td>E-mail</td>
+	</tr>
+	<tr class="noborder">
+		<td><input type="text" name="name" id="name" style="width: 100px;"
+			onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td><input type="text" name="email" id="email" style="width: 150px;"
+			onkeydown="doSearch(arguments[0]||event)" /></td>
+	</tr>
+</table>
+<br />
+
+<table id="list" class="scroll" cellpadding="0" cellspacing="0"></table>
+<div id="pager" class="scroll" style="text-align: left;"></div>
+<br />
+
+<form action="<?=$this->baseUrl?>/admin/supplieradd/"><input
+	type="submit" value="Add supplier" /></form>
+
+<br />
+<br />

@@ -1,0 +1,44 @@
+<table class="tabs">
+	<tr>
+		<td
+			<?php
+			if ($this->actionName == 'view')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/view/">Profiel</a></td>
+		<td
+			<?php
+			if ($this->actionName == 'contact')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/contact/">Contact</a></td>
+		<td
+			<?php
+			if ($this->actionName == 'customer')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/customer/">Klant</a></td>
+		<td
+			<?php
+			if ($this->actionName == 'intake')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/intake/">Intake</a></td>
+		<td
+			<?php
+			if ($this->actionName == 'diet')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/diet/">Dieet</a></td>
+		<td
+			<?php
+			if ($this->actionName == 'medical')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/medical/">Medisch</a></td>
+		<td
+			<?php
+			if ($this->actionName == 'measurements'||$this->actionName == 'measurementedit')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/measurements/">Metingen</a></td>
+		<td
+			<?php
+			if ($this->actionName == 'newconsult' || $this->actionName == 'consult')
+				echo ' class="selected"';
+			?>><a href="<?=$this->baseUrl?>/customer/newconsult/">Consult</a></td>
+	</tr>
+</table>

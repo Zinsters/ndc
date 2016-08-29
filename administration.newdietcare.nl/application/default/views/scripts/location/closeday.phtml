@@ -1,0 +1,129 @@
+<h2>Dag sluiten</h2>
+<table style="padding: 0">
+	<tr>
+		<td style="padding: 0">Locatie:</td>
+		<td><?=$this->location->username?></td>
+	</tr>
+	<tr>
+		<td style="padding: 0">Datum:</td>
+		<td><?=htmlentities ( $this->date->get ( 'd MMMM yyyy', 'nl_NL' ) )?></td>
+	</tr>
+	<tr>
+		<td style="padding: 0">Medewerker:</td>
+		<td><?=htmlentities ( $this->currentEmployee ? $this->currentEmployee->name : '' )?></td>
+	</tr>
+</table>
+<br />
+<?php
+if (! isset ( $this->result )) {
+	?>
+Tel de bedragen.
+<br />
+<br />
+<form method="post">
+<table>
+	<tr>
+		<td style="padding: 0">Afstorten kas:</td>
+		<td>&#0128;</td>
+		<td><input type="text" name="cashextracted" /></td>
+	</tr>
+	<tr>
+		<td style="padding: 0">kastotaal na afstorten:</td>
+		<td>&#0128;</td>
+		<td><input type="text" name="cashclose" /></td>
+	</tr>
+	<tr>
+		<td style="padding: 0">totaal pinbedrag:</td>
+		<td>&#0128;</td>
+		<td><input type="text" name="pintotal" /></td>
+	</tr>
+</table>
+<br />
+<input type="submit" value="Ok" /></form>
+<?php
+} elseif ($this->result === true) {
+	?>
+De dag is met succes gesloten!
+<br />
+<br />
+<form action="<?=$this->baseUrl?>/location/"><input type="submit"
+	value="Ok" /></form>
+<?php
+} else {
+	?>
+<h3>Waarschuwing!</h3>
+<?php
+	if ($this->pindifference) {
+		?>
+- Het opgegeven pin-bedrag is niet correct. Er is een verschil van
+&#0128; <?=$this->printPrice->filter ( $this->pindifference )?>.
+<br />
+<?php
+	}
+	if ($this->cashdifference_close) {
+		?>
+- De opgegeven kasbedragen zijn niet correct. Er is een verschil van
+&#0128; <?=$this->printPrice->filter ( $this->cashdifference_close )?>.
+<br />
+<?php
+	}
+	?>
+<br />
+Tel de bedragen opnieuw.
+<br />
+<br />
+<form method="post">
+<table>
+	<tr>
+		<td style="padding: 0">opname uit kas:</td>
+		<td>&#0128;</td>
+		<td><input type="text" name="cashextracted" /></td>
+	</tr>
+	<tr>
+		<td style="padding: 0">kastotaal na opname:</td>
+		<td>&#0128;</td>
+		<td><input type="text" name="cashclose" /></td>
+	</tr>
+	<tr>
+		<td style="padding: 0">totaal pinbedrag:</td>
+		<td>&#0128;</td>
+		<td><input type="text" name="pintotal" /></td>
+	</tr>
+</table>
+<br />
+<input type="submit" value="Ok" /></form>
+<br />
+<br />
+Of accepteer een kas/pin verschil. (Er wordt een e-mail gestuurd naar de
+administratie.)
+<br />
+<br />
+
+Ja,
+<br>
+- Het opgenomen kasbedrag is
+<b>&#0128; <?=$this->printPrice->filter ( $this->cashextracted )?></b>
+.
+<br />
+- Het bedrag in kas dat overblijft is
+<b>&#0128; <?=$this->printPrice->filter ( $this->cashclose )?></b>
+.
+<br />
+- Het pinbedrag is
+<b>&#0128; <?=$this->printPrice->filter ( $this->pintotal )?></b>
+.
+<br />
+<br />
+
+
+<form method="post"><input type="hidden" name="cashclose"
+	value="<?=$this->printPrice->filter ( $this->cashclose )?>" /><input
+	type="hidden" name="cashextracted"
+	value="<?=$this->printPrice->filter ( $this->cashextracted )?>" /><input
+	type="hidden" name="pintotal"
+	value="<?=$this->printPrice->filter ( $this->pintotal )?>" /><input
+	type="hidden" name="confirmed" value="1" /> <input type="submit"
+	value="Ok" /></form>
+<?php
+}
+?>

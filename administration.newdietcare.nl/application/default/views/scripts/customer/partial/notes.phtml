@@ -1,0 +1,26 @@
+<script type="text/javascript">
+$(document).ready(function(){
+	<?php
+	if ($this->growlMessage) {
+		?>
+		$.jGrowl.defaults.position = 'bottom-right';		
+		$.jGrowl("<?=$this->growlMessage?>");
+		
+	<?php
+	}
+	?>
+    $('#notesSubmit').click(function() {
+		$.post('<?=$this->baseUrl?>/json/setnotes/', {id: "<?=$this->customer->userid?>", notes: $("#notes").val()}, onAjaxSuccess);
+		return false;
+	})
+
+	function onAjaxSuccess(result) {
+		$.jGrowl.defaults.position = 'bottom-right';		
+		$.jGrowl("Data saved successfully");
+    }
+})
+</script>
+
+<div class="narrow">Notities:<br>
+<textarea name="notes" id="notes" class="smalltext"><?=isset ( $this->customer->notes ) ? htmlentities ( $this->customer->notes ) : ''?></textarea>
+<input type="submit" id="notesSubmit" value="OK" /></div>

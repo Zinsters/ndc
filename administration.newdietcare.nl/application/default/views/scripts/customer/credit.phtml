@@ -1,0 +1,88 @@
+<h2>Op rekening</h2>
+
+<?=htmlentities ( $this->currentCustomer->getName () )?>
+<br />
+<?=htmlentities ( $this->currentCustomer->thuisadres )?>
+<br />
+<?=htmlentities ( $this->currentCustomer->thuispostcode )?> <?=htmlentities ( $this->currentCustomer->thuisplaats )?>
+<br />
+<br />
+
+datum: <?=htmlentities ( $this->invoice->dateFormat ( 'created' ) )?>
+<br />
+<br />
+<?=htmlentities ( $this->invoiceDetails->invoice_header )?>
+<br />
+<br />
+
+<table class="invoice">
+	<tr>
+		<th>Product</th>
+		<th class="center">Aantal</th>
+		<th colspan="2">Prijs p/st</th>
+		<th colspan="2">Prijs</th>
+	</tr>
+	<?php
+	foreach ( $this->invoicelines as $line ) {
+		?>
+	<tr class="noborder">
+		<td><?=$this->escape ( $line->getProduct ()->name )?></td>
+		<td class="center"><?=$this->printFloat->filter ( $line->number )?></td>
+		<td>&#0128;</td>
+		<td class="right"><?=$this->printPrice->filter ( $line->number != 0 ? $line->total_price / $line->number : 0 )?></td>
+		<td>&#0128;</td>
+		<td class="right"><?=$this->printPrice->filter ( $line->total_price )?></td>
+	</tr>
+	<?php
+	}
+	?>
+	<tr>
+		<td colspan="6">&nbsp;</td>
+	</tr>
+	<tr class="noborder">
+		<td colspan="4"><b>Totaal</b></td>
+		<td>&#0128;</td>
+		<td class="right"><b><?=$this->printPrice->filter ( $this->invoice->total )?></b></td>
+	</tr>
+	<tr class="noborder">
+		<td colspan="4"><b>Korting</b></td>
+		<td>&#0128;</td>
+		<td class="right"><b><?=$this->printPrice->filter ( $this->invoice->reduction )?></b></td>
+	</tr>
+	<tr class="noborder">
+		<td colspan="4"><b>Totaal inclusief Korting</b></td>
+		<td>&#0128;</td>
+		<td class="right"><b><?=$this->printPrice->filter ( $this->invoice->total - $this->invoice->reduction )?></b></td>
+	</tr>
+	<tr>
+		<td colspan="6">&nbsp;</td>
+	</tr>
+	<tr class="noborder">
+		<td colspan="4">totaal excl. BTW</td>
+		<td>&#0128;</td>
+		<td class="right"><?=$this->printPrice->filter ( $this->exVat )?></td>
+	</tr>
+	<tr class="noborder">
+		<td colspan="4">BTW bedrag</td>
+		<td>&#0128;</td>
+		<td class="right"><?=$this->printPrice->filter ( $this->invoice->total - $this->invoice->reduction - $this->exVat )?></td>
+	</tr>
+</table>
+<br />
+<br />
+
+Eerstvolgende afspraak: <?=$this->nextAppointment instanceof Model_Table_Row_Appointment ? $this->nextAppointment->dateFormat ( 'date' ) . ' ' . substr ( $this->nextAppointment->time_start, 0, 5 ) : ''?>
+<br />
+<br />
+
+<?=htmlentities ( $this->invoiceDetails->footer )?>
+<br />
+<br />
+
+<form method="post"><input type="submit" value="Maak definitief"
+	onclick="return(confirm('Op rekening &#0128; <?=$this->printPrice->filter ( $this->invoice->total - $this->invoice->reduction )?> ?'))"></form>
+<form
+	action="<?=$this->baseUrl?>/customer/invoice/id/<?=$this->invoice->id?>/"><input
+	type="submit" value="Bewerk"></form>
+<br />
+<br />

@@ -1,0 +1,37 @@
+<h2>Edit employee</h2>
+<p>
+	<?php
+	if (isset ( $this->messages ['name'] )) {
+		foreach ( $this->messages ['name'] as $message ) {
+			?><span class="errorMessage"><b>Naam:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	?>
+</p>
+
+<form method="post">
+<table class="medium">
+	<tr>
+		<td>Naam:</td>
+		<td><input type="text" name="name"
+			value="<?=isset ( $this->employee->name ) ? htmlentities ( $this->employee->name ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Locaties:</td>
+		<td>
+			<?php
+			foreach ( $this->locationsToShow as $location ) {
+				?>
+			<input type="checkbox" name="employee_locations[]"
+			value="<?=$location->userid?>"
+			<?=in_array ( $location->userid, $this->employee_locations ) ? 'checked' : ''?> /> <?=htmlentities ( $location->bedrijfsnaam )?><br />
+			<?php
+			}
+			?>
+		</td>
+	</tr>
+</table>
+<br />
+<input type="submit" value="OK" /></form>
+<form action="<?=$this->baseUrl?>/admin/employees/"><input type="submit"
+	value="Back" /></form>

@@ -1,0 +1,108 @@
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	jQuery("#list").jqGrid({
+		url:'<?=$this->baseUrl?>/json/productstop/',
+		datatype: "json",
+		colNames:['Code', 'Product', 'Aantal', '', 'Verkoopprijs'],
+		colModel:[
+		  		{name:'productcode',index:'productcode', sortable:false, width: 65},
+		  		{name:'name',index:'name', sortable:false, width: 120},
+		  		{name:'number_total',index:'number_total', sortable:false, width: 60},		  		
+		  		{sortable:false, width: 20},
+		  		{name:'total_price_total',index:'total_price_total', sortable:false, width: 100, align:"right"}
+		],
+		rowNum:10,
+		imgpath: '<?=$this->baseUrl?>/images/jqGrid',
+		mtype: "POST",		
+		pager: jQuery('#pager'),
+		sortname: 'id',
+		viewrecords: true,
+		sortorder: "asc",
+		multiselect: false, 		
+		width: 350,
+		height: "auto"
+	});
+	});
+	
+	var timeoutHnd;
+	 	
+	function doSearch(ev){
+		if(timeoutHnd)
+			clearTimeout(timeoutHnd);
+		timeoutHnd = setTimeout(gridReload,500);
+	}
+	
+	function gridReload(){
+		var filter_employee = jQuery("#filter_employee").val();
+		var filter_location = jQuery("#filter_location").val();
+		var filter_date_start = jQuery("#filter_date_start").val();
+		var filter_date_end = jQuery("#filter_date_end").val();
+		jQuery("#list").setGridParam({
+			url:"<?=$this->baseUrl?>/json/productstop/?filter_employee="+filter_employee+"&filter_location="+filter_location+"&filter_date_start="+filter_date_start+"&filter_date_end="+filter_date_end,page:1
+		}).trigger("reloadGrid");
+	}
+
+	Date.format = 'dd-mm-yyyy';
+	$(function(){
+		$('#filter_date_start').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
+		$('#filter_date_start').dpSetOffset(20, 0);
+		$('#filter_date_end').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
+		$('#filter_date_end').dpSetOffset(20, 0);
+	});
+</script>
+
+<h2>Producten Top</h2>
+
+<form>
+<table>
+	<tr class="noborder">
+		<td>Medewerker:</td>
+		<td><select name="filter_employee" id="filter_employee"
+			style="width: 160px;" onchange="doSearch(arguments[0]||event)">
+			<option></option>
+			<?php
+			foreach ( $this->filterEmployees as $employee ) {
+				?>
+			<option value="<?=$employee->id?>"
+				<?=$this->input->filter_employee == $employee->id ? 'selected' : ''?>><?=htmlentities ( $employee->name )?></option>
+			<?php
+			}
+			?>			
+		</select></td>
+		<td></td>
+		<td>Van</td>
+		<td>Tot en met</td>
+	</tr>
+	<tr>
+		<td>Vestiging:</td>
+		<td><select name="filter_location" id="filter_location"
+			style="width: 160px;" onchange="doSearch(arguments[0]||event)">
+			<option></option>
+			<?php
+			foreach ( $this->filterLocations as $location ) {
+				?>
+			<option value="<?=$location->userid?>"
+				<?=$this->input->filter_location == $location->userid ? 'selected' : ''?>><?=htmlentities ( $location->bedrijfsnaam )?></option>
+			<?php
+			}
+			?>			
+		</select></td>
+		<td>Datum:</td>
+		<td><input type="text" name="filter_date_start" id="filter_date_start"
+			value="<?=$this->input->filter_date_start ? $this->printDate->filter ( $this->input->filter_date_start ) : ''?>"
+			style="width: 110px;" onkeydown="doSearch(arguments[0]||event)"
+			onchange="doSearch(arguments[0]||event)" /></td>
+		<td><input type="text" name="filter_date_end" id="filter_date_end"
+			value="<?=$this->input->filter_date_end ? $this->printDate->filter ( $this->input->filter_date_end ) : ''?>"
+			style="width: 110px;" onkeydown="doSearch(arguments[0]||event)"
+			onchange="doSearch(arguments[0]||event)" /></td>
+	</tr>
+</table>
+</form>
+<br />
+
+<table id="list" class="scroll" cellpadding="0" cellspacing="0"></table>
+<div id="pager" class="scroll" style="text-align: left;"></div>
+
+<br />
+<br />

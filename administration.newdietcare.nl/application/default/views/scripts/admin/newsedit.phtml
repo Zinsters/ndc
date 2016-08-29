@@ -1,0 +1,79 @@
+<h2>Edit bericht</h2>
+<p>
+	<?php
+	if (isset ( $this->messages ['date'] )) {
+		foreach ( $this->messages ['date'] as $message ) {
+			?><span class="errorMessage"><b>Date:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['published'] )) {
+		foreach ( $this->messages ['published'] as $message ) {
+			?><span class="errorMessage"><b>Published:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	?>
+</p>
+
+<form method="post">
+<table class="notes" style="width: 100%">
+	<tr>
+		<td>Onderwerp:</td>
+		<td></td>
+		<td style="width: 100%"><input type="text" name="title"
+			style="width: 250px"
+			value="<?=isset ( $this->news->title ) ? $this->escape ( $this->news->title ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Datum:</td>
+		<td></td>
+		<td><input type="text" name="date" id="date"
+			value="<?=isset ( $this->news->date ) ? $this->printDate->filter ( $this->news->date ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Inhoud:</td>
+		<td></td>
+		<td><textarea cols="80" id="editor1" name="editor1" rows="10"><?=isset ( $this->news->content ) ? $this->news->content : ''?></textarea>
+		<script type="text/javascript">
+		//<![CDATA[
+
+			// Replace the <textarea id="editor"> with an CKEditor
+			// instance, using default configurations.
+			CKEDITOR.replace( 'editor1',
+			    {
+			    	height: 800,
+					filebrowserBrowseUrl: '<?=$this->baseUrl?>/ckeditor/filemanager/index.html',
+			        toolbar:
+			        [
+						['Cut','Copy','Paste'],
+						['Undo','Redo'],
+						['Bold','Italic','Underline','-','Subscript','Superscript'],
+						['NumberedList','BulletedList','-','Outdent','Indent'],
+					    ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+					    ['Link','Unlink','Anchor'],
+					    ['Image','HorizontalRule','SpecialChar','PageBreak'],
+					    ['Styles','Format','Font','FontSize'],
+					    ['TextColor','BGColor']
+			        ]
+			    });
+
+		//]]>
+		</script></td>
+	</tr>
+	<tr>
+		<td>Actief:</td>
+		<td></td>
+		<td><input type="radio" name="published" id="published" value="1"
+			<?=$this->news->published == 1 ? 'checked="checked"' : ''?> /> Ja <input
+			type="radio" name="published" id="published" value="0"
+			<?=$this->news->published != 1 ? 'checked="checked"' : ''?> /> Nee</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+<br />
+<input type="submit" value="OK" /></form>
+<form action="<?=$this->baseUrl?>/admin/news/"><input type="submit"
+	value="Terug" /></form>

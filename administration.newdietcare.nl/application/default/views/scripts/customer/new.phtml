@@ -1,0 +1,160 @@
+<h2>Klant toevoegen</h2>
+<p>
+	<?php
+	if (isset ( $this->messages ['password'] )) {
+		foreach ( $this->messages ['password'] as $message ) {
+			?><span class="errorMessage"><b>Wachtwoord:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['first_name'] )) {
+		foreach ( $this->messages ['first_name'] as $message ) {
+			?><span class="errorMessage"><b>Voornaam:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['initials'] )) {
+		foreach ( $this->messages ['initials'] as $message ) {
+			?><span class="errorMessage"><b>Voorletters:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['infix'] )) {
+		foreach ( $this->messages ['infix'] as $message ) {
+			?><span class="errorMessage"><b>Tussenvoegsel:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['last_name'] )) {
+		foreach ( $this->messages ['last_name'] as $message ) {
+			?><span class="errorMessage"><b>Achternaam:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['gender'] )) {
+		foreach ( $this->messages ['gender'] as $message ) {
+			?><span class="errorMessage"><b>Geslacht:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['address'] )) {
+		foreach ( $this->messages ['address'] as $message ) {
+			?><span class="errorMessage"><b>Adres:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['zip'] )) {
+		foreach ( $this->messages ['zip'] as $message ) {
+			?><span class="errorMessage"><b>Postcode:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['city'] )) {
+		foreach ( $this->messages ['city'] as $message ) {
+			?><span class="errorMessage"><b>Woonplaats:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['phone'] )) {
+		foreach ( $this->messages ['phone'] as $message ) {
+			?><span class="errorMessage"><b>Telefoon:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['mobile_phone'] )) {
+		foreach ( $this->messages ['mobile_phone'] as $message ) {
+			?><span class="errorMessage"><b>Mobiel:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['email'] )) {
+		foreach ( $this->messages ['email'] as $message ) {
+			?><span class="errorMessage"><b>E-mail:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['notes'] )) {
+		foreach ( $this->messages ['notes'] as $message ) {
+			?><span class="errorMessage"><b>Notities:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	?>
+</p>
+
+<form method="post">
+<div class="narrow">Notities:<br>
+<textarea name="notes" class="smalltext"><?=isset ( $this->customer->notes ) ? htmlentities ( $this->customer->notes ) : ''?></textarea>
+</div>
+
+<table class="medium">
+	<tr>
+		<th colspan="2">Klant login</th>
+	</tr>
+	<tr>
+		<td>Wachtwoord:</td>
+		<td class="right"><input type="text" name="password"
+			value="" /></td>
+	</tr>
+	<tr>
+		<th colspan="2">Persoonsgegevens</th>
+	</tr>
+	<tr>
+		<td>Voornaam:</td>
+		<td class="right"><input type="text" name="first_name"
+			value="<?=isset ( $this->customer->first_name ) ? htmlentities ( $this->customer->first_name ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Voorletters:</td>
+		<td class="right"><input type="text" name="initials"
+			value="<?=isset ( $this->customer->initials ) ? htmlentities ( $this->customer->initials ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Tussenvoegsel:</td>
+		<td class="right"><input type="text" name="infix"
+			value="<?=isset ( $this->customer->infix ) ? htmlentities ( $this->customer->infix ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Achternaam:</td>
+		<td class="right"><input type="text" name="last_name"
+			value="<?=isset ( $this->customer->last_name ) ? htmlentities ( $this->customer->last_name ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Geslacht:</td>
+		<td class="right"><input type="radio" name="gender" value="man"
+			<?=isset ( $this->customer->gender ) && $this->customer->gender == 'man' ? 'checked' : ''?> />
+		Man <input type="radio" name="gender" value="vrouw"
+			<?=isset ( $this->customer->gender ) && $this->customer->gender == 'vrouw' ? 'checked' : ''?> />
+		Vrouw <input type="radio" name="gender" value="bedrijf"
+			<?=isset ( $this->customer->gender ) && $this->customer->gender == 'bedrijf' ? 'checked' : ''?> />
+		Bedrijf
+		</td>
+	</tr>
+	<tr>
+		<th colspan="2">Adres</th>
+	</tr>
+	<tr>
+		<td>Adres:</td>
+		<td class="right"><input type="text" name="address"
+			value="<?=isset ( $this->customer->address ) ? htmlentities ( $this->customer->address ) : ''?>" />
+		</td>
+	</tr>
+	<tr>
+		<td>Postcode:</td>
+		<td class="right"><input type="text" name="zip"
+			value="<?=isset ( $this->customer->zip ) ? htmlentities ( $this->customer->zip ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Woonplaats:</td>
+		<td class="right"><input type="text" name="city"
+			value="<?=isset ( $this->customer->city ) ? htmlentities ( $this->customer->city ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<th colspan="2">Bereikbaar</th>
+	</tr>
+	<tr>
+		<td>Telefoon:</td>
+		<td class="right"><input type="text" name="phone"
+			value="<?=isset ( $this->customer->phone ) ? htmlentities ( $this->customer->phone ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Mobiel:</td>
+		<td class="right"><input type="text" name="mobile_phone"
+			value="<?=isset ( $this->customer->mobile_phone ) ? htmlentities ( $this->customer->mobile_phone ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>E-mail:</td>
+		<td class="right"><input type="text" name="email"
+			value="<?=isset ( $this->customer->email ) ? htmlentities ( $this->customer->email ) : ''?>" /></td>
+	</tr>
+</table>
+<br />
+<input type="submit" name="submitButton" value="OK" /> <input
+	type="submit" name="submitButton" value="OK + Agenda" /></form>

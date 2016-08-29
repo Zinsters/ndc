@@ -1,0 +1,60 @@
+<h2>Dag openen</h2>
+<table style="padding: 0">
+	<tr>
+		<td style="padding: 0">Locatie:</td>
+		<td><?=htmlentities ( $this->location->username )?></td>
+	</tr>
+	<tr>
+		<td style="padding: 0">Datum:</td>
+		<td><?=htmlentities ( $this->date->get ( 'd MMMM yyyy', 'nl_NL' ) )?></td>
+	</tr>
+	<tr>
+		<td style="padding: 0">Medewerker:</td>
+		<td><?=htmlentities ( $this->currentEmployee ? $this->currentEmployee->name : '' )?></td>
+	</tr>
+</table>
+<br />
+<?php
+if (! isset ( $this->result )) {
+	?>
+Tel het bedrag.
+<br />
+<br />
+<form method="post">in kas: &#0128; <input type="text" name="cashopen" />
+<input type="submit" value="Ok" /></form>
+<?php
+} elseif ($this->result === true) {
+	?>
+De dag is met succes geopend!
+<br />
+<br />
+<form action="<?=$this->baseUrl?>/location/"><input type="submit"
+	value="Ok" /></form>
+<?php
+} else {
+	?>
+<h3>Waarschuwing!</h3>
+Het opgegeven kas-bedrag is niet correct.
+<br />
+<br />
+Tel het bedrag opnieuw.
+<br />
+<br />
+<form method="post">in kas: &#0128; <input type="text" name="cashopen" />
+<input type="submit" value="Ok" /></form>
+<br />
+<br />
+Of accepteer een kasverschil van &#0128; <?=$this->printPrice->filter ( $this->cashdiference_open )?>. (Er wordt een e-mail gestuurd
+naar de administratie.)
+<br />
+<br />
+Ja, het bedrag in kas is
+<b>&#0128; <?=$this->printPrice->filter ( $this->cashopen )?></b>
+.
+<form method="post"><input type="hidden" name="cashopen"
+	value="<?=$this->printPrice->filter ( $this->cashopen )?>" /><input
+	type="hidden" name="confirmed" value="1" /> <input type="submit"
+	value="Ok" /></form>
+<?php
+}
+?>

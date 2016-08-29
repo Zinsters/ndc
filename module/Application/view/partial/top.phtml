@@ -1,7 +1,0 @@
-<table class="tabs">
-	<tr>
-	<?php foreach ($this->container as $key => $page): ?>
-		<td<?php if ($page->isActive()) echo ' class="selected"' ?>><?php echo $this->navigation()->menu()->htmlify($page); ?></td>
-	<?php endforeach; ?>
-	</tr>
-</table>

@@ -1,0 +1,33 @@
+<h2>Edit supplier</h2>
+<p>
+	<?php
+	if (isset ( $this->messages ['name'] )) {
+		foreach ( $this->messages ['name'] as $message ) {
+			?><span class="errorMessage"><b>Naam:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['email'] )) {
+		foreach ( $this->messages ['email'] as $message ) {
+			?><span class="errorMessage"><b>E-mail:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	?>
+</p>
+
+<form method="post">
+<table class="medium">
+	<tr>
+		<td>Naam:</td>
+		<td><input type="text" name="name"
+			value="<?=isset ( $this->supplier->name ) ? htmlentities ( $this->supplier->name ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>E-mail:</td>
+		<td><input type="text" name="email"
+			value="<?=isset ( $this->supplier->email ) ? htmlentities ( $this->supplier->email ) : ''?>" /></td>
+	</tr>
+</table>
+<br />
+<input type="submit" value="OK" /></form>
+<form action="<?=$this->baseUrl?>/admin/suppliers/"><input type="submit"
+	value="Back" /></form>

@@ -1,50 +1,66 @@
 <?php
+//echo 'It is administration';
+//die();
 
-use Zend\Mvc\Application;
-use Zend\Stdlib\ArrayUtils;
+//if ( ! isset( $_COOKIE[ 'admin_sessionid' ] ) )
+//	die();
 
-set_include_path ( __DIR__ . '/../module/Application/src/Library/dompdf' . PATH_SEPARATOR . get_include_path () );
+date_default_timezone_set('Europe/Amsterdam');
 
-/**
- * Display all errors when APPLICATION_ENV is development.
- */
-if ($_SERVER['APPLICATION_ENV'] === 'development') {
-    error_reporting(E_ALL);
-    ini_set("display_errors", 1);
-}
+define ( 'APP_FULL_PATH', getcwd () );
+define ( 'MC_FULL_PATH', APP_FULL_PATH . '/application/library' );
+set_include_path ( APP_FULL_PATH . '/application/library/' . PATH_SEPARATOR . APP_FULL_PATH . '/application/library/dompdf/' . PATH_SEPARATOR . APP_FULL_PATH . '/application/library/Excel/' . PATH_SEPARATOR . get_include_path () );
 
-/**
- * This makes our life easier when dealing with paths. Everything is relative
- * to the application root now.
- */
-chdir(dirname(__DIR__));
+require_once ('loader.php');
 
-// Decline static file requests back to the PHP built-in webserver
-if (php_sapi_name() === 'cli-server') {
-    $path = realpath(__DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-    if (__FILE__ !== $path && is_file($path)) {
-        return false;
-    }
-    unset($path);
-}
+//Zend_Registry object
+$registry = Zend_Registry::getInstance ();
 
-// Composer autoloading
-include __DIR__ . '/../vendor/autoload.php';
+//Setup application config
+$config = new Zend_Config_Xml ( APP_FULL_PATH . '/application/config/.config' );
+$registry->set ( 'config', $config );
 
-if (! class_exists(Application::class)) {
-    throw new RuntimeException(
-        "Unable to load application.\n"
-        . "- Type `composer install` if you are developing locally.\n"
-        . "- Type `vagrant ssh -c 'composer install'` if you are using Vagrant.\n"
-        . "- Type `docker-compose run zf composer install` if you are using Docker.\n"
-    );
-}
+//Setup database
+$db = Zend_Db::factory ( $config->database->adapter, $config->database->params->toArray () );
+$registry->set ( 'db', $db );
+Zend_Db_Table::setDefaultAdapter ( $db );
+$db->query ( 'SET CHARACTER SET utf8' );
 
-// Retrieve configuration
-$appConfig = require __DIR__ . '/../config/application.config.php';
-if (file_exists(__DIR__ . '/../config/development.config.php')) {
-    $appConfig = ArrayUtils::merge($appConfig, require __DIR__ . '/../config/development.config.php');
-}
+/*
+//Setup Zend_Mail
+$tr = new Zend_Mail_Transport_Smtp ( 'localhost' );
+Zend_Mail::setDefaultTransport ( $tr );
+*/
 
-// Run the application!
-Application::init($appConfig)->run();
+/*
+$mail_config = array('auth' => 'login', 'username' => 'noreply@newdietcare.nl', 'password' => 'Rti6rx');
+$tr = new Zend_Mail_Transport_Smtp ( 'mail.dualdev.com' );
+Zend_Mail::setDefaultTransport ( $tr, $mail_config );
+*/
+
+//Setup view
+$view = new Zend_View ( );
+$viewRenderer = new Zend_Controller_Action_Helper_ViewRenderer ( $view );
+$viewRenderer->setViewBasePathSpec ( APP_FULL_PATH . '/application/:module/views' );
+$viewRenderer->setViewScriptPathSpec ( ':controller/:action.:suffix' );
+$viewRenderer->setViewSuffix ( 'phtml' );
+Zend_Controller_Action_HelperBroker::addHelper ( $viewRenderer );
+
+//Setup layout
+$layout = Zend_Layout::startMvc ();
+$layout->setContentKey ( 'content' );
+
+//Setup front controller
+$controller = Zend_Controller_Front::getInstance ();
+$controller->setParam ( 'prefixDefaultModule', true );
+$controller->setControllerDirectory ( array ('default' => APP_FULL_PATH . '/application/default/controllers' ) );
+$controller->setBaseUrl ( $config->application->baseUrl );
+
+//TODO Turn it off in the final version!!! 
+$controller->throwExceptions ( false );
+$controller->registerPlugin ( new Zend_Controller_Plugin_ErrorHandler ( ) );
+
+//run
+$controller->dispatch ();
+
+

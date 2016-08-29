@@ -1,0 +1,33 @@
+<div
+	style="width: 760px; height: 108px; background-color: #d6d7d9; margin-bottom: 10px;">
+<a href="http://www.newdietcare.nl/"><img
+	src="http://newdietcare.nl/images_basis/logo.gif" alt="NewDiet Care"
+	width="298" height="108" border="0" /></a></div>
+<div
+	style="width: 760px; margin-right: 30px; color: #525759; font-size: 9pt; font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular; line-height: 12pt; text-align: justify;">
+<h1
+	style="color: #b3c1dd; font-size: 14pt; font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular; font-style: italic; font-weight: bold; line-height: 13pt; text-align: left;">Nieuws</h1>
+<?php
+$i = 0;
+foreach ( $this->rows as $row ) {
+	$prepared = str_replace ( '<p>', '', $row->content );
+	$prepared = str_replace ( '</p>', '<br />', $prepared );
+	$prepared = explode ( '<br />', $prepared );
+	$prepared = $prepared [0];
+	?>
+<p
+	style="padding: 3px; color: #525759; font-size: 9pt; font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular; font-variant: normal; font-weight: normal; line-height: 12pt; text-align: justify; text-transform: none; <?php
+	echo ($i % 2 == 0 ? 'background-color: #d6d7d9;' : '');
+	?>"><span style="font-weight: bold"><?=$this->escape ( $row->title )?></span><br />
+<?=$prepared?><br />
+<a
+	href="<?='http://' . $_SERVER ['SERVER_NAME'] . '/inhoud_pages/nieuws/leesmeer.php?id=' . $row->id?>"
+	style="color: #525759; font-size: 9pt; font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular; text-decoration: underline">Lees
+meer</a></p>
+	<?php
+	$i ++;
+}
+?>
+</div>
+<br style="clear: both" />
+<br style="clear: both" />

@@ -1,0 +1,52 @@
+<h2>Nieuwsbrief - Stap 2 - Bekijk/Wijzig bericht</h2>
+
+<form method="post" action="<?=$this->baseUrl?>/admin/newsletter3/">
+<table class="notes" style="width: 100%">
+	<tr>
+		<td>Onderwerp:</td>
+		<td></td>
+		<td style="width: 100%"><input type="text" name="subject"
+			style="width: 250px"
+			value="<?=isset ( $this->subject ) ? $this->escape ( $this->subject ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Inhoud:</td>
+		<td></td>
+		<td style="width: 100%"><textarea cols="80" id="editor1"
+			name="editor1" rows="10"><?=isset ( $this->content ) ? $this->content : ''?></textarea>
+		<script type="text/javascript">
+		//<![CDATA[
+
+			// Replace the <textarea id="editor"> with an CKEditor
+			// instance, using default configurations.
+			CKEDITOR.replace( 'editor1',
+			    {
+		    		height: 800,			    
+					filebrowserBrowseUrl: '<?=$this->baseUrl?>/ckeditor/filemanager/index.html',
+			        toolbar :
+			        [
+						['Cut','Copy','Paste'],
+						['Undo','Redo'],
+						['Bold','Italic','Underline','-','Subscript','Superscript'],
+						['NumberedList','BulletedList','-','Outdent','Indent'],
+					    ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+					    ['Link','Unlink','Anchor'],
+					    ['Image','HorizontalRule','SpecialChar','PageBreak'],					    
+					    ['Styles','Format','Font','FontSize'],
+					    ['TextColor','BGColor']
+			        ]
+			    });
+
+		//]]>
+		</script></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+<br />
+<input type="submit" value="&lt; Stap 1"
+	onclick="this.form.action='<?=$this->baseUrl?>/admin/newsletter/'" />&nbsp;<input
+	type="submit" value="Stap 3 &gt;" /></form>

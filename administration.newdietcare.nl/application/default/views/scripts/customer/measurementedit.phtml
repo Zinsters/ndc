@@ -1,0 +1,252 @@
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#weight').change(function(){
+		$.getJSON('<?=$this->baseUrl?>/json/weightdifference/', {id: "<?=$this->currentCustomer->userid?>", weight: $("#weight").attr("value")}, onAjaxSuccess);
+	})
+
+	function onAjaxSuccess(obj)
+	{
+		$("#weightDifferenceField").text(obj.weightDifference);	
+	}
+})
+
+Date.format = 'dd-mm-yyyy';
+$(function(){
+	$('#date').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
+	$('#date').dpSetOffset(-145, 0);
+});
+</script>
+
+<?php
+if (isset ( $this->xml )) {
+	?>
+<script type="text/javascript"
+	src="<?=$this->baseUrl?>/scripts/swfobject.js"></script>
+<script type="text/javascript">
+	function getChartXml1()
+	{
+		return document.getElementById("xmlcontent1").innerHTML;
+	}
+	
+	function getChartXml2()
+	{
+		return document.getElementById("xmlcontent2").innerHTML;
+	}
+	
+	function getChartXml3()
+	{
+		return document.getElementById("xmlcontent3").innerHTML;
+	}
+</script>
+<script type="text/javascript">
+	swfobject.embedSWF("<?=$this->baseUrl?>/flash/dietcare.swf", "flashcontent1", "250", "90", "9.0.0", "<?=$this->mijnnewdietcareUrl?>/templates/NDC_v1.0/media/flash/expressinstall.swf", {xmlReturnFunction : "getChartXml1"});
+</script>
+<script type="text/javascript">
+	swfobject.embedSWF("<?=$this->baseUrl?>/flash/dietcare.swf", "flashcontent2", "250", "90", "9.0.0", "<?=$this->mijnnewdietcareUrl?>/templates/NDC_v1.0/media/flash/expressinstall.swf", {xmlReturnFunction : "getChartXml2"});
+</script>
+<script type="text/javascript">
+	swfobject.embedSWF("<?=$this->baseUrl?>/flash/dietcare.swf", "flashcontent3", "250", "90", "9.0.0", "<?=$this->mijnnewdietcareUrl?>/templates/NDC_v1.0/media/flash/expressinstall.swf", {xmlReturnFunction : "getChartXml3"});
+</script>
+<?php
+}
+?>
+
+<?=$this->partial ( 'customer/partial/menu.phtml', array ('baseUrl' => $this->baseUrl, 'actionName' => $this->actionName ) )?>
+
+<h2>Metingen - <?=htmlentities ( $this->currentCustomer->getName () )?></h2>
+<div id="weightDifferenceField" style="font-weight: bold">
+<?php
+if ($this->currentCustomer->getRealStartWeight () > 0 && isset ( $this->measurement->weight )) {
+	if ($this->currentCustomer->getRealStartWeight () >= $this->measurement->weight) {
+		?>
+<b>Totaal gewichtsverlies: <?=$this->printFloat->filter ( $this->currentCustomer->getRealStartWeight () - $this->measurement->weight )?> kg</b>
+<?php
+	} else {
+		?>
+<b>Totaal gewichtstoename: <?=$this->printFloat->filter ( $this->currentCustomer->getCurrentWeight () - $this->measurement->weight )?> kg</b>
+<?php
+	}
+}
+?>
+</div>
+
+<p>
+	<?php
+	if (isset ( $this->messages ['date'] )) {
+		foreach ( $this->messages ['date'] as $message ) {
+			?><span class="errorMessage"><b>Datum:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['weight'] )) {
+		foreach ( $this->messages ['weight'] as $message ) {
+			?><span class="errorMessage"><b>Gewicht kg:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['spiermassa'] )) {
+		foreach ( $this->messages ['spiermassa'] as $message ) {
+			?><span class="errorMessage"><b>Spiermassa kg:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['fat'] )) {
+		foreach ( $this->messages ['fat'] as $message ) {
+			?><span class="errorMessage"><b>Vetmassa kg:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['fat_p'] )) {
+		foreach ( $this->messages ['fat_p'] as $message ) {
+			?><span class="errorMessage"><b>Vetmassa %:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['damp'] )) {
+		foreach ( $this->messages ['damp'] as $message ) {
+			?><span class="errorMessage"><b>Vocht kg:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['bmi'] )) {
+		foreach ( $this->messages ['bmi'] as $message ) {
+			?><span class="errorMessage"><b>BMI:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['start'] )) {
+		foreach ( $this->messages ['start'] as $message ) {
+			?><span class="errorMessage"><b>Dieetfase:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	?>
+</p>
+
+<table class="list">
+	<tr class="noborder">
+		<td>Datum</td>
+		<td>Gewicht kg</td>
+		<td>Vetmassa kg</td>
+		<td>Spiermassa</td>		
+		<td>Vetmassa %</td>
+		<td>Vocht kg</td>
+		<td>BMI</td>
+		<td>Dieetfase</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="measurements noborder">
+		<form method="post">
+		<td><input type="text" name="date" id="date" style="width: 70px;"
+			value="<?=isset ( $this->measurement->date ) ? htmlentities ( $this->measurement->dateFormat ( 'date', '%d-%m-%Y' ) ) : htmlentities ( date ( 'd-m-Y' ) )?>" /></td>
+		<td><input type="text" name="weight" id="weight" class="number"
+			value="<?=isset ( $this->measurement->weight ) ? htmlentities ( $this->printFloat->filter ( $this->measurement->weight ) ) : ''?>" /></td>
+		<td><input type="text" name="fat" class="number"
+			value="<?=isset ( $this->measurement->fat ) ? htmlentities ( $this->printFloat->filter ( $this->measurement->fat ) ) : ''?>" /></td>
+		<td><input type="text" name="spiermassa" id="spiermassa"
+			class="number"
+			value="<?=isset ( $this->measurement->spiermassa ) ? htmlentities ( $this->printFloat->filter ( $this->measurement->spiermassa ) ) : ''?>" /></td>
+		<td><input type="text" name="fat_p" class="number"
+			value="<?=isset ( $this->measurement->fat_p ) ? htmlentities ( $this->printFloat->filter ( $this->measurement->fat_p ) ) : ''?>" /></td>
+		<td><input type="text" name="damp" class="number"
+			value="<?=isset ( $this->measurement->damp ) ? htmlentities ( $this->printFloat->filter ( $this->measurement->damp ) ) : ''?>" /></td>
+		<td><input type="text" name="bmi" class="number"
+			value="<?=isset ( $this->measurement->bmi ) ? htmlentities ( $this->measurement->bmi ) : ''?>" /></td>
+		<td><input type="text" name="start" class="number"
+			value="<?=isset ( $this->measurement->start ) ? htmlentities ( $this->measurement->start ) : ''?>" /></td>
+		<td><input type="submit" value="Voeg toe" /></td>
+		</form>
+	</tr>
+	<tr class="noborder">
+		<td></td>
+	</tr>
+	<tr>
+		<th>Datum</th>
+		<th>Gewicht kg</th>
+		<th>Vetmassa kg</th>
+		<th>Spiermassa</th>		
+		<th>Vetmassa %</th>
+		<th>Vocht kg</th>
+		<th>BMI</th>
+		<th>Dieetfase</th>
+		<th>Bewerk</th>
+	</tr>
+	<?php
+	if (isset ( $this->paginator )) {
+		$i = true;
+		foreach ( $this->paginator->getCurrentItems () as $measurement ) {
+			?>
+	<tr class="<?=($i ? 'dark' : 'light')?>">
+		<td
+			onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')"><?=$measurement->dateFormat ( 'date', '%d-%m-%Y' )?></td>
+		<td
+			onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')"><?=htmlentities ( $this->printFloat->filter ( $measurement->weight ) )?></td>
+		<td
+			onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')"><?=htmlentities ( $this->printFloat->filter ( $measurement->fat ) )?></td>
+		<td
+			onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')"><?=htmlentities ( $this->printFloat->filter ( $measurement->spiermassa ) )?></td>
+		<td
+			onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')"><?=htmlentities ( $this->printFloat->filter ( $measurement->fat_p ) )?></td>
+		<td
+			onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')"><?=htmlentities ( $this->printFloat->filter ( $measurement->damp ) )?></td>
+		<td
+			onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')"><?=htmlentities ( $measurement->bmi )?></td>
+		<td
+			onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')"><?=htmlentities ( $measurement->start )?></td>
+		<td class="nopadding">
+		<form method="post"
+			action="<?=$this->baseUrl?>/customer/measurementdelete/"
+			onsubmit="return confirm('meting verwijderen?')"><input type="submit"
+			class="delete" value="" title="verwijder"><input type="hidden"
+			name="id" value="<?=$measurement->id?>"></form>
+		</td>
+	</tr>
+	<?php
+			$i = ! $i;
+		}
+	}
+	?>
+</table>
+<?php
+if (isset ( $this->paginator ) && $this->paginator->count () > 1) {
+	?>
+	<?=$this->p_control?>
+	<?php
+}
+?>
+
+<br />
+
+<?php
+if (isset ( $this->xml )) {
+	?>
+<table width="100%">
+	<tr>
+		<td class="noborder">
+		<div class="header">Gewicht</div>
+		<div class="graphic">
+		<div id="xmlcontent1" style="display: none"><?=$this->xml->weight?></div>
+		<div id="flashcontent1">
+		<h4>You need to upgrade your Flash Player</h4>
+		<p>This is replaced by the Flash content. Place your alternate content
+		here and users without the Flash plugin or with Javascript turned off
+		will see this. Content here allows you to leave out <code>noscript</code>
+		tags. Include a link to <a href="index.html?detectflash=false">bypass
+		the detection</a> if you wish.</p>
+		</div>
+		</div>
+		</td>
+		<td class="noborder">
+		<div class="header">BMI</div>
+		<div class="graphic">
+		<div id="xmlcontent2" style="display: none"><?=$this->xml->bmi?></div>
+		<div id="flashcontent2"></div>
+		</div>
+		</td>
+		<td class="noborder">
+		<div class="header">Vet en vocht in kilo's</div>
+		<div class="graphic">
+		<div id="xmlcontent3" style="display: none"><?=$this->xml->fatdamp?></div>
+		<div id="flashcontent3"></div>
+		</div>
+		</td>
+	</tr>
+</table>
+<?php
+}
+?>
+<form method="post"><input type="submit" name="submitButton"
+	value="OK + Consult" /> <input type="submit" name="submitButton"
+	value="Nieuwe meting" /></form>

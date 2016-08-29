@@ -1,0 +1,213 @@
+<script type="text/javascript">
+	Date.format = 'dd-mm-yyyy';
+	$(function(){
+		$('#filter_date_start').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
+		$('#filter_date_start').dpSetOffset(20, 0);
+		$('#filter_date_end').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
+		$('#filter_date_end').dpSetOffset(20, 0);
+	});
+</script>
+
+<h2>Verkoop</h2>
+
+<form id="salesform">
+<table>
+	<tr class="noborder">
+		<td>Medewerker:</td>
+		<td><select name="filter_employee" style="width: 160px;">
+			<option></option>
+			<?php
+			foreach ( $this->filterEmployees as $employee ) {
+				?>
+			<option value="<?=$employee->id?>"
+				<?=isset($this->input) && isset($this->input->filter_employee) && $this->input->filter_employee == $employee->id ? 'selected' : ''?>><?=htmlentities ( $employee->name )?></option>
+			<?php
+			}
+			?>			
+		</select></td>
+		<td></td>
+		<td>Van</td>
+		<td>Tot en met</td>
+	</tr>
+	<tr>
+		<td>Vestiging:</td>
+		<td><select name="filter_location" style="width: 160px;">
+			<option></option>
+			<?php
+			foreach ( $this->filterLocations as $location ) {
+				?>
+			<option value="<?=$location->userid?>"
+				<?=isset($this->input) && isset($this->input->filter_location) && $this->input->filter_location == $location->userid ? 'selected' : ''?>><?=htmlentities ( $location->bedrijfsnaam )?></option>
+			<?php
+			}
+			?>			
+		</select></td>
+		<td>Datum:</td>
+		<td><input type="text" name="filter_date_start" id="filter_date_start"
+			value="<?=$this->input->filter_date_start ? $this->printDate->filter ( $this->input->filter_date_start ) : ''?>"
+			style="width: 110px;" /></td>
+		<td><input type="text" name="filter_date_end" id="filter_date_end"
+			value="<?=$this->input->filter_date_end ? $this->printDate->filter ( $this->input->filter_date_end ) : ''?>"
+			style="width: 110px;" /></td>
+	</tr>
+	<tr>
+		<td>Betaalwijze:</td>
+		<td><select name="filter_paymentmethod" style="width: 160px;">
+			<option></option>
+			<option value="kas"
+				<?=isset($this->input) && isset($this->input->filter_paymentmethod) && $this->input->filter_paymentmethod == 'kas' ? 'selected' : ''?>>Kas</option>
+			<option value="bank"
+				<?=isset($this->input) && isset($this->input->filter_paymentmethod) && $this->input->filter_paymentmethod == 'bank' ? 'selected' : ''?>>Bank</option>
+			<option value="pin"
+				<?=isset($this->input) && isset($this->input->filter_paymentmethod) && $this->input->filter_paymentmethod == 'pin' ? 'selected' : ''?>>Pin</option>
+		</select></td>
+		<td>Prijs &#0128;:</td>
+		<td><input type="text" name="filter_price_start"
+			value="<?=isset($this->input) && isset($this->input->filter_price_start) && $this->input->filter_price_start ? $this->printPrice->filter ( $this->input->filter_price_start ) : ''?>"
+			style="width: 110px;" /></td>
+		<td><input type="text" name="filter_price_end"
+			value="<?=isset($this->input) && isset($this->input->filter_price_end) && $this->input->filter_price_end ? $this->printPrice->filter ( $this->input->filter_price_end ) : ''?>"
+			style="width: 110px;" /></td>
+		<td><input type="submit" name="output" value="Zoek"
+			onclick="$('#salesform').attr('action', ''); $('#salesform').attr('target', '_self');" />
+		<input type="submit" name="output" value="PDF"
+			onclick="$('#salesform').attr('action', '<?=$this->baseUrl?>/admin/salespdf/'); $('#salesform').attr('target', '_blank');" /></td>
+	</tr>
+</table>
+</form>
+<br />
+
+<table class="list autowidth">
+	<tr class="left">
+		<th>Categorie</th>
+		<th colspan="3">Verkoopwaarde</th>
+		<th colspan="3">Korting</th>
+		<th colspan="3">Verkoop&nbsp;inc.BTW</th>
+		<th colspan="3">Verkoop&nbsp;ex.BTW</th>
+		<th colspan="3">BTW&nbsp;laag</th>
+		<th colspan="3">BTW&nbsp;hoog</th>
+	</tr>
+	<?php
+	$total = 0;
+	$reduction = 0;
+	$withVat = 0;
+	$withoutVat = 0;
+	$vatHigh = 0;
+	$vatLow = 0;
+	$i = true;
+	foreach ( $this->lines as $line ) {
+		?>
+	<tr class="<?=$i ? 'dark' : 'light'?> left">
+		<td><?=htmlentities ( $line->name ? $line->name : 'No category' )?></td>
+		<td>&#0128;</td>
+		<td class="right"><?=htmlentities ( $this->printPrice->filter ( $line->total ) )?></td>
+		<td></td>
+		<td>&#0128;</td>
+		<td class="right"><?=htmlentities ( $this->printPrice->filter ( $line->reduction ) )?></td>
+		<td></td>
+		<td>&#0128;</td>
+		<td class="right"><?=htmlentities ( $this->printPrice->filter ( $line->total - $line->reduction ) )?></td>
+		<td></td>
+		<td>&#0128;</td>
+		<td class="right"><?=htmlentities ( $this->printPrice->filter ( $line->total - $line->reduction - $line->vat_high - $line->vat_low ) )?></td>
+		<td>&nbsp;&nbsp;</td>
+		<td>&#0128;</td>
+		<td class="right"><?=htmlentities ( $this->printPrice->filter ( $line->vat_low ) )?></td>
+		<td></td>
+		<td>&#0128;</td>
+		<td class="right"><?=htmlentities ( $this->printPrice->filter ( $line->vat_high ) )?></td>
+		<td></td>
+	</tr>
+	<?php
+		$total += $line->total;
+		$reduction += $line->reduction;
+		$withVat += $line->total - $line->reduction;
+		$withoutVat += $line->total - $line->reduction - $line->vat_high - $line->vat_low;
+		$vatHigh += $line->vat_high;
+		$vatLow += $line->vat_low;
+		$i = ! $i;
+	}
+	?>
+	<tr class="noborder">
+		<td colspan="19">&nbsp;</td>
+	</tr>
+	<tr class="dark left">
+		<td><b>Totaal</b></td>
+		<td>&#0128;</td>
+		<td class="right"><b><?=htmlentities ( $this->printPrice->filter ( $total ) )?></b></td>
+		<td>&nbsp;&nbsp;</td>
+		<td>&#0128;</td>
+		<td class="right"><b><?=htmlentities ( $this->printPrice->filter ( $reduction ) )?></b></td>
+		<td></td>
+		<td>&#0128;</td>
+		<td class="right"><b><?=htmlentities ( $this->printPrice->filter ( $withVat ) )?></b></td>
+		<td></td>
+		<td>&#0128;</td>
+		<td class="right"><b><?=htmlentities ( $this->printPrice->filter ( $withoutVat ) )?></b></td>
+		<td>&nbsp;&nbsp;</td>
+		<td>&#0128;</td>
+		<td class="right"><b><?=htmlentities ( $this->printPrice->filter ( $vatLow ) )?></b></td>
+		<td>&nbsp;&nbsp;</td>
+		<td>&#0128;</td>
+		<td class="right"><b><?=htmlentities ( $this->printPrice->filter ( $vatHigh ) )?></b></td>
+		<td>&nbsp;&nbsp;</td>
+	</tr>
+</table>
+
+<br>
+<br>
+<table class="list medium" style="width: 280px;">
+	<tr class="light">
+		<th width="100%">Totalen</th>
+		<th colspan="3">Bedrag</th>
+	</tr>
+	<tr class="light">
+		<td>Producten</td>
+		<td>&#0128;</td>
+		<td class="right"><?=htmlentities ( $this->printPrice->filter ( $this->products ) )?></td>
+		<td>&nbsp;&nbsp;</td>
+	</tr>
+	<tr class="light">
+		<td>Behandelingen</td>
+		<td>&#0128;</td>
+		<td class="right"><?=htmlentities ( $this->printPrice->filter ( $this->consults ) )?></td>
+		<td>&nbsp;&nbsp;</td>
+	</tr>
+	<tr class="dark">
+		<td><b>Totaal</b></td>
+		<td>&#0128;</td>
+		<td class="right"><b><?=htmlentities ( $this->printPrice->filter ( $this->products + $this->consults ) )?></b></td>
+		<td>&nbsp;&nbsp;</td>
+	</tr>
+	<tr class="">
+		<td colspan="4">&nbsp;</td>
+	</tr>
+	<tr class="light">
+		<td>Kas</td>
+		<td>&#0128;</td>
+		<td class="right"><?=htmlentities ( $this->printPrice->filter ( $this->cash ) )?></td>
+		<td></td>
+	</tr>
+	<tr class="light">
+		<td>Pin</td>
+		<td>&#0128;</td>
+		<td class="right"><?=htmlentities ( $this->printPrice->filter ( $this->pin ) )?></td>
+		<td></td>
+	</tr>
+	<tr class="light">
+		<td>Op rekening</td>
+		<td>&#0128;</td>
+		<td class="right"><?=htmlentities ( $this->printPrice->filter ( $this->invoice ) )?></td>
+		<td></td>
+	</tr>
+	<tr class="dark">
+		<td><b>Totaal</b></td>
+		<td>&#0128;</td>
+		<td class="right"><b><?=htmlentities ( $this->printPrice->filter ( $this->cash + $this->pin + $this->invoice ) )?></b></td>
+		<td></td>
+	</tr>
+</table>
+<br />
+
+
+

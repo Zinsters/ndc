@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<link rel="stylesheet" href="<?=$this->baseUrl?>/css/style.css"
+	type="text/css" />
+<title>NewDiet Care</title>
+</head>
+
+<body>
+<div id="login">
+<div id="loginheader">
+<div id="logo"><img src="<?=$this->baseUrl?>/images/logogroot.gif" /></div>
+</div>
+<div id="loginform">
+<form method="post">
+<table class="noborder">
+	<tr>
+		<td>Loginnaam:</td>
+		<td><input type="text" name="username" /></td>
+	</tr>
+	<tr>
+		<td>Wachtwoord:</td>
+		<td><input type="password" name="password" /></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td><input type="hidden" name="link"
+			value="<?php
+			echo $this->link;
+			?>" /><input name="login"
+			type="hidden" value="hiddenfield" /><input type="submit"
+			name="submit" value="Verzenden" /></td>
+	</tr>
+</table>
+</form>
+</div>
+
+</div>
+</body>
+
+</html>

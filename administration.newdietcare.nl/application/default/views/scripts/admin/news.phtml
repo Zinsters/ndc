@@ -1,0 +1,86 @@
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+	jQuery("#list").jqGrid({
+		url:'<?=$this->baseUrl?>/json/news/',
+		datatype: "json",
+		colNames:['Onderwerp', 'Datum', 'Actief', ''],
+		colModel:[
+		  		{name:'title',index:'title', width: 400},
+		  		{name:'date',index:'date', width: 150},
+		  		{name:'published',index:'published', width: 150},
+		  		{width: 60, sortable:false}		  		
+		],
+		rowNum:10,
+		imgpath: '<?=$this->baseUrl?>/images/jqGrid',
+		mtype: "POST",		
+		pager: jQuery('#pager'),
+		sortname: 'id',
+		viewrecords: true,
+		sortorder: "asc",
+		multiselect: false, 		
+		width: 760,
+		height: "auto"
+	});
+	});
+
+	/////////////////////
+	// News search //
+	/////////////////////
+	
+	var timeoutHnd;
+	 	
+	function doSearch(ev){
+		if(timeoutHnd)
+			clearTimeout(timeoutHnd);
+		timeoutHnd = setTimeout(gridReload,500);
+	}
+	
+	function gridReload(){
+		var title = jQuery("#title").val();
+		var date = jQuery("#date").val();
+		var published = jQuery("#published").val();
+		jQuery("#list").setGridParam({
+			url:"<?=$this->baseUrl?>/json/news/?title="+title+"&date="+date+"&published="+published,page:1
+		}).trigger("reloadGrid");
+	}
+
+	Date.format = 'dd-mm-yyyy';
+	$(function(){
+		$('#date').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
+		$('#date').dpSetOffset(20, 0);
+	});
+</script>
+
+<h2>Nieuws</h2>
+
+<table class="list left" style="width: 735px">
+	<tr class="noborder">
+		<td>Onderwerp</td>
+		<td>Datum</td>
+		<td>Actief</td>
+	</tr>
+	<tr class="noborder">
+		<td style="width: 405px;"><input type="text" name="title" id="title"
+			style="width: 250px;" onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td style="width: 150px;"><input type="text" name="date" id="date"
+			style="width: 90px;" onkeydown="doSearch(arguments[0]||event)"
+			onchange="doSearch(arguments[0]||event)" /></td>
+		<td style="width: 180px;"><select name="published" id="published"
+			onchange="doSearch(arguments[0]||event)">
+			<option></option>
+			<option value="1">Ja</option>
+			<option value="0">Nee</option>
+		</select></td>
+	</tr>
+</table>
+<br />
+
+<table id="list" class="scroll" cellpadding="0" cellspacing="0"></table>
+<div id="pager" class="scroll" style="text-align: left;"></div>
+<br />
+
+<form action="<?=$this->baseUrl?>/admin/newsadd/"><input type="submit"
+	value="Nieuw bericht" /></form>
+
+<br />
+<br />

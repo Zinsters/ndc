@@ -1,0 +1,158 @@
+<h2>Edit product</h2>
+<p>
+	<?php
+	if (isset ( $this->messages ['productcode'] )) {
+		foreach ( $this->messages ['productcode'] as $message ) {
+			?><span class="errorMessage"><b>Code:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['name'] )) {
+		foreach ( $this->messages ['name'] as $message ) {
+			?><span class="errorMessage"><b>Naam:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['productcategory_id'] )) {
+		foreach ( $this->messages ['productcategory_id'] as $message ) {
+			?><span class="errorMessage"><b>Variant:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['productcategory_new'] )) {
+		foreach ( $this->messages ['productcategory_new'] as $message ) {
+			?><span class="errorMessage"><b>Variant:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['supplier_id'] )) {
+		foreach ( $this->messages ['supplier_id'] as $message ) {
+			?><span class="errorMessage"><b>Leverancier:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['size'] )) {
+		foreach ( $this->messages ['size'] as $message ) {
+			?><span class="errorMessage"><b>Inhoud:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['price'] )) {
+		foreach ( $this->messages ['price'] as $message ) {
+			?><span class="errorMessage"><b>Prijs:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['is_consult'] )) {
+		foreach ( $this->messages ['is_consult'] as $message ) {
+			?><span class="errorMessage"><b>Is consult:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['consult_duration'] )) {
+		foreach ( $this->messages ['consult_duration'] as $message ) {
+			?><span class="errorMessage"><b>Consult duration:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['description'] )) {
+		foreach ( $this->messages ['description'] as $message ) {
+			?><span class="errorMessage"><b>Description:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['vat_id'] )) {
+		foreach ( $this->messages ['vat_id'] as $message ) {
+			?><span class="errorMessage"><b>BTW:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	?>
+</p>
+
+<form method="post">
+<table class="notes">
+	<tr>
+		<td>Code:</td>
+		<td></td>
+		<td><input type="text" name="productcode"
+			value="<?=isset ( $this->product->productcode ) ? htmlentities ( $this->product->productcode ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Naam:</td>
+		<td></td>
+		<td><input type="text" name="name"
+			value="<?=isset ( $this->product->name ) ? $this->escape($this->product->name) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Categorie:</td>
+		<td></td>
+		<td><select name="productcategory_id">
+			<option value="0">&nbsp;</option>
+			<?php
+			foreach ( $this->categories as $category ) {
+				?>
+			<option value="<?=$category->id?>"
+				<?=isset ( $this->product->productcategory_id ) && $this->product->productcategory_id == $category->id ? 'selected' : ''?>><?=htmlentities ( $category->name )?></option>
+			<?php
+			}
+			?>
+		</select>&nbsp;Nieuw:&nbsp;<input type="text"
+			name="productcategory_new" size="18"
+			value="<?=isset ( $this->product->productcategory_new ) ? htmlentities ( $this->product->productcategory_new ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Leverancier:</td>
+		<td></td>
+		<td><select name="supplier_id">
+			<option value="0"></option>
+			<?php
+			foreach ( $this->suppliers as $supplier ) {
+				?>
+			<option value="<?=$supplier->id?>"
+				<?=isset ( $this->product->supplier_id ) && $this->product->supplier_id == $supplier->id ? 'selected' : ''?>><?=htmlentities ( $supplier->name )?></option>
+			<?php
+			}
+			?>
+		</select></td>
+	</tr>
+	<tr>
+		<td>Inhoud:</td>
+		<td></td>
+		<td><input type="text" name="size"
+			value="<?=isset ( $this->product->size ) ? htmlentities ( $this->product->size ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Prijs:</td>
+		<td>&#0128;</td>
+		<td><input type="text" name="price"
+			value="<?=isset ( $this->product->price ) ? $this->printPrice->filter ( $this->product->price ) : ''?>"
+			class="number" /></td>
+	</tr>
+	<tr>
+		<td>Is consult:</td>
+		<td></td>
+		<td><input type="checkbox" name="is_consult" value="1"
+			<?=isset ( $this->product->is_consult ) && $this->product->is_consult == 1 ? 'checked' : ''?> />&nbsp;Consult
+		duur (minuten):&nbsp;<input type="text" name="consult_duration"
+			value="<?=isset ( $this->product->consult_duration ) && $this->product->consult_duration ? htmlentities ( $this->product->consult_duration ) : ''?>"
+			style="width: 25px" /></td>
+	</tr>
+	<tr>
+		<td>Omschrijving:</td>
+		<td></td>
+		<td><textarea name="description"><?=isset ( $this->product->description ) ? htmlentities ( $this->product->description ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td>BTW:</td>
+		<td></td>
+		<td><select name="vat_id">
+			<?php
+			foreach ( $this->vat as $vat ) {
+				?>
+			<option value="<?=$vat->id?>"
+				<?=isset ( $this->product->vat_id ) && $this->product->vat_id == $vat->id ? 'selected' : ''?>><?=htmlentities ( $vat->name )?></option>
+			<?php
+			}
+			?>
+		</select></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+<br />
+<input type="submit" value="OK" /></form>
+<form action="<?=$this->baseUrl?>/admin/products/"><input type="submit"
+	value="Back" /></form>

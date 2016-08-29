@@ -1,0 +1,147 @@
+<script type="text/javascript">
+	var stopSelect=false;
+	
+	jQuery(document).ready(function(){
+	jQuery("#list").jqGrid({
+		url:'<?=$this->baseUrl?>/json/customerssearch/',
+		datatype: "json",
+		colNames:['Achternaam', 'Voornaam', 'Tussenvoegsel', 'Geboortedatum', 'Adres', 'Woonplaats','Postcode','E-mail',''],
+		colModel:[
+		  		{name:'achternaam',index:'achternaam', width:160},
+		  		{name:'voornaam',index:'voornaam', width:140},
+		  		{name:'tussenvoegsel',index:'tussenvoegsel', width:185},		  		
+		  		{name:'geboortedatum',index:'geboortedatum', width:195},
+		  		{name:'thuisadres',index:'thuisadres', width:100},
+		  		{name:'thuisplaats',index:'thuisplaats', width:160},
+		  		{name:'thuispostcode',index:'thuispostcode', width:130},
+		  		{name:'email',index:'email', width:100},
+		  		{width:30,sortable:false, align:"center"}
+		],
+		rowNum:10,
+		imgpath: '<?=$this->baseUrl?>/images/jqGrid',
+		mtype: "POST",		
+		pager: jQuery('#pager'),
+		sortname: 'id',
+		viewrecords: true,
+		sortorder: "asc",
+		multiselect: false, 		
+		width: 760,
+		height: "auto",
+		onSelectRow: function(ids) {
+			if (!stopSelect) {
+				if(ids != null)
+					location.replace('<?=$this->baseUrl?>/customer/view/id/'+ids+'/');
+			} else
+				stopSelect=false;				
+		}
+	});
+	});
+	
+	var timeoutHnd;
+	 	
+	function doSearch(ev){
+		if(timeoutHnd)
+			clearTimeout(timeoutHnd);
+		timeoutHnd = setTimeout(gridReload,500);
+	}
+	
+	function gridReload(){
+		var voornaam = jQuery("#voornaam").val();
+		var achternaam = jQuery("#achternaam").val();
+		var geboortedatum = jQuery("#geboortedatum").val();
+		var thuisadres = jQuery("#thuisadres").val();
+		var thuisplaats = jQuery("#thuisplaats").val();
+		var thuispostcode = jQuery("#thuispostcode").val();
+		jQuery("#list").setGridParam({
+			url:"<?=$this->baseUrl?>/json/customerssearch/?voornaam="+voornaam+"&achternaam="+achternaam+"&geboortedatum="+geboortedatum+"&thuisadres="+thuisadres+"&thuisplaats="+thuisplaats+"&thuispostcode="+thuispostcode,page:1
+		}).trigger("reloadGrid");
+	}
+	
+	Date.format = 'dd-mm-yyyy';
+	$(function(){
+		$('#geboortedatum').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
+		$('#geboortedatum').dpSetOffset(20, 0);
+		$('#reg_date_from').datePicker({createButton:false, clickInput:true});
+		$('#reg_date_from').dpSetOffset(20, 0);
+		$('#reg_date_to').datePicker({createButton:false, clickInput:true});
+		$('#reg_date_to').dpSetOffset(20, 0);
+	});
+</script>
+
+<h2>Klantenoverzicht</h2>
+
+<table id="search">
+	<tr class="noborder">
+		<td>Voornaam:</td>
+		<td><input type="text" name="voornaam" id="voornaam"
+			onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td>Achternaam:</td>
+		<td><input type="text" name="achternaam" id="achternaam"
+			onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td>Geboortedatum:</td>
+		<td><input type="text" name="geboortedatum" id="geboortedatum"
+			onkeydown="doSearch(arguments[0]||event)"
+			onchange="doSearch(arguments[0]||event)" /></td>
+	</tr>
+	<tr class="noborder">
+		<td>Adres:</td>
+		<td><input type="text" name="thuisadres" id="thuisadres"
+			onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td>Woonplaats:</td>
+		<td><input type="text" name="thuisplaats" id="thuisplaats"
+			onkeydown="doSearch(arguments[0]||event)" /></td>
+		<td>Postcode:</td>
+		<td><input type="text" name="thuispostcode" id="thuispostcode"
+			onkeydown="doSearch(arguments[0]||event)" /></td>
+	</tr>
+</table>
+<br />
+
+<table id="list" class="scroll" cellpadding="0" cellspacing="0"></table>
+<div id="pager" class="scroll" style="text-align: left;"></div>
+
+<br />
+<br />
+
+<form action="<?=$this->baseUrl?>/customer/export/" method="post">
+	<table>
+		<tr class="noborder">
+			<td>Started in:</td>
+			<td>
+				<select name="reg_date_year">
+					<option></option>
+					<?php for( $i = date( 'Y' ); $i >= 2009; $i-- ) { ?>
+					<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+					<?php } ?>
+				</select>
+			</td>
+		</tr>
+		<tr class="noborder">
+			<td>Started: from</td>
+			<td><input type="text" name="reg_date_from" id="reg_date_from" /> to <input type="text" name="reg_date_to" id="reg_date_to" /></td>
+		</tr>
+		<tr class="noborder">
+			<td>No measurements:</td>
+			<td>
+				<select name="no_measurements">
+					<option></option>
+					<option value="2">2 months</option>
+					<option value="4">4 months</option>
+					<option value="6">6 months</option>
+					<option value="8">8 months</option>
+					<option value="10">10 months</option>
+					<option value="12">12 months</option>
+				</select>
+			</td>
+		</tr>
+		<tr class="noborder">
+			<td>With birthday:</td>
+			<td><input type="checkbox" name="with_birthday" /></td>
+		</tr>
+	</table>
+	<br />
+	<input type="submit" value="Export" />
+</form>
+
+<br />
+<br />

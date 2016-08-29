@@ -1,0 +1,152 @@
+<h2>Rekeningen - <?=htmlentities ( $this->currentCustomer->getName () )?></h2>
+
+<table class="list fullwidth">
+	<tr>
+		<td class="left noborder" colspan="7">
+		<h3>Niet betaald</h3>
+		</td>
+	</tr>
+	<tr>
+		<th>Datum</th>
+		<th>Tijd</th>
+		<th>Medewerker</th>
+		<th>Vestiging</th>
+		<th>Prijs</th>
+		<th>Type</th>
+		<th></th>
+	</tr>
+	<?php
+	$i = true;
+	foreach ( $this->invoicesNotPayed as $invoice ) {
+		?>
+	<tr class="<?=($i ? 'dark' : 'light')?>">
+		<td><?=htmlentities ( $invoice->date )?></td>
+		<td><?=htmlentities ( $invoice->time )?></td>
+		<td><?=htmlentities ( $invoice->employee )?></td>
+		<td><?=htmlentities ( $invoice->location )?></td>
+		<td>&#0128; <?=$this->printPrice->filter ( $invoice->total - $invoice->reduction )?></td>
+		<td><?=htmlentities ( ucfirst ( $invoice->paymentmethod ) )?></td>
+		<td class="nopadding">
+		<?php
+		if ($invoice->status == 'final' || $invoice->status == 'payed') {
+			?>
+		<form
+			action="<?=$this->baseUrl?>/customer/invoicepdf/id/<?=$invoice->id?>/"
+			target="_blank"><input type="submit" class="pdf" value=""
+			title="print"></form>
+		<?php
+		}
+		if (isset ( $this->admin ) && $invoice->paymentmethod == 'bank' && $invoice->status == 'final') {
+			?>
+		<form method="post"
+			action="<?=$this->baseUrl?>/customer/invoicepayed/id/<?=$invoice->id?>/"
+			onsubmit="return confirm('betaling per bank &#0128; <?=$this->printPrice->filter ( $invoice->total - $invoice->reduction )?> ?')"><input
+			type="submit" class="pay" value="" title="bevestig betaling"></form>
+		<?php
+		}
+		if (isset ( $this->admin ) || ! $invoice->burned) {
+			?>
+		<form
+			action="<?=$this->baseUrl?>/customer/invoice/id/<?=$invoice->id?>/"><input
+			type="submit" class="edit" value="" title="bewerk"></form>
+		<?php
+		}
+		if ($invoice->status == 'open') {
+			?>
+		<form method="post"
+			action="<?=$this->baseUrl?>/customer/invoicedel/id/<?=$invoice->id?>/"
+			onsubmit="return confirm('rekening verwijderen?')"><input
+			type="submit" class="delete" value="" title="verwijder"></form>
+		<?php
+		}
+		?>
+		</td>
+	</tr>
+	<?php
+		$i = ! $i;
+	}
+	?>
+	<tr>
+		<td class="left noborder" colspan="7">
+		<h3>Betaald</h3>
+		</td>
+	</tr>
+	<tr>
+		<th>Datum</th>
+		<th>Tijd</th>
+		<th>Medewerker</th>
+		<th>Vestiging</th>
+		<th>Prijs</th>
+		<th>Type</th>
+		<th></th>
+	</tr>
+	<?php
+	$i = true;
+	foreach ( $this->invoicesPayed as $invoice ) {
+		?>
+	<tr class="<?=($i ? 'dark' : 'light')?>">
+		<td><?=htmlentities ( $invoice->date )?></td>
+		<td><?=htmlentities ( $invoice->time )?></td>
+		<td><?=htmlentities ( $invoice->employee )?></td>
+		<td><?=htmlentities ( $invoice->location )?></td>
+		<td>&#0128; <?=$this->printPrice->filter ( $invoice->total - $invoice->reduction )?></td>
+		<td><?=htmlentities ( ucfirst ( $invoice->paymentmethod ) )?></td>
+		<td class="nopadding">
+		<?php
+		if ($invoice->status == 'final' || $invoice->status == 'payed') {
+			?>
+		<form
+			action="<?=$this->baseUrl?>/customer/invoicepdf/id/<?=$invoice->id?>/"
+			target="_blank"><input type="submit" class="pdf" value=""
+			title="print"></form>
+		<?php
+		}
+		if (isset ( $this->admin ) && $invoice->paymentmethod == 'bank' && $invoice->status == 'final') {
+			?>
+		<form method="post"
+			action="<?=$this->baseUrl?>/customer/invoicepayed/id/<?=$invoice->id?>/"
+			onsubmit="return confirm('betaling per bank &#0128; <?=$this->printPrice->filter ( $invoice->total - $invoice->reduction )?> ?')"><input
+			type="submit" class="pay" value="" title="bevestig betaling"></form>
+		<?php
+		}
+		if (isset ( $this->admin ) || ! $invoice->burned) {
+			?>
+		<form
+			action="<?=$this->baseUrl?>/customer/invoice/id/<?=$invoice->id?>/"><input
+			type="submit" class="edit" value="" title="bewerk"></form>
+		<?php
+		}
+		if ($invoice->status == 'open') {
+			?>
+		<form method="post"
+			action="<?=$this->baseUrl?>/customer/invoicedel/id/<?=$invoice->id?>/"
+			onsubmit="return confirm('rekening verwijderen?')"><input
+			type="submit" class="delete" value="" title="verwijder"></form>
+		<?php
+		}
+		?>
+		</td>
+	</tr>
+	<?php
+		$i = ! $i;
+	}
+	?>
+</table>
+<br />
+<br />
+<?php
+if (isset ( $this->invoice ) && $this->invoice instanceof Model_Table_Row_Invoice) {
+	?>
+<form id="submitForm" style="width: 0; height: 0; margin: 0; padding: 0"
+	action="<?=$this->baseUrl?>/customer/invoicepdf/id/<?=$this->invoice->id?>/"
+	target="_blank"><input type="submit"
+	style="width: 0; height: 0; border: 0; margin: 0; padding: 0" /></form>
+
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		$("#submitForm").submit();
+	});
+</script>
+<?php
+}
+?>

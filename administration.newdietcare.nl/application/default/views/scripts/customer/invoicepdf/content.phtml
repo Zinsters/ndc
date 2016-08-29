@@ -1,0 +1,100 @@
+<?=($this->invoice->paymentmethod == 'kas' ? 'KAS betaling' : ($this->invoice->paymentmethod == 'pin' ? 'PIN betaling' : 'REKENING'))?>
+<br />
+<?php
+if ($this->invoice->paymentmethod == 'bank') {
+	?>
+factuurnummer:
+	<?=htmlentities ( $this->invoice->invoicenumber )?>
+<br />
+	<?php
+}
+?>
+datum:
+<?=htmlentities ( $this->printFullDate->filter ( $this->invoice->created ) )?>
+<br />
+klantnummer:
+<?=htmlentities ( $this->currentCustomer->userid )?>
+<br />
+<br />
+<?=htmlentities ( $this->invoice->paymentmethod == 'kas' ? $this->invoiceDetails->cash_header : ($this->invoice->paymentmethod == 'pin' ? $this->invoiceDetails->pin_header : $this->invoiceDetails->invoice_header) )?>
+<br />
+<br />
+
+<table width="100%" style="margin-left: 0; padding-left: 0;">
+	<tr>
+		<th
+			style="text-align: left; margin-left: 0; padding-left: 0; width: 65%">Product</th>
+		<th style="text-align: right; width: 10%">Prijs/stuk</th>
+		<th style="text-align: center; width: 10%">Aantal</th>
+		<th style="text-align: center; width: 5%"></th>
+		<th style="text-align: right; width: 10%">Prijs</th>
+	</tr>
+	<tr>
+		<td colspan="5" style="border-bottom: 1px solid black"></td>
+	</tr>
+	<?php
+	foreach ( $this->invoicelines as $line ) {
+		?>
+	<tr>
+		<td style="margin-left: 0; padding-left: 0;"><?=utf8_decode(str_replace('“', '"', $this->escape($line->getProduct ()->name)))?></td>
+		<td style="text-align: right"><?=$this->printPrice->filter ( $line->number != 0 ? $line->total_price / $line->number : 0 )?></td>
+		<td style="text-align: center"><?=$this->printFloat->filter ( $line->number )?></td>
+		<td colspan="2" style="text-align: right"><?=$this->printPrice->filter ( $line->total_price )?></td>
+	</tr>
+	<?php
+	}
+	?>
+	<tr>
+		<td colspan="5">&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="3"></td>
+		<td colspan="2" style="border-bottom: 1px solid black"></td>
+	</tr>
+	<tr>
+		<td colspan="3" style="margin-left: 0; padding-left: 0;">Totaal incl.
+		BTW</td>
+		<td>EUR</td>
+		<td style="text-align: right"><?=$this->printPrice->filter ( $this->invoice->total )?></td>
+	</tr>
+	<?php
+	if ($this->invoice->reduction > 0) {
+		?>
+	<tr>
+		<td colspan="3" style="margin-left: 0; padding-left: 0;">Korting</td>
+		<td>EUR</td>
+		<td style="text-align: right"><?=$this->printPrice->filter ( $this->invoice->reduction )?></td>
+	</tr>
+	<tr>
+		<td colspan="3" style="margin-left: 0; padding-left: 0;">Totaal
+		inclusief Korting</td>
+		<td>EUR</td>
+		<td style="text-align: right"><?=$this->printPrice->filter ( $this->invoice->total - $this->invoice->reduction )?></td>
+	</tr>
+	<?php
+	}
+	?>
+	<tr>
+		<td colspan="5">&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="3" style="margin-left: 0; padding-left: 0;">BTW laag (6%)</td>
+		<td>EUR</td>
+		<td style="text-align: right"><?=$this->printPrice->filter ( $this->exVatLow )?></td>
+	</tr>
+	<tr>
+		<td colspan="3" style="margin-left: 0; padding-left: 0;">BTW hoog
+		(21%)</td>
+		<td>EUR</td>
+		<td style="text-align: right"><?=$this->printPrice->filter ( $this->exVatHigh )?></td>
+	</tr>
+</table>
+<br />
+<br />
+
+Eerstvolgende afspraak:
+	<?=$this->nextAppointment instanceof Model_Table_Row_Appointment ? $this->printFullDate->filter ( $this->nextAppointment->date ) . ' ' . substr ( $this->nextAppointment->time_start, 0, 5 ) : ''?>
+<br />
+<br />
+
+	<?=htmlentities ( $this->invoiceDetails->footer )?>

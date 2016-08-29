@@ -1,0 +1,34 @@
+<?=$this->partial ( 'customer/partial/menu.phtml', array ('baseUrl' => $this->baseUrl, 'actionName' => $this->actionName ) )?>
+
+<h2>Medisch - <?=htmlentities ( $this->currentCustomer->getName () )?></h2>
+
+<?=$this->partial ( 'customer/partial/notes.phtml', array ('baseUrl' => $this->baseUrl, 'customer' => $this->customer, 'growlMessage' => (isset ( $this->growlMessage ) ? $this->growlMessage : '') ) )?>
+
+<form method="post">
+<table class="notes">
+	<tr>
+		<th colspan="2">Medisch</th>
+	</tr>
+	<tr>
+		<td>Medische situatie:</td>
+		<td><textarea name="medical_situation"><?=isset ( $this->customer->medical_situation ) ? htmlentities ( $this->customer->medical_situation ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td>Medicatie:</td>
+		<td><textarea name="medications"><?=isset ( $this->customer->medications ) ? htmlentities ( $this->customer->medications ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td>Onder behandeling bij:</td>
+		<td><textarea name="under_treatment_with"><?=isset ( $this->customer->under_treatment_with ) ? htmlentities ( $this->customer->under_treatment_with ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td>Darmfunctie:</td>
+		<td><textarea name="darm"><?=isset ( $this->customer->darm ) ? htmlentities ( $this->customer->darm ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+<input type="submit" name="submitButton" value="OK" /> <input
+	type="submit" name="submitButton" value="OK + Metingen" /></form>

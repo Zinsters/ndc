@@ -1,0 +1,100 @@
+<script type="text/javascript">
+	Date.format = 'dd-mm-yyyy';
+	$(function(){
+		$('#geboortedatum').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
+		$('#geboortedatum').dpSetOffset(20, 0);
+	});
+</script>
+
+<?=$this->partial ( 'customer/partial/menu.phtml', array ('baseUrl' => $this->baseUrl, 'actionName' => $this->actionName ) )?>
+
+<h2>Dieet - <?=htmlentities ( $this->currentCustomer->getName () )?></h2>
+
+<p>
+	<?php
+	if (isset ( $this->messages ['geboortedatum'] )) {
+		foreach ( $this->messages ['geboortedatum'] as $message ) {
+			?><span class="errorMessage"><b>Geb. datum:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['length'] )) {
+		foreach ( $this->messages ['length'] as $message ) {
+			?><span class="errorMessage"><b>Lengte:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['weight'] )) {
+		foreach ( $this->messages ['weight'] as $message ) {
+			?><span class="errorMessage"><b>Begingewicht:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['weight_ideal'] )) {
+		foreach ( $this->messages ['weight_ideal'] as $message ) {
+			?><span class="errorMessage"><b>Streefgewicht:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['why_gained_weight'] )) {
+		foreach ( $this->messages ['why_gained_weight'] as $message ) {
+			?><span class="errorMessage"><b>Waarom zwaarder geworden:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['other_diets'] )) {
+		foreach ( $this->messages ['other_diets'] as $message ) {
+			?><span class="errorMessage"><b>Wat voorheen geprobeerd:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	if (isset ( $this->messages ['dietgoal'] )) {
+		foreach ( $this->messages ['dietgoal'] as $message ) {
+			?><span class="errorMessage"><b>Dieetdoel:</b>:&nbsp;<?=$message?></span><br /><?php
+		}
+	}
+	?>
+</p>
+
+<?=$this->partial ( 'customer/partial/notes.phtml', array ('baseUrl' => $this->baseUrl, 'customer' => $this->customer, 'growlMessage' => (isset ( $this->growlMessage ) ? $this->growlMessage : '') ) )?>
+
+<form method="post">
+<table class="notes">
+	<tr>
+		<th colspan="2">Dieetgeschiedenis</th>
+	</tr>
+	<tr>
+		<td class="minwidth">Geb. datum:</td>
+		<td><input type="text" name="geboortedatum" id="geboortedatum"
+			value="<?=isset ( $this->customer->geboortedatum ) ? htmlentities ( $this->customer->dateFormat ( 'geboortedatum', '%d-%m-%Y' ) ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Lengte:</td>
+		<td><input type="text" name="length"
+			value="<?=isset ( $this->customer->length ) ? htmlentities ( $this->printPrice->filter ( $this->customer->length ) ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Begingewicht:</td>
+		<td><input type="text" name="weight"
+			value="<?=isset ( $this->customer->weight ) ? htmlentities ( $this->printFloat->filter ( $this->customer->weight ) ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Streefgewicht:</td>
+		<td><input type="text" name="weight_ideal"
+			value="<?=isset ( $this->customer->weight_ideal ) ? htmlentities ( $this->printFloat->filter ( $this->customer->weight_ideal ) ) : ''?>" /></td>
+	</tr>
+	<tr>
+		<td>Waarom zwaarder<br />
+		geworden:</td>
+		<td><textarea name="why_gained_weight"><?=isset ( $this->customer->why_gained_weight ) ? htmlentities ( $this->customer->why_gained_weight ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td>Wat voorheen<br />
+		geprobeerd:</td>
+		<td><textarea name="other_diets"><?=isset ( $this->customer->other_diets ) ? htmlentities ( $this->customer->other_diets ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td>Dieetdoel:</td>
+		<td><textarea name="dietgoal"><?=isset ( $this->customer->dietgoal ) ? htmlentities ( $this->customer->dietgoal ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+<input type="submit" name="submitButton" value="OK" /> <input
+	type="submit" name="submitButton" value="OK + Medisch" /></form>

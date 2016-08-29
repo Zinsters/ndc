@@ -1,0 +1,84 @@
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		jQuery("#agenda").agenda({
+			getagendatableUrl:'<?=$this->baseUrl?>/json/getagendatable/location/<?=$this->currentLocation->userid?>/currentdate/<?=$this->date?>/',
+			getmodalcontentUrl:'<?=$this->baseUrl?>/json/getmodalcontent/',
+			gettimeendUrl:'<?=$this->baseUrl?>/json/gettimeend/',
+			customerId:'<?=isset ( $this->currentCustomer ) ? $this->currentCustomer->userid : ''?>',
+			locationId:'<?=$this->currentLocation->userid?>',
+			currentDate:'<?=$this->date?>',
+			imagesDir:'<?=$this->baseUrl?>/images/'
+		});
+	});
+
+	Date.format = 'dd-mm-yyyy';
+	$(function(){
+		$('#selectDate').datePicker({startDate:'01/01/1900', createButton:true});
+		$('#selectDate').dpSetOffset(15, 0);
+		$('#selectDate').bind(
+				'dateSelected',
+				function(e, selectedDate, $td) {
+					d=selectedDate.getDate();
+					d = d.toString();
+					if (d.length < 2)
+						d = '0' + d;
+
+					m=selectedDate.getMonth();
+					m++;
+					m = m.toString();
+					if (m.length < 2)
+						m = '0' + m;
+					
+					y=selectedDate.getFullYear();
+					y = y.toString();
+					
+					location.replace("<?=$this->baseUrl?>/location/index/id/<?=$this->currentLocation->userid?>/date/"+y+'-'+m+'-'+d+"/");					
+				}
+			);
+	});
+
+	function appointmentOtherClick(locationId) {
+		location.replace("<?=$this->baseUrl?>/location/index/id/"+locationId+"/date/<?=$this->date?>/");		
+	}
+</script>
+
+<div id="editAppointment" class="edit_appointment"></div>
+
+<h2 style="margin-bottom: 0;">Agenda <?=htmlentities ( $this->currentLocation->bedrijfsnaam )?></h2>
+<?php
+$first = true;
+foreach ( $this->locationsToShow as $location ) {
+	?>
+	<?=$first ? $first = false : ' | '?><?=$location->userid == $this->currentLocation->userid ? '' : '<a	href="' . $this->baseUrl . '/location/index/id/' . $location->userid . '/date/' . $this->date . '/">'?><?=htmlentities ( $location->bedrijfsnaam )?><?=$location->userid == $this->currentLocation->userid ? '' : '</a>'?>
+	<?php
+	$first = false;
+}
+?>
+<br />
+<h3 style="margin-bottom: 0;"><?=htmlentities ( ucfirst ( ($this->dateToPrint->get ( 'EEEE d MMMM yyyy', 'nl_NL' )) ) )?></h3>
+<a
+	href="<?=$this->baseUrl?>/location/index/id/<?=$this->currentLocation->userid?>/date/<?=$this->monthSubtract?>/"><<</a>
+maand
+<a
+	href="<?=$this->baseUrl?>/location/index/id/<?=$this->currentLocation->userid?>/date/<?=$this->monthAdd?>/">>></a>
+<a
+	href="<?=$this->baseUrl?>/location/index/id/<?=$this->currentLocation->userid?>/date/<?=$this->weekSubtract?>/"><<</a>
+week
+<a
+	href="<?=$this->baseUrl?>/location/index/id/<?=$this->currentLocation->userid?>/date/<?=$this->weekAdd?>/">>></a>
+<a
+	href="<?=$this->baseUrl?>/location/index/id/<?=$this->currentLocation->userid?>/date/<?=$this->daySubtract?>/"><<</a>
+dag
+<a
+	href="<?=$this->baseUrl?>/location/index/id/<?=$this->currentLocation->userid?>/date/<?=$this->dayAdd?>/">>></a>
+<span id="selectDate"></span>
+|
+<a
+	href="<?=$this->baseUrl?>/location/index/id/<?=$this->currentLocation->userid?>/">vandaag</a>
+<br />
+<br />
+
+<table id="agenda" class="scroll" cellpadding="0" cellspacing="0"></table>
+
+<br />
+<br />

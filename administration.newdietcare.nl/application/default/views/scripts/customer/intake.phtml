@@ -1,0 +1,62 @@
+<?=$this->partial ( 'customer/partial/menu.phtml', array ('baseUrl' => $this->baseUrl, 'actionName' => $this->actionName ) )?>
+
+<h2>Intake - <?=htmlentities ( $this->currentCustomer->getName () )?></h2>
+
+<?=$this->partial ( 'customer/partial/notes.phtml', array ('baseUrl' => $this->baseUrl, 'customer' => $this->customer, 'growlMessage' => (isset ( $this->growlMessage ) ? $this->growlMessage : '') ) )?>
+
+<form method="post">
+<table class="notes">
+	<tr>
+		<th colspan="2">Intake door</th>
+	</tr>
+	<tr>
+		<td>Werknemer:</td>
+		<td><?=htmlentities ( $this->currentEmployee ? $this->currentEmployee->name : '' )?></td>
+	</tr>
+	<tr>
+		<td>Datum:</td>
+		<td><?=htmlentities ( $this->date->get ( 'd MMMM yyyy', 'nl_NL' ) )?></td>
+	</tr>
+	<tr>
+		<th colspan="2">Privé</th>
+	</tr>
+	<tr>
+		<td>Werksituatie:</td>
+		<td><textarea name="work_situation"><?=isset ( $this->customer->work_situation ) ? htmlentities ( $this->customer->work_situation ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td>Thuissituatie:</td>
+		<td><textarea name="home_situation"><?=isset ( $this->customer->home_situation ) ? htmlentities ( $this->customer->home_situation ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<th colspan="2">Levensstijl</th>
+	</tr>
+	<tr>
+		<td>Beweging:</td>
+		<td><textarea name="excercise" class="verysmalltext"><?=isset ( $this->customer->excercise ) ? htmlentities ( $this->customer->excercise ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td>Roken:</td>
+		<td><textarea name="smoking" class="verysmalltext"><?=isset ( $this->customer->smoking ) ? htmlentities ( $this->customer->smoking ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td>Alcohol:</td>
+		<td><textarea name="drinking" class="verysmalltext"><?=isset ( $this->customer->drinking ) ? htmlentities ( $this->customer->drinking ) : ''?></textarea></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+<?php
+if ($this->currentEmployee) {
+	?>
+<input type="hidden" name="employee_id"
+	value="<?=$this->currentEmployee->id?>" />
+	<?php
+}
+?>
+<input type="hidden" name="intake_date"
+	value="<?=$this->date->get ( 'yyyy-MM-dd' )?>" /> <input type="submit"
+	name="submitButton" value="OK" /> <input type="submit"
+	name="submitButton" value="OK + Dieet" /></form>

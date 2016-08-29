@@ -1,0 +1,56 @@
+<h2>Jaaroverzicht</h2>
+<table class="list">
+	<tr>
+		<th></th>
+		<?php
+		$totalArray = array ();
+		foreach ( $this->years as $year ) {
+			?>
+		<th><?=htmlentities ( $year->year )?></th>
+		<?php
+			$totalArray [$year->year] = 0;
+		}
+		?>
+	</tr>
+	<?php
+	foreach ( $this->resultTable as $key => $resultTableRow ) {
+		?>
+	<tr class="dark">
+		<td><b><?=htmlentities ( $this->dutchMonths [$key - 1] )?></b></td>
+		<?php
+		foreach ( $resultTableRow as $year => $result ) {
+			?>
+		<td class="right"><?=$this->printPrice->filter ( $result ['total'] )?></td>
+		<?php
+			$totalArray [$year] += $result ['total'];
+		}
+		?>
+	</tr>
+	<tr class="light">
+		<td class="grey">Behandelingen<br />
+		Producten</td>
+		<?php
+		foreach ( $resultTableRow as $result ) {
+			?>
+		<td class="right grey"><?=$this->printPrice->filter ( $result ['consult'] )?><br />
+		<?=$this->printPrice->filter ( $result ['product'] )?></td>
+		<?php
+		}
+		?>
+	</tr>
+	<?php
+	}
+	?>
+		<tr class="Dark">
+		<td><b>Totaal</b></td>
+		<?php
+		foreach ( $totalArray as $totalValue ) {
+			?>
+		<td class="right"><b><?=$this->printPrice->filter ( $totalValue )?></b></td>
+		<?php
+		}
+		?>
+	</tr>
+</table>
+<br />
+<br />

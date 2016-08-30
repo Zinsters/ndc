@@ -57,6 +57,14 @@ class Default_IndexController extends Controller_Default {
 					//Success
 					if ($user->active) {
 						// Hold our cookies
+						if ( ! empty( $defaultNamespace->adminUserId ) ) {
+							$previousUser = $users->getById( $defaultNamespace->adminUserId );
+						}
+						if ( ! empty( $previousUser ) && $previousUser->isLocation() && $user->isAdmin() ) {
+							$defaultNamespace->previousAdminUserId = $defaultNamespace->adminUserId;
+						} else {
+							unset( $defaultNamespace->previousAdminUserId );
+						}
 						$defaultNamespace->adminUserId = $user->userid;
 
 						$this->_redirect ( '/' );
@@ -88,12 +96,9 @@ class Default_IndexController extends Controller_Default {
 	 *
 	 */
 	public function logoutAction() {
-		$auth = Zend_Auth::getInstance ();
-		$auth->clearIdentity ();
-		$auth->setStorage ( new Zend_Auth_Storage_Session ( 'default' ) );
-		$auth->clearIdentity ();
-		
 		$defaultNamespace = new Zend_Session_Namespace ( 'default' );
+		unset ( $defaultNamespace->adminUserId );
+		unset ( $defaultNamespace->previousAdminUserId );
 		unset ( $defaultNamespace->currentLocationId );
 		unset ( $defaultNamespace->currentAdminId );
 		unset ( $defaultNamespace->currentCustomerId );

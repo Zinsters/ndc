@@ -1372,41 +1372,36 @@ class Default_CustomerController extends Controller_Default {
 	}
 
 	public function exportAction() {
-		/*
 		$customers = new Model_Table_Users();
 		
 		$prepareDate = new Controller_Filter_PrepareDate();
 		
 		set_time_limit ( 180 );
-		require_once ('writer.php');
 
 		$this->_helper->layout->disableLayout ();
 		$this->_helper->viewRenderer->setNoRender ();
 
-		$xls = & new Spreadsheet_Excel_Writer ( );
-		$xls->send ( 'customers.xls' );
-		$xls->setTempDir ( 'temp' );
-		$sheet = & $xls->addWorksheet ( 'Customers' );
-		$sheet->setInputEncoding ( 'UTF-8' );
+		$buffer = fopen( 'php://temp', 'r+' );
 
-		$sheet->write ( 0, 0, 'Userid' );
-		$sheet->write ( 0, 1, 'Username' );
-		$sheet->write ( 0, 2, 'E-mail' );
-		$sheet->write ( 0, 3, 'Voornaam' );
-		$sheet->write ( 0, 4, 'Voorletters' );
-		$sheet->write ( 0, 5, 'Tussenvoegsel' );
-		$sheet->write ( 0, 6, 'Achternaam' );
-		$sheet->write ( 0, 7, 'Geslacht' );
-		$sheet->write ( 0, 8, 'Geb. datum' );
-		$sheet->write ( 0, 9, 'Adres' );
-		$sheet->write ( 0, 10, 'Postcode' );
-		$sheet->write ( 0, 11, 'Woonplaats' );
-		$sheet->write ( 0, 12, 'Telefoon' );
-		$sheet->write ( 0, 13, 'Mobiel' );
-		$sheet->write ( 0, 14, 'Registratie datum' );
+		$data = array(
+			'Userid',
+			'Username',
+			'E-mail',
+			'Voornaam',
+			'Voorletters',
+			'Tussenvoegsel',
+			'Achternaam',
+			'Geslacht',
+			'Geb. datum',
+			'Adres',
+			'Postcode',
+			'Woonplaats',
+			'Telefoon',
+			'Mobiel',
+			'Registratie datum'
+		);
+		fputcsv( $buffer, $data, ';', '"', '\\' );
 
-		$i = 1;
-		
 		$select = $customers->select();
 		$select->setIntegrityCheck ( false );
 		$select->from ( array ('c' => 'users_data' ) );
@@ -1436,27 +1431,36 @@ class Default_CustomerController extends Controller_Default {
 		//exit;
 		$sampleData = $customers->fetchAll ( $select );
 		foreach ( $sampleData as $row ) {
-			@$sheet->write ( $i, 0, $row->userid );
-			@$sheet->write ( $i, 1, $row->username );
-			@$sheet->write ( $i, 2, $row->email );
-			@$sheet->write ( $i, 3, $row->voornaam );
-			@$sheet->write ( $i, 4, $row->initials );
-			@$sheet->write ( $i, 5, $row->tussenvoegsel );
-			@$sheet->write ( $i, 6, $row->achternaam );
-			@$sheet->write ( $i, 7, $row->geslacht );
-			@$sheet->write ( $i, 8, $row->geboortedatum );
-			@$sheet->write ( $i, 9, $row->thuisadres );
-			@$sheet->write ( $i, 10, $row->thuispostcode );
-			@$sheet->write ( $i, 11, $row->thuisplaats );
-			@$sheet->write ( $i, 12, $row->telefoon );
-			@$sheet->write ( $i, 13, $row->mobiel );
-			@$sheet->write ( $i, 14, ($row->reg_date?date( 'd-m-Y', $row->reg_date):'') );
-			
-			$i ++;
+			$data = array(
+				$row->userid,
+				$row->username,
+				$row->email,
+				$row->voornaam,
+				$row->initials,
+				$row->tussenvoegsel,
+				$row->achternaam,
+				$row->geslacht,
+				$row->geboortedatum,
+				$row->thuisadres,
+				$row->thuispostcode,
+				$row->thuisplaats,
+				$row->telefoon,
+				$row->mobiel,
+				( $row->reg_date ? date( 'd-m-Y', $row->reg_date ) : '' )
+			);
+					
+			fputcsv( $buffer, $data, ';', '"', '\\' );
 		}
 
-		$xls->close ();
-		*/
+		rewind( $buffer );
+		$content = stream_get_contents( $buffer );
+		fclose( $buffer );
+
+		$this->getResponse ()->setHeader ( 'Content-Type', 'text/csv' );
+		$this->getResponse ()->setHeader ( 'Content-Length', strlen ( $content ) );
+		$this->getResponse ()->setHeader ( 'Content-Disposition', "attachment; filename=\"customers.csv\"" );
+
+		echo $content;
 	}
 
 	///////////////////////

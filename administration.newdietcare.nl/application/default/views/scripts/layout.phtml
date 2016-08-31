@@ -8,12 +8,18 @@
 	type="text/css" />
 
 <script type="text/javascript"
-	src="<?=$this->baseUrl?>/scripts/jquery.js"></script>
+	src="<?=$this->baseUrl?>/scripts/jquery-1.11.0.min.js"></script>
+<script type="text/javascript"
+	src="<?=$this->baseUrl?>/scripts/jquery-ui.min.js"></script>
 
 <script type="text/javascript"
-	src="<?=$this->baseUrl?>/scripts/jquery.jqGrid.js"></script>
+	src="<?=$this->baseUrl?>/scripts/i18n/grid.locale-nl.js"></script>
+<script type="text/javascript"
+	src="<?=$this->baseUrl?>/scripts/jquery.jqGrid.min.js"></script>
 <link rel="stylesheet" type="text/css" media="screen"
-	href="<?=$this->baseUrl?>/css/jqGrid/grid.css" />
+	href="<?=$this->baseUrl?>/css/jquery-ui/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+	href="<?=$this->baseUrl?>/css/jqGrid/ui.jqgrid.css" />
 
 <?=$this->headcontent ? $this->partial ( $this->headcontent, array ('baseUrl' => $this->baseUrl ) ) : ''?>
 

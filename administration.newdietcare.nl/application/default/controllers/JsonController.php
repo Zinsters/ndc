@@ -168,9 +168,9 @@ class Default_JsonController extends Controller_Json {
 		$responce = new stdClass ( );
 		
 		if (count ( $sampleData ) > 0) {
-			$responce->page = $params->page;
-			$responce->total = $params->rows ? ceil ( count ( $allData ) / $params->rows ) : 0;
-			$responce->records = count ( $allData );
+			$responce->page = (string) $params->page;
+			$responce->total = (string) ( $params->rows ? ceil ( count ( $allData ) / $params->rows ) : 0 );
+			$responce->records = (string) count ( $allData );
 			$i = 0;
 			
 			$select = $invoices->select ();

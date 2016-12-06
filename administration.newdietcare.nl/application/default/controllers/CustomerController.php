@@ -7,7 +7,7 @@
  */
 
 class Default_CustomerController extends Controller_Default {
-	
+
 	/**
 	 * Return current role of the user
 	 *
@@ -15,7 +15,7 @@ class Default_CustomerController extends Controller_Default {
 	public function getRole() {
 		return '';
 	}
-	
+
 	/**
 	 * The default controller action (search)
 	 *
@@ -23,7 +23,7 @@ class Default_CustomerController extends Controller_Default {
 	public function indexAction() {
 		$this->view->headcontent = 'customer/index/headcontent.phtml';
 	}
-	
+
 	/**
 	 * Add a new customer
 	 *
@@ -34,24 +34,24 @@ class Default_CustomerController extends Controller_Default {
 			if (! isset ( $userData ['gender'] ))
 				$userData ['gender'] = '';
 			unset ( $userData ['submitButton'] );
-			
+
 			$validName = new Zend_Validate ( );
 			$validName->addValidator ( new Zend_Validate_NotEmpty ( ), true )->addValidator ( new Zend_Validate_Alpha ( true ) );
 			$validGender = new Zend_Validate ( );
 			$validGender->addValidator ( new Zend_Validate_NotEmpty ( ), true )->addValidator ( new Zend_Validate_InArray ( array ('man', 'vrouw', 'bedrijf' ) ) );
 			$validEmail = new Zend_Validate ( );
 			$validEmail->addValidator ( new Zend_Validate_NotEmpty ( ), true )->addValidator ( new Zend_Validate_EmailAddress ( ) )->addValidator ( new Controller_Validate_Uniq ( 'Model_Table_Users', 'email' ) );
-			
+
 			$filters = array ('passowrd' => array ('StringTrim', 'StripTags' ), 'first_name' => array ('StringTrim', 'StripTags' ), 'initials' => array ('StringTrim', 'StripTags' ), 'infix' => array ('StringTrim', 'StripTags' ), 'last_name' => array ('StringTrim', 'StripTags' ), 'gender' => array ('StringTrim', 'StripTags' ), 'address' => array ('StringTrim', 'StripTags' ), 'number' => array ('StringTrim', 'StripTags' ), 'zip' => array ('StringTrim', 'StripTags' ), 'city' => array ('StringTrim', 'StripTags' ), 'phone' => array ('StringTrim', 'StripTags' ), 'mobile_phone' => array ('StringTrim', 'StripTags' ), 'email' => array ('StringTrim', 'StripTags' ), 'notes' => array ('StringTrim', 'StripTags' ) );
 			$validators = array ('password' => 'NotEmpty', 'first_name' => array ($validName, 'allowEmpty' => true ), 'initials' => array (new Controller_Validate_Initials ( ), 'allowEmpty' => true ), 'infix' => array ('allowEmpty' => true ), 'last_name' => $validName, 'gender' => $validGender, 'address' => array ('allowEmpty' => true ), 'number' => array ('allowEmpty' => true ), 'zip' => array ('allowEmpty' => true ), 'city' => array ('allowEmpty' => true ), 'phone' => array ('allowEmpty' => true ), 'mobile_phone' => array ('allowEmpty' => true ), 'email' => array ($validEmail, 'allowEmpty' => true ), 'notes' => array ('allowEmpty' => true ) );
-			
+
 			$input = new Zend_Filter_Input ( $filters, $validators, $userData );
 			foreach ( $userData as $key => $value )
 				$userData [$key] = $input->$key;
-			
+
 			if ($input->isValid ()) {
 				$users = new Model_Table_Users ( );
-				
+
 				$do =  Array(
 					'email' => $userData[ 'email' ],
 					'username' => $userData[ 'first_name' ] . ' ' . ( $userData[ 'infix' ] ? $userData[ 'infix' ] . ' ' : null ) . $userData[ 'last_name' ],
@@ -72,10 +72,10 @@ class Default_CustomerController extends Controller_Default {
 				);
 				$user = $users->createRow ( $do );
 				$user->save ();
-				
+
 				$defaultNamespace = new Zend_Session_Namespace ( 'default' );
 				$defaultNamespace->currentCustomerId = $user->userid;
-				
+
 				if ($this->_request->getPost ( 'submitButton' ) == 'Ok + Agenda')
 					$this->_redirect ( '/location/' );
 				else
@@ -83,7 +83,7 @@ class Default_CustomerController extends Controller_Default {
 				return;
 			} else {
 				$this->view->messages = $input->getMessages ();
-				
+
 				$this->view->customer = new stdClass ( );
 				foreach ( $userData as $key => $value )
 					$this->view->customer->$key = $value;
@@ -92,7 +92,7 @@ class Default_CustomerController extends Controller_Default {
 			$this->view->customer = new stdClass ( );
 		}
 	}
-	
+
 	/**
 	 * View customer data
 	 *
@@ -100,7 +100,7 @@ class Default_CustomerController extends Controller_Default {
 	public function viewAction() {
 		$defaultNamespace = new Zend_Session_Namespace ( 'default' );
 		$users = new Model_Table_Users ( );
-		
+
 		if ($this->_request->getParam ( 'id' )) {
 			$customer = $users->getById ( ( int ) $this->_request->getParam ( 'id' ) );
 			if ($customer instanceof Model_Table_Row_User && $customer->isCustomer()) {
@@ -112,15 +112,15 @@ class Default_CustomerController extends Controller_Default {
 				unset ( $this->view->currentCustomer );
 			}
 		}
-		
+
 		if (! isset ( $defaultNamespace->currentCustomerId ))
 			$this->_redirect ( '/customer/' );
 
 		$customer = $users->getById ( $defaultNamespace->currentCustomerId );
-		
+
 		$consults = new Model_Table_Consults ( );
 		$this->view->lastConsult = $consults->getByCustomerId ( $customer->userid )->current ();
-		
+
 		$measurements = new Model_Table_Measurements ( );
 		$sampleData = $measurements->getByUserId ( $customer->userid, 'date DESC' );
 
@@ -128,15 +128,15 @@ class Default_CustomerController extends Controller_Default {
 			$paginator = Zend_Paginator::factory ( $sampleData );
 			$paginator->setItemCountPerPage ( 10 );
 			$paginator->setPageRange ( 10 );
-			
+
 			$currentPage = ( int ) $this->_request->getParam ( 'page' );
 			if ($currentPage > 0 and $currentPage <= $paginator->count ())
 				$paginator->setCurrentPageNumber ( $currentPage );
 			else
 				$paginator->setCurrentPageNumber ( 1 );
-			
+
 			Zend_View_Helper_PaginationControl::setDefaultViewPartial ( 'paginator.phtml' );
-			
+
 			$this->view->p_control = $this->view->paginationControl ( $paginator );
 			$this->view->paginator = $paginator;
 			$this->view->count = count ( $sampleData );
@@ -145,7 +145,7 @@ class Default_CustomerController extends Controller_Default {
 
 		$this->view->xml = $this->measurementsToXml ( $customer->userid );
 	}
-	
+
 	/**
 	 * Edit contact data
 	 *
@@ -156,13 +156,13 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$users = new Model_Table_Users ( );
-		
+
 		if ($this->_request->isPost ()) {
 			$userData = $this->_request->getPost ();
 			unset ( $userData ['submitButton'] );
-			
+
 			$customer = $users->getById ( $defaultNamespace->currentCustomerId );
 
 			$validName = new Zend_Validate ( );
@@ -172,34 +172,34 @@ class Default_CustomerController extends Controller_Default {
 			$validEmail = new Zend_Validate ( );
 			$validEmail->addValidator ( new Zend_Validate_NotEmpty ( ), true )->addValidator ( new Zend_Validate_EmailAddress ( ) )->addValidator ( new Controller_Validate_Uniq ( 'Model_Table_Users', 'email', $customer->userid ) );
 
-			$filters = array ('voornaam' => array ('StringTrim', 'StripTags' ), 
-			                  'initials' => array ('StringTrim', 'StripTags' ), 
-			                  'tussenvoegsel' => array ('StringTrim', 'StripTags' ), 
-			                  'achternaam' => array ('StringTrim', 'StripTags' ), 
-			                  'geslacht' => array ('StringTrim', 'StripTags' ), 
-			                  'thuisadres' => array ('StringTrim', 'StripTags' ), 
-			                  'thuispostcode' => array ('StringTrim', 'StripTags' ), 
-			                  'thuisplaats' => array ('StringTrim', 'StripTags' ), 
-			                  'telefoon' => array ('StringTrim', 'StripTags' ), 
-			                  'mobiel' => array ('StringTrim', 'StripTags' ), 
+			$filters = array ('voornaam' => array ('StringTrim', 'StripTags' ),
+			                  'initials' => array ('StringTrim', 'StripTags' ),
+			                  'tussenvoegsel' => array ('StringTrim', 'StripTags' ),
+			                  'achternaam' => array ('StringTrim', 'StripTags' ),
+			                  'geslacht' => array ('StringTrim', 'StripTags' ),
+			                  'thuisadres' => array ('StringTrim', 'StripTags' ),
+			                  'thuispostcode' => array ('StringTrim', 'StripTags' ),
+			                  'thuisplaats' => array ('StringTrim', 'StripTags' ),
+			                  'telefoon' => array ('StringTrim', 'StripTags' ),
+			                  'mobiel' => array ('StringTrim', 'StripTags' ),
 			                  'email' => array ('StringTrim', 'StripTags' ) );
-			$validators = array ('voornaam' => array ($validName, 'allowEmpty' => true ), 
-			                     'initials' => array (new Controller_Validate_Initials ( ), 'allowEmpty' => true ), 
-			                     'tussenvoegsel' => array ('allowEmpty' => true ), 
-			                     'achternaam' => $validName, 
-			                     'geslacht' => $validGender, 
-			                     'thuisadres' => array ('allowEmpty' => true ), 
-			                     'thuispostcode' => array ('allowEmpty' => true ), 
-			                     'thuisplaats' => array ('allowEmpty' => true ), 
-			                     'telefoon' => array ('allowEmpty' => true ), 
-			                     'mobiel' => array ('allowEmpty' => true ), 
+			$validators = array ('voornaam' => array ($validName, 'allowEmpty' => true ),
+			                     'initials' => array (new Controller_Validate_Initials ( ), 'allowEmpty' => true ),
+			                     'tussenvoegsel' => array ('allowEmpty' => true ),
+			                     'achternaam' => $validName,
+			                     'geslacht' => $validGender,
+			                     'thuisadres' => array ('allowEmpty' => true ),
+			                     'thuispostcode' => array ('allowEmpty' => true ),
+			                     'thuisplaats' => array ('allowEmpty' => true ),
+			                     'telefoon' => array ('allowEmpty' => true ),
+			                     'mobiel' => array ('allowEmpty' => true ),
 			                     'email' => array ($validEmail, 'allowEmpty' => true ) );
 
 			$input = new Zend_Filter_Input ( $filters, $validators, $userData );
 			foreach ( $userData as $key => $value ) {
 				$userData [$key] = $input->$key;
                         }
-			
+
 			if ( $input->isValid() ) {
 				$customer->setFromArray ( $userData );
 				$customer->save();
@@ -209,7 +209,7 @@ class Default_CustomerController extends Controller_Default {
 					return;
 				} else {
 					$this->view->growlMessage = 'Data saved successfully';
-					
+
 					$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 					$this->view->currentCustomer = $users->getById ( $defaultNamespace->currentCustomerId );
 				}
@@ -226,10 +226,10 @@ class Default_CustomerController extends Controller_Default {
 		} else {
 			$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		}
-		
+
 		$this->view->headcontent = 'customer/contact/headcontent.phtml';
 	}
-	
+
 	/**
 	 * Edit general information
 	 *
@@ -240,9 +240,9 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$users = new Model_Table_Users ( );
-		
+
 		$customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		if (! $customer instanceof Model_Table_Row_User || ! $customer->isCustomer() ) {
 			unset ( $shopNamespace->currentCustomerId );
@@ -250,19 +250,19 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		if ($this->_request->isPost ()) {
 			$userData = $this->_request->getPost ();
 			if (! isset ( $userData ['state'] ))
 				$userData ['state'] = 0;
 			unset ( $userData ['submitButton'] );
-			
+
 			$validName = new Zend_Validate ( );
 			$validName->addValidator ( new Zend_Validate_NotEmpty ( ), true )->addValidator ( new Zend_Validate_Alpha ( true ) );
-			
+
 			$filters = array ( 'password' => array ('StringTrim', 'StripTags' ), 'username' => array ('StringTrim', 'StripTags' ), 'discount_percent' => array (new Controller_Filter_PrepareFloat ( ) ), 'relatives' => array ('StringTrim', 'StripTags' ) );
 			$validators = array ( 'password' => array ( 'allowEmpty' => true ), 'username' => 'NotEmpty', 'discount_percent' => array ('Float', new Zend_Validate_Between ( 0, 100 ), 'allowEmpty' => true ), 'relatives' => array ('allowEmpty' => true ) );
-			
+
 			$input = new Zend_Filter_Input ( $filters, $validators, $userData );
 			foreach ( $userData as $key => $value )
 				$userData [$key] = $input->$key;
@@ -271,25 +271,25 @@ class Default_CustomerController extends Controller_Default {
 			} else {
 				unset( $userData[ 'password' ] );
 			}
-			
+
 			if ($input->isValid ()) {
 				$customer->setFromArray ( $userData );
 				$customer->save ();
-				
+
 				if ($this->_request->getPost ( 'submitButton' ) == 'OK + Intake') {
 					$this->_redirect ( '/customer/intake/' );
 					return;
 				} else {
 					$this->view->growlMessage = 'Data saved successfully';
-					
+
 					$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 					$this->view->currentCustomer = $users->getById ( $defaultNamespace->currentCustomerId );
 				}
 			} else {
 				$this->view->messages = $input->getMessages ();
-				
+
 				$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
-				
+
 				foreach ( $userData as $key => $value )
 					if (! empty ( $value ))
 						$this->view->customer->$key = $value;
@@ -297,31 +297,31 @@ class Default_CustomerController extends Controller_Default {
 		} else {
 			$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		}
-		
+
 		$this->view->headcontent = 'customer/customer/headcontent.phtml';
 	}
-	
+
 	/**
 	 * Edit current customer general information
 	 *
 	 */
 	public function intakeAction() {
 		$this->view->date = new Zend_Date ( );
-		
+
 		$defaultNamespace = new Zend_Session_Namespace ( 'default' );
 		if (! isset ( $defaultNamespace->currentCustomerId )) {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$users = new Model_Table_Users ( );
-		
+
 		if ($this->_request->isPost ()) {
 			$userData = $this->_request->getPost ();
 			unset ( $userData ['submitButton'] );
-			
+
 			$customer = $users->getById ( $defaultNamespace->currentCustomerId );
-			
+
 			$filterChain = new Zend_Filter ( );
 			$filterChain->addFilter ( new Zend_Filter_StringTrim ( ) )->addFilter ( new Zend_Filter_StripTags ( ) );
 			$userData ['work_situation'] = $filterChain->filter ( $userData ['work_situation'] );
@@ -332,26 +332,26 @@ class Default_CustomerController extends Controller_Default {
 			$userData ['intake_date'] = $filterChain->filter ( $userData ['intake_date'] );
 			if (isset ( $userData ['employee_id'] ))
 				$userData ['employee_id'] = ( int ) $userData ['employee_id'];
-			
+
 			$customer->setFromArray ( $userData );
 			$customer->save ();
-			
+
 			if ($this->_request->getPost ( 'submitButton' ) == 'OK + Dieet') {
 				$this->_redirect ( '/customer/diet/' );
 				return;
 			} else {
 				$this->view->growlMessage = 'Data saved successfully';
-				
+
 				$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 				$this->view->currentCustomer = $users->getById ( $defaultNamespace->currentCustomerId );
 			}
 		} else {
 			$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		}
-		
+
 		$this->view->headcontent = 'customer/intake/headcontent.phtml';
 	}
-	
+
 	/**
 	 * Edit current customer diet information
 	 *
@@ -362,38 +362,38 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/new/' );
 			return;
 		}
-		
+
 		$users = new Model_Table_Users ( );
-		
+
 		if ($this->_request->isPost ()) {
 			$userData = $this->_request->getPost ();
 			unset ( $userData ['submitButton'] );
-			
+
 			$customer = $users->getById ( $defaultNamespace->currentCustomerId );
-			
+
 			$filters = array ('geboortedatum' => array (new Controller_Filter_PrepareDate ( ) ), 'length' => array (new Controller_Filter_PrepareFloat ( ) ), 'weight' => array (new Controller_Filter_PrepareFloat ( ) ), 'weight_ideal' => array (new Controller_Filter_PrepareFloat ( ) ), 'why_gained_weight' => array ('StringTrim', 'StripTags' ), 'other_diets' => array ('StringTrim', 'StripTags' ), 'dietgoal' => array ('StringTrim', 'StripTags' ), 'notes' => array ('StringTrim', 'StripTags' ) );
 			$validators = array ('geboortedatum' => array ('Date', 'allowEmpty' => true ), 'length' => array ('Float', 'allowEmpty' => true ), 'weight' => array ('Float', 'allowEmpty' => true ), 'weight_ideal' => array ('Float', 'allowEmpty' => true ), 'why_gained_weight' => array ('allowEmpty' => true ), 'other_diets' => array ('allowEmpty' => true ), 'dietgoal' => array ('allowEmpty' => true ), 'notes' => array ('allowEmpty' => true ) );
-			
+
 			$input = new Zend_Filter_Input ( $filters, $validators, $userData );
 			foreach ( $userData as $key => $value )
 				$userData [$key] = $input->$key;
-			
+
 			if ($input->isValid ()) {
 				$customer->setFromArray ( $userData );
 				$customer->save ();
-				
+
 				if ($this->_request->getPost ( 'submitButton' ) == 'OK + Medisch') {
 					$this->_redirect ( '/customer/medical/' );
 					return;
 				} else {
 					$this->view->growlMessage = 'Data saved successfully';
-					
+
 					$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 					$this->view->currentCustomer = $users->getById ( $defaultNamespace->currentCustomerId );
 				}
 			} else {
 				$this->view->messages = $input->getMessages ();
-				
+
 				$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 				foreach ( $userData as $key => $value )
 					if (! empty ( $value ))
@@ -402,10 +402,10 @@ class Default_CustomerController extends Controller_Default {
 		} else {
 			$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		}
-		
+
 		$this->view->headcontent = 'customer/diet/headcontent.phtml';
 	}
-	
+
 	/**
 	 * Edit current customer medical information
 	 *
@@ -416,41 +416,41 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$users = new Model_Table_Users ( );
-		
+
 		if ($this->_request->isPost ()) {
 			$userData = $this->_request->getPost ();
 			unset ( $userData ['submitButton'] );
-			
+
 			$customer = $users->getById ( $defaultNamespace->currentCustomerId );
-			
+
 			$filterChain = new Zend_Filter ( );
 			$filterChain->addFilter ( new Zend_Filter_StringTrim ( ) )->addFilter ( new Zend_Filter_StripTags ( ) );
 			$userData ['medical_situation'] = $filterChain->filter ( $userData ['medical_situation'] );
 			$userData ['medications'] = $filterChain->filter ( $userData ['medications'] );
 			$userData ['under_treatment_with'] = $filterChain->filter ( $userData ['under_treatment_with'] );
 			$userData ['darm'] = $filterChain->filter ( $userData ['darm'] );
-			
+
 			$customer->setFromArray ( $userData );
 			$customer->save ();
-			
+
 			if ($this->_request->getPost ( 'submitButton' ) == 'OK + Metingen') {
 				$this->_redirect ( '/customer/measurements/' );
 				return;
 			} else {
 				$this->view->growlMessage = 'Data saved successfully';
-				
+
 				$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 				$this->view->currentCustomer = $users->getById ( $defaultNamespace->currentCustomerId );
 			}
 		} else {
 			$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		}
-		
+
 		$this->view->headcontent = 'customer/medical/headcontent.phtml';
 	}
-	
+
 	/**
 	 * Information about customer measurements
 	 *
@@ -461,28 +461,28 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		if ($this->_request->getPost ( 'submitButton' )) {
 			if ($this->_request->getPost ( 'submitButton' ) == 'OK + Consult') {
 				$this->_redirect ( '/customer/newconsult/' );
 				return;
 			}
 		}
-		
+
 		$users = new Model_Table_Users ( );
 		$customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		$measurements = new Model_Table_Measurements ( );
-		
+
 		if ($this->_request->isPost ()) {
 			$userData = $this->_request->getPost ();
-			
+
 			$filters = array ('date' => array (new Controller_Filter_PrepareDate ( ) ), 'weight' => array (new Controller_Filter_PrepareFloat ( ) ), 'spiermassa' => array (new Controller_Filter_PrepareFloat ( ) ), 'fat' => array (new Controller_Filter_PrepareFloat ( ) ), 'fat_p' => array (new Controller_Filter_PrepareFloat ( ) ), 'damp' => array (new Controller_Filter_PrepareFloat ( ) ), 'bmi' => array (new Controller_Filter_PrepareFloat ( ) ), 'start' => array ('StringTrim', 'StripTags' ) );
 			$validators = array ('date' => array ('Date' ), 'weight' => array ('notEmpty', 'Float' ), 'spiermassa' => array ('notEmpty', 'Float' ), 'fat' => array ('notEmpty', 'Float' ), 'fat_p' => array ('notEmpty', 'Float', new Zend_Validate_Between ( 0, 100 ) ), 'damp' => array ('notEmpty', 'Float' ), 'bmi' => array ('notEmpty', 'Float' ), 'start' => array ('Int', 'allowEmpty' => true ) );
-			
+
 			$input = new Zend_Filter_Input ( $filters, $validators, $userData );
 			foreach ( $userData as $key => $value )
 				$userData [$key] = $input->$key;
-			
+
 			if ($input->isValid ()) {
 				$userData ['user_id'] = $customer->userid;
 				$measurement = $measurements->createRow ( $userData );
@@ -496,35 +496,35 @@ class Default_CustomerController extends Controller_Default {
 			}
 		} else
 			$this->view->measurement = new stdClass ( );
-		
+
 		$sampleData = $measurements->getByUserId ( $customer->userid, 'date DESC' );
-		
+
 		if (count ( $sampleData ) > 0) {
 			$paginator = Zend_Paginator::factory ( $sampleData );
 			$paginator->setItemCountPerPage ( 10 );
 			$paginator->setPageRange ( 10 );
-			
+
 			$currentPage = ( int ) $this->_request->getParam ( 'page' );
 			if ($currentPage > 0 and $currentPage <= $paginator->count ())
 				$paginator->setCurrentPageNumber ( $currentPage );
 			else
 				$paginator->setCurrentPageNumber ( 1 );
-			
+
 			Zend_View_Helper_PaginationControl::setDefaultViewPartial ( 'paginator.phtml' );
-			
+
 			$this->view->p_control = $this->view->paginationControl ( $paginator );
 			$this->view->paginator = $paginator;
 			$this->view->count = count ( $sampleData );
 		} else
 			$this->view->count = 0;
-		
+
 		if (isset ( $this->view->measurement->weight ) && $this->view->measurement->weight > 0 && $profile instanceof Model_Table_Row_Profile && $profile->start_weight > 0)
 			$this->view->weightDifference = $customer->getRealStartWeight () - $this->view->measurement->weight;
-		
+
 		$this->view->xml = $this->measurementsToXml ( $customer->userid );
 		$this->view->headcontent = 'customer/measurements/headcontent.phtml';
 	}
-	
+
 	/**
 	 * Edit selected measurement
 	 *
@@ -535,7 +535,7 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		if ($this->_request->getPost ( 'submitButton' )) {
 			if ($this->_request->getPost ( 'submitButton' ) == 'OK + Consult')
 				$this->_redirect ( '/customer/newconsult/' );
@@ -545,35 +545,35 @@ class Default_CustomerController extends Controller_Default {
 				$this->_redirect ( '/customer/view/' );
 			return;
 		}
-		
+
 		$users = new Model_Table_Users ( );
 		$customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		$measurements = new Model_Table_Measurements ( );
-		
+
 		if ($this->_request->getParam ( 'id' )) {
 			$select = $measurements->select ();
 			$select->where ( 'id=' . ( int ) $this->_request->getParam ( 'id' ) );
 			$select->where ( 'user_id=' . $customer->userid );
 			$measurement = $measurements->fetchRow ( $select );
 		}
-		
+
 		if (! isset ( $measurement ) || ! $measurement instanceof Model_Table_Row_Measurement)
 			$this->_redirect ( '/customer/measurements/' );
-		
+
 		if ($this->_request->isPost ()) {
 			$userData = $this->_request->getPost ();
-			
+
 			$filters = array ('date' => array (new Controller_Filter_PrepareDate ( ) ), 'weight' => array (new Controller_Filter_PrepareFloat ( ) ), 'spiermassa' => array (new Controller_Filter_PrepareFloat ( ) ), 'fat' => array (new Controller_Filter_PrepareFloat ( ) ), 'fat_p' => array (new Controller_Filter_PrepareFloat ( ) ), 'damp' => array (new Controller_Filter_PrepareFloat ( ) ), 'bmi' => array (new Controller_Filter_PrepareFloat ( ) ), 'start' => array ('StringTrim', 'StripTags' ) );
 			$validators = array ('date' => array ('Date' ), 'weight' => array ('notEmpty', 'Float' ), 'spiermassa' => array ('notEmpty', 'Float' ), 'fat' => array ('notEmpty', 'Float' ), 'fat_p' => array ('notEmpty', 'Float', new Zend_Validate_Between ( 0, 100 ) ), 'damp' => array ('notEmpty', 'Float' ), 'bmi' => array ('notEmpty', 'Float' ), 'start' => array ('Int', 'allowEmpty' => true ) );
-			
+
 			$input = new Zend_Filter_Input ( $filters, $validators, $userData );
 			foreach ( $userData as $key => $value )
 				$userData [$key] = $input->$key;
-			
+
 			if ($input->isValid ()) {
 				$measurement->setFromArray ( $userData );
 				$measurement->save ();
-				
+
 				$this->_redirect ( '/customer/view/' );
 				return;
 			} else {
@@ -585,35 +585,35 @@ class Default_CustomerController extends Controller_Default {
 			}
 		} else
 			$this->view->measurement = $measurement;
-		
+
 		$sampleData = $measurements->getByUserId ( $customer->userid, 'date DESC' );
-		
+
 		if (count ( $sampleData ) > 0) {
 			$paginator = Zend_Paginator::factory ( $sampleData );
 			$paginator->setItemCountPerPage ( 10 );
 			$paginator->setPageRange ( 10 );
-			
+
 			$currentPage = ( int ) $this->_request->getParam ( 'page' );
 			if ($currentPage > 0 and $currentPage <= $paginator->count ())
 				$paginator->setCurrentPageNumber ( $currentPage );
 			else
 				$paginator->setCurrentPageNumber ( 1 );
-			
+
 			Zend_View_Helper_PaginationControl::setDefaultViewPartial ( 'paginator.phtml' );
-			
+
 			$this->view->p_control = $this->view->paginationControl ( $paginator );
 			$this->view->paginator = $paginator;
 			$this->view->count = count ( $sampleData );
 		} else
 			$this->view->count = 0;
-		
+
 		if (isset ( $this->view->measurement->weight ) && $this->view->measurement->weight > 0 && $customer instanceof Model_Table_Row_User && $customer->weight_ideal > 0)
 			$this->view->weightDifference = $customer->getRealStartWeight () - $this->view->measurement->weight;
-		
+
 		$this->view->xml = $this->measurementsToXml ( $customer->userid );
 		$this->view->headcontent = 'customer/measurements/headcontent.phtml';
 	}
-	
+
 	/**
 	 * Delete selected measurement
 	 *
@@ -624,11 +624,11 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$users = new Model_Table_Users ( );
 		$customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		$measurements = new Model_Table_Measurements ( );
-		
+
 		if ($this->_request->getPost ( 'id' )) {
 			$select = $measurements->select ();
 			$select->where ( 'id=' . ( int ) $this->_request->getPost ( 'id' ) );
@@ -637,17 +637,17 @@ class Default_CustomerController extends Controller_Default {
 			if ($measurement instanceof Model_Table_Row_Measurement)
 				$measurement->delete ();
 		}
-		
+
 		$this->_redirect ( '/customer/measurements/' );
 	}
-	
+
 	/**
 	 * New consult
 	 *
 	 */
 	public function newconsultAction() {
 		$this->view->date = new Zend_Date ( );
-		
+
 		$defaultNamespace = new Zend_Session_Namespace ( 'default' );
 		if (! isset ( $defaultNamespace->currentCustomerId )) {
 			$this->_redirect ( '/customer/' );
@@ -657,14 +657,14 @@ class Default_CustomerController extends Controller_Default {
 		$users = new Model_Table_Users ( );
 		$products = new Model_Table_Products ( );
 		$consults = new Model_Table_Consults ( );
-		
+
 		if ($this->_request->isPost ()) {
 			$userData = $this->_request->getPost ();
 			unset ( $userData ['submitButton'] );
-			
+
 			$filterChain = new Zend_Filter ( );
 			$filterChain->addFilter ( new Zend_Filter_StringTrim ( ) )->addFilter ( new Zend_Filter_StripTags ( ) );
-			
+
 			$userData ['product_id'] = ( int ) $userData ['product_id'];
 			$userData ['report'] = $filterChain->filter ( $userData ['report'] );
 			$userData ['plan'] = $filterChain->filter ( $userData ['plan'] );
@@ -673,16 +673,16 @@ class Default_CustomerController extends Controller_Default {
 				$userData ['employee_id'] = ( int ) $userData ['employee_id'];
 			if (isset ( $userData ['location_id'] ))
 				$userData ['location_id'] = ( int ) $userData ['location_id'];
-			
+
 			$consult = $consults->createRow ( $userData );
 			$consult->save ();
-			
+
 			if ($this->_request->getPost ( 'submitButton' ) == 'OK + Afspraak') {
 				$this->_redirect ( '/location/' );
 				return;
 			} else {
 				$this->view->growlMessage = 'Data saved successfully';
-				
+
 				$this->view->consultTypes = $products->getConsults ();
 				$this->view->consults = $consults->getByCustomerId ( $this->view->currentCustomer->userid );
 				if (isset ( $defaultNamespace->currentLocationId )) {
@@ -696,10 +696,10 @@ class Default_CustomerController extends Controller_Default {
 				$this->view->currentLocation = $users->getById ( $defaultNamespace->currentLocationId );
 			}
 		}
-		
+
 		$this->view->headcontent = 'customer/newconsult/headcontent.phtml';
 	}
-	
+
 	/**
 	 * View existing consult
 	 *
@@ -710,33 +710,33 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		if ($this->_request->getPost ( 'submitButton' ) == 'Nieuw consult') {
 			$this->_redirect ( '/customer/newconsult/' );
 			return;
 		}
-		
+
 		$users = new Model_Table_Users ( );
 		$products = new Model_Table_Products ( );
 		$consults = new Model_Table_Consults ( );
-		
+
 		if ($this->_request->getParam ( 'id' )) {
 			$select = $consults->select ();
 			$select->where ( 'id=' . ( int ) $this->_request->getParam ( 'id' ) );
 			$select->where ( 'customer_id=' . $this->view->currentCustomer->userid );
 			$consult = $consults->fetchRow ( $select );
 		}
-		
+
 		if (! isset ( $consult ) || ! $consult instanceof Model_Table_Row_Consult)
 			$this->_redirect ( '/customer/newconsult/' );
-		
+
 		if ($this->_request->isPost ()) {
 			$userData = $this->_request->getPost ();
 			unset ( $userData ['submitButton'] );
-			
+
 			$filterChain = new Zend_Filter ( );
 			$filterChain->addFilter ( new Zend_Filter_StringTrim ( ) )->addFilter ( new Zend_Filter_StripTags ( ) );
-			
+
 			$userData ['product_id'] = ( int ) $userData ['product_id'];
 			$userData ['report'] = $filterChain->filter ( $userData ['report'] );
 			$userData ['plan'] = $filterChain->filter ( $userData ['plan'] );
@@ -745,16 +745,16 @@ class Default_CustomerController extends Controller_Default {
 				$userData ['employee_id'] = ( int ) $userData ['employee_id'];
 			if (isset ( $userData ['location_id'] ))
 				$userData ['location_id'] = ( int ) $userData ['location_id'];
-			
+
 			$consult->setFromArray ( $userData );
 			$consult->save ();
-			
+
 			if ($this->_request->getPost ( 'submitButton' ) == 'OK + Afspraak') {
 				$this->_redirect ( '/location/' );
 				return;
 			} else {
 				$this->view->growlMessage = 'Data saved successfully';
-				
+
 				$this->view->consult = $consult;
 				$this->view->consultTypes = $products->getConsults ();
 				$this->view->consults = $consults->getByCustomerId ( $this->view->currentCustomer->userid );
@@ -764,10 +764,10 @@ class Default_CustomerController extends Controller_Default {
 			$this->view->consultTypes = $products->getConsults ();
 			$this->view->consults = $consults->getByCustomerId ( $this->view->currentCustomer->userid );
 		}
-		
+
 		$this->view->headcontent = 'customer/consult/headcontent.phtml';
 	}
-	
+
 	/**
 	 * Delete selected consult
 	 *
@@ -778,11 +778,11 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$users = new Model_Table_Users ( );
 		$customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		$consults = new Model_Table_Consults ( );
-		
+
 		if ($this->_request->getPost ( 'id' )) {
 			$select = $consults->select ();
 			$select->where ( 'id=' . ( int ) $this->_request->getPost ( 'id' ) );
@@ -791,10 +791,10 @@ class Default_CustomerController extends Controller_Default {
 			if ($consult instanceof Model_Table_Row_Consult)
 				$consult->delete ();
 		}
-		
+
 		$this->_redirect ( '/customer/newconsult/' );
 	}
-	
+
 	/**
 	 * Create new/edit existing invoice
 	 * Invoice must not be burned
@@ -806,15 +806,15 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		if (! $this->_request->getParam ( 'id' ) && ! isset ( $defaultNamespace->currentLocationId )) {
 			$this->_redirect ( '/' );
 			return;
 		}
-		
+
 		//Display warning is day is not opened or already closed
 		$days = new Model_Table_Days ( );
-		
+
 		$day = $days->getById ( $this->view->currentDay->id );
 		if (! isset ( $this->view->admin )) {
 			if (! $day instanceof Model_Table_Row_Day || $day->date != date ( 'Y-m-d' )) {
@@ -827,7 +827,7 @@ class Default_CustomerController extends Controller_Default {
 				return;
 			}
 		}
-		
+
 		$invoices = new Model_Table_Invoices ( );
 		$locations = new Model_Table_Locations ( );
 		if ($this->_request->getParam ( 'id' )) {
@@ -838,17 +838,17 @@ class Default_CustomerController extends Controller_Default {
 			}
 		} else {
 			$invoice = $invoices->getCurrent ( $defaultNamespace->currentCustomerId, $locations->getByUserId ( $defaultNamespace->currentLocationId )->id );
-			
+
 			if (! $invoice instanceof Model_Table_Row_Invoice)
 				$invoice = $invoices->createRow ();
 		}
-		
+
 		if ($this->_request->isPost ()) {
 			$invoicelines = new Model_Table_Invoicelines ( );
 			$products = new Model_Table_Products ( );
-			
+
 			$filter = new Controller_Filter_PrepareFloat ( );
-			
+
 			if (! $invoice->id) {
 				if (! $day instanceof Model_Table_Row_Day) {
 					$this->_helper->viewRenderer->setNoRender ();
@@ -860,11 +860,11 @@ class Default_CustomerController extends Controller_Default {
 				$invoice->employee_id = $defaultNamespace->currentEmployeeId;
 				$invoice->day_id = $day->id;
 			}
-			
+
 			$invoice->total = ( float ) $filter->filter ( $this->_request->getPost ( 'total' ) );
 			$invoice->reduction = ( float ) $filter->filter ( $this->_request->getPost ( 'reduction' ) );
 			$invoice->save ();
-			
+
 			$lines = $invoice->findDependentRowset ( 'Model_Table_Invoicelines' );
 			foreach ( $lines as $line )
 				$line->delete ();
@@ -877,14 +877,14 @@ class Default_CustomerController extends Controller_Default {
 				$invoiceline->position = $i;
 				$invoiceline->number = ( float ) $filter->filter ( $newLine ['quantity'] );
 				$invoiceline->total_price = ( float ) $filter->filter ( $newLine ['total'] );
-				
+
 				$product = $products->getById ( ( int ) $newLine ['product'] );
 				$invoiceline->vat_percent = $product->getVatPercent ();
-				
+
 				$invoiceline->save ();
 				$i ++;
 			}
-			
+
 			switch ($this->_request->getPost ( 'paymentmethod' )) {
 				case 'cash' :
 					$this->_redirect ( '/customer/cash/id/' . $invoice->id . '/' );
@@ -902,13 +902,13 @@ class Default_CustomerController extends Controller_Default {
 					break;
 			}
 		}
-		
+
 		$this->view->headcontent = 'customer/invoice2/headcontent.phtml';
 		$this->view->invoice = $invoice;
 	}
-	
+
 	/**
-	 * New version of the invoice 
+	 * New version of the invoice
 	 *
 	 */
 	public function invoiceAction() {
@@ -917,15 +917,15 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		if (! $this->_request->getParam ( 'id' ) && ! isset ( $defaultNamespace->currentLocationId )) {
 			$this->_redirect ( '/' );
 			return;
 		}
-		
+
 		//Display warning is day is not opened or already closed
 		$days = new Model_Table_Days ( );
-		
+
 		$day = $days->getById ( $this->view->currentDay->id );
 		if (! isset ( $this->view->admin )) {
 			if (! $day instanceof Model_Table_Row_Day || $day->date != date ( 'Y-m-d' )) {
@@ -938,7 +938,7 @@ class Default_CustomerController extends Controller_Default {
 				return;
 			}
 		}
-		
+
 		$users = new Model_Table_Users ( );
 		$invoices = new Model_Table_Invoices ( );
 		if ($this->_request->getParam ( 'id' )) {
@@ -949,17 +949,17 @@ class Default_CustomerController extends Controller_Default {
 			}
 		} else {
 			$invoice = $invoices->getCurrent ( $defaultNamespace->currentCustomerId, $users->getById ( $defaultNamespace->currentLocationId )->userid );
-			
+
 			if (! $invoice instanceof Model_Table_Row_Invoice)
 				$invoice = $invoices->createRow ();
 		}
-		
+
 		if ($this->_request->isPost ()) {
 			$invoicelines = new Model_Table_Invoicelines ( );
 			$products = new Model_Table_Products ( );
-			
+
 			$filter = new Controller_Filter_PrepareFloat ( );
-			
+
 			if (! $invoice->id) {
 				if (! $day instanceof Model_Table_Row_Day) {
 					$this->_helper->viewRenderer->setNoRender ();
@@ -971,11 +971,11 @@ class Default_CustomerController extends Controller_Default {
 				$invoice->employee_id = $defaultNamespace->currentEmployeeId;
 				$invoice->day_id = $day->id;
 			}
-			
+
 			$invoice->total = ( float ) $filter->filter ( $this->_request->getPost ( 'total' ) );
 			$invoice->reduction = ( float ) $filter->filter ( $this->_request->getPost ( 'reduction' ) );
 			$invoice->save ();
-			
+
 			$lines = $invoice->findDependentRowset ( 'Model_Table_Invoicelines' );
 			foreach ( $lines as $line )
 				$line->delete ();
@@ -988,14 +988,14 @@ class Default_CustomerController extends Controller_Default {
 				$invoiceline->position = $i;
 				$invoiceline->number = ( float ) $filter->filter ( $newLine ['quantity'] );
 				$invoiceline->total_price = ( float ) $filter->filter ( $newLine ['total'] );
-				
+
 				$product = $products->getById ( ( int ) $newLine ['product'] );
 				$invoiceline->vat_percent = $product->getVatPercent ();
-				
+
 				$invoiceline->save ();
 				$i ++;
 			}
-			
+
 			switch ($this->_request->getPost ( 'paymentmethod' )) {
 				case 'cash' :
 					$this->_redirect ( '/customer/cash/id/' . $invoice->id . '/' );
@@ -1013,11 +1013,11 @@ class Default_CustomerController extends Controller_Default {
 					break;
 			}
 		}
-		
+
 		$this->view->headcontent = 'customer/invoice/headcontent.phtml';
 		$this->view->invoice = $invoice;
 	}
-	
+
 	/**
 	 * Finalize the invoice by cash algorithm
 	 *
@@ -1028,7 +1028,7 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$invoices = new Model_Table_Invoices ( );
 		if ($this->_request->getParam ( 'id' )) {
 			$invoice = $invoices->getById ( ( int ) $this->_request->getParam ( 'id' ) );
@@ -1040,7 +1040,7 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/invoices/' );
 			return;
 		}
-		
+
 		$exVat = 0;
 		$invoicelines = $invoice->getLines ();
 		foreach ( $invoicelines as $line ) {
@@ -1049,24 +1049,24 @@ class Default_CustomerController extends Controller_Default {
 		}
 		$koef2 = ($invoice->total - $invoice->reduction) / $invoice->total;
 		$exVatExReduction = round ( $exVat * $koef2, 2 );
-		
+
 		if ($this->_request->isPost ()) {
 			$invoice->status = 'payed';
 			$invoice->paymentmethod = 'kas';
 			$invoice->invoicenumber = '';
 			$invoice->save ();
-			
+
 			$this->_redirect ( '/customer/invoices/id/' . $invoice->id . '/' );
 			return;
 		}
-		
+
 		$invoiceDetails = new Model_Table_Invoicedetails ( );
 		$this->view->invoiceDetails = $invoiceDetails->fetchRow ();
 		$this->view->invoice = $invoice;
 		$this->view->invoicelines = $invoicelines;
 		$this->view->exVat = $exVatExReduction;
 	}
-	
+
 	/**
 	 * Finalize the invoice by pin algorithm
 	 *
@@ -1077,7 +1077,7 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$invoices = new Model_Table_Invoices ( );
 		if ($this->_request->getParam ( 'id' )) {
 			$invoice = $invoices->getById ( ( int ) $this->_request->getParam ( 'id' ) );
@@ -1089,7 +1089,7 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/invoices/' );
 			return;
 		}
-		
+
 		$exVat = 0;
 		$invoicelines = $invoice->getLines ();
 		foreach ( $invoicelines as $line ) {
@@ -1098,24 +1098,24 @@ class Default_CustomerController extends Controller_Default {
 		}
 		$koef2 = ($invoice->total - $invoice->reduction) / $invoice->total;
 		$exVatExReduction = round ( $exVat * $koef2, 2 );
-		
+
 		if ($this->_request->isPost ()) {
 			$invoice->status = 'payed';
 			$invoice->paymentmethod = 'pin';
 			$invoice->invoicenumber = '';
 			$invoice->save ();
-			
+
 			$this->_redirect ( '/customer/invoices/id/' . $invoice->id . '/' );
 			return;
 		}
-		
+
 		$invoiceDetails = new Model_Table_Invoicedetails ( );
 		$this->view->invoiceDetails = $invoiceDetails->fetchRow ();
 		$this->view->invoice = $invoice;
 		$this->view->invoicelines = $invoicelines;
 		$this->view->exVat = $exVatExReduction;
 	}
-	
+
 	/**
 	 * Finalize the invoice by credit algorithm
 	 *
@@ -1126,7 +1126,7 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$invoices = new Model_Table_Invoices ( );
 		if ($this->_request->getParam ( 'id' )) {
 			$invoice = $invoices->getById ( ( int ) $this->_request->getParam ( 'id' ) );
@@ -1138,7 +1138,7 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/invoices/' );
 			return;
 		}
-		
+
 		$exVat = 0;
 		$invoicelines = $invoice->getLines ();
 		foreach ( $invoicelines as $line ) {
@@ -1147,12 +1147,12 @@ class Default_CustomerController extends Controller_Default {
 		}
 		$koef2 = ($invoice->total - $invoice->reduction) / $invoice->total;
 		$exVatExReduction = round ( $exVat * $koef2, 2 );
-		
+
 		if ($this->_request->isPost ()) {
 			if (! $invoice->invoicenumber) {
 				$numbers = new Model_Table_Lastinvoicenumber ( );
 				$number = $numbers->find ( date ( 'Y' ) )->current ();
-				
+
 				if (! $number instanceof Model_Table_Row_Lastinvoicenumber) {
 					$number = $numbers->createRow ();
 					$number->year = date ( 'Y' );
@@ -1160,26 +1160,26 @@ class Default_CustomerController extends Controller_Default {
 				} else {
 					$number->number ++;
 				}
-				
+
 				$number->save ();
 				$invoice->invoicenumber = $number->getNumber ();
 			}
-			
+
 			$invoice->status = 'final';
 			$invoice->paymentmethod = 'bank';
 			$invoice->save ();
-			
+
 			$this->_redirect ( '/customer/invoices/id/' . $invoice->id . '/' );
 			return;
 		}
-		
+
 		$invoiceDetails = new Model_Table_Invoicedetails ( );
 		$this->view->invoiceDetails = $invoiceDetails->fetchRow ();
 		$this->view->invoice = $invoice;
 		$this->view->invoicelines = $invoicelines;
 		$this->view->exVat = $exVatExReduction;
 	}
-	
+
 	/**
 	 * Work with customer invoices
 	 *
@@ -1190,7 +1190,7 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$invoices = new Model_Table_Invoices ( );
 		$params = new stdClass ( );
 		$params->customerId = $defaultNamespace->currentCustomerId;
@@ -1198,11 +1198,11 @@ class Default_CustomerController extends Controller_Default {
 		$this->view->invoicesPayed = $invoices->getByRequest ( clone $params );
 		$params->statusesAllowed = array ('open', 'final' );
 		$this->view->invoicesNotPayed = $invoices->getByRequest ( clone $params );
-		
+
 		if ($this->_request->getParam ( 'id' ))
 			$this->view->invoice = $invoices->getById ( ( int ) $this->_request->getParam ( 'id' ) );
 	}
-	
+
 	/**
 	 * Delete invoice
 	 * Status must be 'open'
@@ -1214,7 +1214,7 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$invoices = new Model_Table_Invoices ( );
 		if ($this->_request->getParam ( 'id' )) {
 			$invoice = $invoices->getById ( ( int ) $this->_request->getParam ( 'id' ) );
@@ -1226,13 +1226,13 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/invoices/' );
 			return;
 		}
-		
+
 		if ($this->_request->isPost ())
 			$invoice->delete ();
-		
+
 		$this->_redirect ( '/customer/invoices/' );
 	}
-	
+
 	/**
 	 * Change invoice status to 'payed'
 	 * - admin permission
@@ -1246,7 +1246,7 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$invoices = new Model_Table_Invoices ( );
 		if ($this->_request->getParam ( 'id' )) {
 			$invoice = $invoices->getById ( ( int ) $this->_request->getParam ( 'id' ) );
@@ -1258,15 +1258,15 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/invoices/' );
 			return;
 		}
-		
+
 		if ($this->_request->isPost ()) {
 			$invoice->status = 'payed';
 			$invoice->save ();
 		}
-		
+
 		$this->_redirect ( '/customer/invoices/' );
 	}
-	
+
 	/**
 	 * Return the invoice in the pdf format
 	 *
@@ -1274,13 +1274,13 @@ class Default_CustomerController extends Controller_Default {
 	public function invoicepdfAction() {
 		set_time_limit ( 180 );
 		require_once ("dompdf_config.inc.php");
-		
+
 		$defaultNamespace = new Zend_Session_Namespace ( 'default' );
 		if (! isset ( $defaultNamespace->currentCustomerId )) {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		$invoices = new Model_Table_Invoices ( );
 		if ($this->_request->getParam ( 'id' )) {
 			$invoice = $invoices->getById ( ( int ) $this->_request->getParam ( 'id' ) );
@@ -1292,7 +1292,7 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/invoices/' );
 			return;
 		}
-		
+
 		$vat = new Model_Table_Vat ( );
 		$vatLow = $vat->getVatLow ();
 		$exVatLow = 0;
@@ -1308,7 +1308,7 @@ class Default_CustomerController extends Controller_Default {
 		$koef2 = ($invoice->total - $invoice->reduction) / $invoice->total;
 		$exVatExReductionLow = round ( $exVatLow * $koef2, 2 );
 		$exVatExReductionHigh = round ( $exVatHigh * $koef2, 2 );
-		
+
 		$invoiceDetails = new Model_Table_Invoicedetails ( );
 		$contentData = array ();
 		$contentData ['invoiceDetails'] = $invoiceDetails->fetchRow ();
@@ -1323,26 +1323,26 @@ class Default_CustomerController extends Controller_Default {
 		$contentData ['nextAppointment'] = $this->view->nextAppointment;
 		$contentData ['printFullDate'] = $this->view->printFullDate;
 		$this->view->contentData = $contentData;
-		
+
 		$this->_helper->layout->disableLayout ();
 		$this->_helper->viewRenderer->setNoRender ();
-		
+
 		$html = $this->view->render ( 'customer/invoicepdf.phtml' );
-		
+
 		$dompdf = new DOMPDF ( );
 		$dompdf->set_paper ( 'a4' );
 		$dompdf->load_html ( $html );
-		
+
 		$dompdf->render ();
 		$outputString = $dompdf->output ();
-		
+
 		$this->getResponse ()->setHeader ( 'Content-Type', 'application/pdf' );
 		$this->getResponse ()->setHeader ( 'Content-Length', strlen ( $outputString ) );
 		$this->getResponse ()->setHeader ( 'Content-Disposition', "inline; filename=invoice.pdf" );
-		
+
 		echo $outputString;
 	}
-	
+
 	/**
 	 * Customer can be deleted if he has no invoices only
 	 *
@@ -1359,23 +1359,23 @@ class Default_CustomerController extends Controller_Default {
 			$this->_redirect ( '/customer/' );
 			return;
 		}
-		
+
 		if ($this->_request->isPost ()) {
 			$defaultNamespace = new Zend_Session_Namespace ( 'default' );
 			if ($defaultNamespace->currentCustomerId == $customer->userid)
 				unset ( $defaultNamespace->currentCustomerId );
-			
+
 			$customer->delete ();
 		}
-		
+
 		$this->_redirect ( '/customer/' );
 	}
 
 	public function exportAction() {
 		$customers = new Model_Table_Users();
-		
+
 		$prepareDate = new Controller_Filter_PrepareDate();
-		
+
 		set_time_limit ( 180 );
 
 		$this->_helper->layout->disableLayout ();
@@ -1448,7 +1448,7 @@ class Default_CustomerController extends Controller_Default {
 				$row->mobiel,
 				( $row->reg_date ? date( 'd-m-Y', $row->reg_date ) : '' )
 			);
-					
+
 			fputcsv( $buffer, $data, ';', '"', '\\' );
 		}
 
@@ -1466,7 +1466,7 @@ class Default_CustomerController extends Controller_Default {
 	///////////////////////
 	// Private functions //
 	///////////////////////
-	
+
 
 	/**
 	 * Generate random customer password
@@ -1476,16 +1476,16 @@ class Default_CustomerController extends Controller_Default {
 	private function generatePassword() {
 		$chars = 'abcdefghijkmnopqrstuvwxyz0123456789';
 		$password = NULL;
-		
+
 		for($i = 0; $i < 6; $i ++) {
 			$number = rand ( 0, 34 );
 			$char = substr ( $chars, $number, 1 );
 			$password .= $char;
 		}
-		
+
 		return $password;
 	}
-	
+
 	/**
 	 * Collect all measurements data for current customer in the xml format
 	 *
@@ -1496,25 +1496,25 @@ class Default_CustomerController extends Controller_Default {
 		$measurements = new Model_Table_Measurements ( );
 		$points = $measurements->getByUserId ( $userId, 'date' )->toArray ();
 		$lastPoint = count ( $points ) - 1;
-		
+
 		$weight = array ();
 		$bmi = array ();
 		$fatDamp = array ();
-		
+
 		foreach ( $points as $point ) {
 			$weight [] = $point ['weight'];
 			$bmi [] = $point ['bmi'];
 			$fatDamp [] = $point ['fat'];
 			$fatDamp [] = $point ['damp'];
 		}
-		
+
 		@$lowestWeight = min ( $weight );
 		$minWeight = $lowestWeight - fmod ( $lowestWeight, 10 );
 		@$lowestBmi = min ( $bmi );
 		$minBmi = $lowestBmi - fmod ( $lowestBmi, 10 );
 		@$lowestFatDamp = min ( $fatDamp );
 		$minFatDamp = $lowestFatDamp - fmod ( $lowestFatDamp, 10 );
-		
+
 		if (count ( $points ) > 1) {
 			$dateFormat = Zend_Registry::getInstance ()->get ( 'config' )->application->dateFormat;
 			$startDate = strftime ( $dateFormat, strtotime ( $points [0] ['date'] ) );
@@ -1532,10 +1532,10 @@ class Default_CustomerController extends Controller_Default {
 			$result->bmi = str_replace ( '<?xml version="1.0" encoding="UTF-8"?>', '', $bmi );
 			$result->fatdamp = str_replace ( '<?xml version="1.0" encoding="UTF-8"?>', '', $fatDamp );
 		}
-		
+
 		return $result;
 	}
-	
+
 	/**
 	 * Return xml document with graphics params
 	 *
@@ -1551,7 +1551,7 @@ class Default_CustomerController extends Controller_Default {
 	 */
 	private function createXml($tipValue, $yminValue, $yintervalValue, $xminValue, $xmaxValue, $xintervalValue, $graphicLines, $points) {
 		$dateFormat = Zend_Registry::getInstance ()->get ( 'config' )->application->dateFormat;
-		
+
 		$dom = new DOMDocument ( '1.0', 'UTF-8' );
 		$dom->formatOutput = true;
 		$root = $dom->createElement ( 'graphic', '' );
@@ -1583,26 +1583,26 @@ class Default_CustomerController extends Controller_Default {
 		$data = $dom->createElement ( 'data' );
 		$root->appendChild ( $data );
 		$colors = array (1 => '#A2BBDE', 2 => '#999999' );
-		
+
 		foreach ( $graphicLines as $lineData ) {
 			$line = $dom->createElement ( 'line', '' );
 			$line->setAttribute ( 'key', 'line' . $lineData ['linenumber'] );
 			$line->setAttribute ( 'color', $colors [$lineData ['linenumber']] );
 			$lines->appendChild ( $line );
 		}
-		
+
 		foreach ( $points as $point ) {
 			$item = $dom->createElement ( 'item' );
 			$data->appendChild ( $item );
 			$date = $dom->createElement ( 'date', strftime ( $dateFormat, strtotime ( $point ['date'] ) ) );
 			$item->appendChild ( $date );
-			
+
 			foreach ( $graphicLines as $lineData ) {
 				$line = $dom->createElement ( 'line' . $lineData ['linenumber'], $point [$lineData ['key']] );
 				$item->appendChild ( $line );
 			}
 		}
-		
+
 		return $dom->saveXML ();
 	}
 

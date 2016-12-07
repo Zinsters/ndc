@@ -4,6 +4,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
+<link rel="stylesheet" type="text/css" media="screen"
+	href="<?=$this->baseUrl?>/css/jquery-ui/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+	href="<?=$this->baseUrl?>/css/jqGrid/ui.jqgrid.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+	href="<?=$this->baseUrl?>/css/jqGrowl/jquery.jgrowl.css" />
 <link rel="stylesheet" href="<?=$this->baseUrl?>/css/style.css"
 	type="text/css" />
 
@@ -12,16 +18,8 @@
 <script type="text/javascript"
 	src="<?=$this->baseUrl?>/scripts/jquery-ui.min.js"></script>
 
-<script type="text/javascript"
-	src="<?=$this->baseUrl?>/scripts/i18n/grid.locale-nl.js"></script>
-<script type="text/javascript"
-	src="<?=$this->baseUrl?>/scripts/jquery.jqGrid.min.js"></script>
-<link rel="stylesheet" type="text/css" media="screen"
-	href="<?=$this->baseUrl?>/css/jquery-ui/jquery-ui.css" />
-<link rel="stylesheet" type="text/css" media="screen"
-	href="<?=$this->baseUrl?>/css/jqGrid/ui.jqgrid.css" />
-
 <?=$this->headcontent ? $this->partial ( $this->headcontent, array ('baseUrl' => $this->baseUrl ) ) : ''?>
+<?php echo $this->headScript() ?>
 
 <title>NewDiet Care</title>
 </head>
@@ -253,7 +251,7 @@ if (isset ( $this->locations )) {
 	<?php
 	} else {
 		?>
-	<li><a href="<?=$this->baseUrl?>/index/login/?link=">Extra</a></li>	
+	<li><a href="<?=$this->baseUrl?>/index/login/?link=">Extra</a></li>
 	<?php
 	}
 	?>

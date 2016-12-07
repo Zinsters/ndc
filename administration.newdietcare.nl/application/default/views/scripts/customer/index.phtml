@@ -1,6 +1,8 @@
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/i18n/grid.locale-nl.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jquery.jqGrid.min.js'); ?>
 <script type="text/javascript">
 	var stopSelect=false;
-	
+
 	jQuery(document).ready(function(){
 	jQuery("#list").jqGrid({
 		url:'<?=$this->baseUrl?>/json/customerssearch/',
@@ -8,7 +10,7 @@
 		colModel:[
 		  		{label:'Achternaam', name:'achternaam', index:'achternaam', width:160},
 		  		{label:'Voornaam', name:'voornaam', index:'voornaam', width:140},
-		  		{label:'Tussenvoegsel', name:'tussenvoegsel', index:'tussenvoegsel', width:185},		  		
+		  		{label:'Tussenvoegsel', name:'tussenvoegsel', index:'tussenvoegsel', width:185},
 		  		{label:'Geboortedatum', name:'geboortedatum', index:'geboortedatum', width:195},
 		  		{label:'Adres', name:'thuisadres', index:'thuisadres', width:100},
 		  		{label:'Woonplaats', name:'thuisplaats', index:'thuisplaats', width:160},
@@ -21,7 +23,7 @@
 		height: "auto",
 		rowNum: 10,
 		pager: '#pager',
-		mtype: "POST",		
+		mtype: "POST",
 		sortname: 'id',
 		sortorder: "asc",
 		multiselect: false,
@@ -30,19 +32,19 @@
 				if(ids != null)
 					location.href = '<?=$this->baseUrl?>/customer/view/id/'+ids+'/';
 			} else
-				stopSelect=false;				
+				stopSelect=false;
 		}
 	});
 	});
-	
+
 	var timeoutHnd;
-	 	
+
 	function doSearch(ev){
 		if(timeoutHnd)
 			clearTimeout(timeoutHnd);
 		timeoutHnd = setTimeout(gridReload,500);
 	}
-	
+
 	function gridReload(){
 		var voornaam = jQuery("#voornaam").val();
 		var achternaam = jQuery("#achternaam").val();
@@ -54,7 +56,7 @@
 			url:"<?=$this->baseUrl?>/json/customerssearch/?voornaam="+voornaam+"&achternaam="+achternaam+"&geboortedatum="+geboortedatum+"&thuisadres="+thuisadres+"&thuisplaats="+thuisplaats+"&thuispostcode="+thuispostcode,page:1
 		}).trigger("reloadGrid");
 	}
-	
+
 	$(function(){
 		$.datepicker.setDefaults({
     		dateFormat: 'dd-mm-yy',

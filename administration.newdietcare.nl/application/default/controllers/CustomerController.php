@@ -21,7 +21,6 @@ class Default_CustomerController extends Controller_Default {
 	 *
 	 */
 	public function indexAction() {
-		$this->view->headcontent = 'customer/index/headcontent.phtml';
 	}
 
 	/**
@@ -66,12 +65,15 @@ class Default_CustomerController extends Controller_Default {
 					'thuisplaats' => $userData[  'city' ],
 					'telefoon' => $userData[  'phone' ],
 					'mobiel' => $userData[  'mobile_phone' ],
+                    'notes' => $userData[  'notes' ],
 					'active' => 1,
 					'group' => 19,
 					'nieuwsbrief' => 1
 				);
 				$user = $users->createRow ( $do );
 				$user->save ();
+                
+                
 
 				$defaultNamespace = new Zend_Session_Namespace ( 'default' );
 				$defaultNamespace->currentCustomerId = $user->userid;
@@ -226,8 +228,6 @@ class Default_CustomerController extends Controller_Default {
 		} else {
 			$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		}
-
-		$this->view->headcontent = 'customer/contact/headcontent.phtml';
 	}
 
 	/**
@@ -297,8 +297,6 @@ class Default_CustomerController extends Controller_Default {
 		} else {
 			$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		}
-
-		$this->view->headcontent = 'customer/customer/headcontent.phtml';
 	}
 
 	/**
@@ -348,8 +346,6 @@ class Default_CustomerController extends Controller_Default {
 		} else {
 			$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		}
-
-		$this->view->headcontent = 'customer/intake/headcontent.phtml';
 	}
 
 	/**
@@ -402,8 +398,6 @@ class Default_CustomerController extends Controller_Default {
 		} else {
 			$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		}
-
-		$this->view->headcontent = 'customer/diet/headcontent.phtml';
 	}
 
 	/**

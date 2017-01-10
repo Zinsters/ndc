@@ -1,9 +1,12 @@
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jquery.jgrowl.min.js'); ?>
 <script type="text/javascript">
-	Date.format = 'dd-mm-yyyy';
-	$(function(){
-		$('#geboortedatum').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
-		$('#geboortedatum').dpSetOffset(20, 0);
-	});
+    $(function(){
+        $.datepicker.setDefaults({
+            dateFormat: 'dd-mm-yy',
+            yearRange: "-100:+0",
+        });
+        $('#geboortedatum').datepicker({changeMonth: true, changeYear: true});
+    });
 </script>
 
 <?=$this->partial ( 'customer/partial/menu.phtml', array ('baseUrl' => $this->baseUrl, 'actionName' => $this->actionName ) )?>

@@ -61,7 +61,7 @@ class Controller_Validate_Uniq extends Zend_Validate_Abstract {
 
 		$tableName = $this->tableName;
 		$table = new $tableName ( );
-		$where = array ($this->fieldName . ' = ?' => $value );
+		$where = array ($this->fieldName . ' = ?' => intval($value) );
 		$row = $table->fetchRow ( $where );
 		if ($row && $row->userid != $this->id) {
 			$this->_error ();

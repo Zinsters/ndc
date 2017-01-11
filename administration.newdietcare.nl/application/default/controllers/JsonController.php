@@ -24,7 +24,7 @@ class Default_JsonController extends Controller_Json {
 		$filter1 = new Controller_Filter_PrintFloat ( );
 		
 		$users = new Model_Table_Users ( );
-		$customer = $users->getByUserId ( ( int ) $this->_request->getParam ( 'id' ) );
+		$customer = $users->getById ( ( int ) $this->_request->getParam ( 'id' ) );
 		if ($customer instanceof Model_Table_Row_User) {
 			$currentWeight = ( float ) $filter->filter ( $this->_request->getParam ( 'weight' ) );
 			if ($currentWeight > 0 && $customer->getRealStartWeight () > 0) {

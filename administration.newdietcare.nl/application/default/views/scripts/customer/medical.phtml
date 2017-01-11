@@ -1,3 +1,4 @@
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jquery.jgrowl.min.js'); ?>
 <?=$this->partial ( 'customer/partial/menu.phtml', array ('baseUrl' => $this->baseUrl, 'actionName' => $this->actionName ) )?>
 
 <h2>Medisch - <?=htmlentities ( $this->currentCustomer->getName () )?></h2>

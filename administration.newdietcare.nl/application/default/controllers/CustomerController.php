@@ -441,8 +441,6 @@ class Default_CustomerController extends Controller_Default {
 		} else {
 			$this->view->customer = $users->getById ( $defaultNamespace->currentCustomerId );
 		}
-
-		$this->view->headcontent = 'customer/medical/headcontent.phtml';
 	}
 
 	/**
@@ -470,7 +468,7 @@ class Default_CustomerController extends Controller_Default {
 		if ($this->_request->isPost ()) {
 			$userData = $this->_request->getPost ();
 
-			$filters = array ('date' => array (new Controller_Filter_PrepareDate ( ) ), 'weight' => array (new Controller_Filter_PrepareFloat ( ) ), 'spiermassa' => array (new Controller_Filter_PrepareFloat ( ) ), 'fat' => array (new Controller_Filter_PrepareFloat ( ) ), 'fat_p' => array (new Controller_Filter_PrepareFloat ( ) ), 'damp' => array (new Controller_Filter_PrepareFloat ( ) ), 'bmi' => array (new Controller_Filter_PrepareFloat ( ) ), 'start' => array ('StringTrim', 'StripTags' ) );
+            $filters = array ('date' => array (new Controller_Filter_PrepareDate ( ) ), 'weight' => array (new Controller_Filter_PrepareFloat ( ) ), 'spiermassa' => array (new Controller_Filter_PrepareFloat ( ) ), 'fat' => array (new Controller_Filter_PrepareFloat ( ) ), 'fat_p' => array (new Controller_Filter_PrepareFloat ( ) ), 'damp' => array (new Controller_Filter_PrepareFloat ( ) ), 'bmi' => array (new Controller_Filter_PrepareFloat ( ) ), 'start' =>  array (new Controller_Filter_PrepareFloat ( ) ) );
 			$validators = array ('date' => array ('Date' ), 'weight' => array ('notEmpty', 'Float' ), 'spiermassa' => array ('notEmpty', 'Float' ), 'fat' => array ('notEmpty', 'Float' ), 'fat_p' => array ('notEmpty', 'Float', new Zend_Validate_Between ( 0, 100 ) ), 'damp' => array ('notEmpty', 'Float' ), 'bmi' => array ('notEmpty', 'Float' ), 'start' => array ('Int', 'allowEmpty' => true ) );
 
 			$input = new Zend_Filter_Input ( $filters, $validators, $userData );
@@ -516,7 +514,6 @@ class Default_CustomerController extends Controller_Default {
 			$this->view->weightDifference = $customer->getRealStartWeight () - $this->view->measurement->weight;
 
 		$this->view->xml = $this->measurementsToXml ( $customer->userid );
-		$this->view->headcontent = 'customer/measurements/headcontent.phtml';
 	}
 
 	/**
@@ -605,7 +602,6 @@ class Default_CustomerController extends Controller_Default {
 			$this->view->weightDifference = $customer->getRealStartWeight () - $this->view->measurement->weight;
 
 		$this->view->xml = $this->measurementsToXml ( $customer->userid );
-		$this->view->headcontent = 'customer/measurements/headcontent.phtml';
 	}
 
 	/**

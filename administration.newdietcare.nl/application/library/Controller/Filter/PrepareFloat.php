@@ -16,7 +16,7 @@ class Controller_Filter_PrepareFloat implements Zend_Filter_Interface {
 	 * @return string
 	 */
 	public function filter($value) {
-		return str_replace ( ',', '.', $value );
+        return $value ? str_replace ( ',', '.', $value ) : 0;
 	}
 
 }

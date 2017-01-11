@@ -111,7 +111,7 @@ if ($this->currentCustomer->getRealStartWeight () > 0) {
 		<td><?=htmlentities ( $this->printFloat->filter ( $measurement->spiermassa ) )?></td>
 		<td><?=htmlentities ( $this->printFloat->filter ( $measurement->fat_p ) )?></td>
 		<td><?=htmlentities ( $this->printFloat->filter ( $measurement->damp ) )?></td>
-		<td><?=htmlentities ( $measurement->bmi )?></td>
+        <td><?=htmlentities ( $this->printFloat->filter ( $measurement->bmi ) )?></td>
 		<td><?=htmlentities ( $measurement->start )?></td>
 	</tr>
 	<?php

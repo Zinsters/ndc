@@ -1,7 +1,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
     $('#weight').change(function(){
-		$.getJSON('<?=$this->baseUrl?>/json/weightdifference/', {id: "<?=$this->currentCustomer->userid?>", weight: $("#weight").attr("value")}, onAjaxSuccess);
+		$.getJSON('<?=$this->baseUrl?>/json/weightdifference/', {id: "<?=$this->currentCustomer->userid?>", weight: $("#weight").val()}, onAjaxSuccess);
 	})
 
 	function onAjaxSuccess(obj)
@@ -10,10 +10,12 @@ $(document).ready(function(){
 	}
 })
 
-Date.format = 'dd-mm-yyyy';
 $(function(){
-	$('#date').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
-	$('#date').dpSetOffset(-145, 0);
+    $.datepicker.setDefaults({
+        dateFormat: 'dd-mm-yy',
+        yearRange: "-100:+0",
+    });
+    $('#date').datepicker({changeMonth: true, changeYear: true});
 });
 </script>
 
@@ -143,7 +145,7 @@ Totaal gewichtstoename: <?=$this->printFloat->filter ( $this->currentCustomer->g
 		<td><input type="text" name="damp" class="number"
 			value="<?=isset ( $this->measurement->damp ) ? htmlentities ( $this->printFloat->filter ( $this->measurement->damp ) ) : ''?>" /></td>
 		<td><input type="text" name="bmi" class="number"
-			value="<?=isset ( $this->measurement->bmi ) ? htmlentities ( $this->measurement->bmi ) : ''?>" /></td>
+                   value="<?=isset ( $this->measurement->bmi ) ? htmlentities ( $this->printFloat->filter ( $this->measurement->bmi ) ) : ''?>" /></td>
 		<td><input type="text" name="start" class="number"
 			value="<?=isset ( $this->measurement->start ) ? htmlentities ( $this->measurement->start ) : ''?>" /></td>
 		<td><input type="submit" value="Voeg toe" /></td>
@@ -182,7 +184,7 @@ Totaal gewichtstoename: <?=$this->printFloat->filter ( $this->currentCustomer->g
 		<td
 			onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')"><?=htmlentities ( $this->printFloat->filter ( $measurement->damp ) )?></td>
 		<td
-			onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')"><?=htmlentities ( $measurement->bmi )?></td>
+            onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')"><?=htmlentities ( $this->printFloat->filter ( $measurement->bmi ) )?></td>
 		<td
 			onClick="location.replace('<?=$this->baseUrl?>/customer/measurementedit/id/<?=$measurement->id?>/')"><?=htmlentities ( $measurement->start )?></td>
 		<td class="nopadding">

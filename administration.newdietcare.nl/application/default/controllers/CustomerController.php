@@ -686,8 +686,6 @@ class Default_CustomerController extends Controller_Default {
 				$this->view->currentLocation = $users->getById ( $defaultNamespace->currentLocationId );
 			}
 		}
-
-		$this->view->headcontent = 'customer/newconsult/headcontent.phtml';
 	}
 
 	/**
@@ -754,8 +752,6 @@ class Default_CustomerController extends Controller_Default {
 			$this->view->consultTypes = $products->getConsults ();
 			$this->view->consults = $consults->getByCustomerId ( $this->view->currentCustomer->userid );
 		}
-
-		$this->view->headcontent = 'customer/consult/headcontent.phtml';
 	}
 
 	/**

@@ -261,7 +261,7 @@ class Default_CustomerController extends Controller_Default {
 			$validName->addValidator ( new Zend_Validate_NotEmpty ( ), true )->addValidator ( new Zend_Validate_Alpha ( true ) );
 
 			$filters = array ( 'password' => array ('StringTrim', 'StripTags' ), 'username' => array ('StringTrim', 'StripTags' ), 'discount_percent' => array (new Controller_Filter_PrepareFloat ( ) ), 'relatives' => array ('StringTrim', 'StripTags' ) );
-			$validators = array ( 'password' => array ( 'allowEmpty' => true ), 'username' => 'NotEmpty', 'discount_percent' => array ('Float', new Zend_Validate_Between ( 0, 100 ), 'allowEmpty' => true ), 'relatives' => array ('allowEmpty' => true ) );
+            $validators = array ( 'password' => array ( 'allowEmpty' => true ), 'username' => 'NotEmpty', 'discount_percent' => array (new Zend_Validate_Float(array('locale' => 'us') ), new Zend_Validate_Between ( 0, 100 ), 'allowEmpty' => true ), 'relatives' => array ('allowEmpty' => true ) );
 
 			$input = new Zend_Filter_Input ( $filters, $validators, $userData );
 			foreach ( $userData as $key => $value )
@@ -368,7 +368,7 @@ class Default_CustomerController extends Controller_Default {
 			$customer = $users->getById ( $defaultNamespace->currentCustomerId );
 
 			$filters = array ('geboortedatum' => array (new Controller_Filter_PrepareDate ( ) ), 'length' => array (new Controller_Filter_PrepareFloat ( ) ), 'weight' => array (new Controller_Filter_PrepareFloat ( ) ), 'weight_ideal' => array (new Controller_Filter_PrepareFloat ( ) ), 'why_gained_weight' => array ('StringTrim', 'StripTags' ), 'other_diets' => array ('StringTrim', 'StripTags' ), 'dietgoal' => array ('StringTrim', 'StripTags' ), 'notes' => array ('StringTrim', 'StripTags' ) );
-			$validators = array ('geboortedatum' => array ('Date', 'allowEmpty' => true ), 'length' => array ('Float', 'allowEmpty' => true ), 'weight' => array ('Float', 'allowEmpty' => true ), 'weight_ideal' => array ('Float', 'allowEmpty' => true ), 'why_gained_weight' => array ('allowEmpty' => true ), 'other_diets' => array ('allowEmpty' => true ), 'dietgoal' => array ('allowEmpty' => true ), 'notes' => array ('allowEmpty' => true ) );
+            $validators = array ('geboortedatum' => array ('Date', 'allowEmpty' => true ), 'length' => array (new Zend_Validate_Float(array('locale' => 'us') ), 'allowEmpty' => true ), 'weight' => array (new Zend_Validate_Float(array('locale' => 'us') ), 'allowEmpty' => true ), 'weight_ideal' => array (new Zend_Validate_Float(array('locale' => 'us') ), 'allowEmpty' => true ), 'why_gained_weight' => array ('allowEmpty' => true ), 'other_diets' => array ('allowEmpty' => true ), 'dietgoal' => array ('allowEmpty' => true ), 'notes' => array ('allowEmpty' => true ) );
 
 			$input = new Zend_Filter_Input ( $filters, $validators, $userData );
 			foreach ( $userData as $key => $value )
@@ -469,7 +469,7 @@ class Default_CustomerController extends Controller_Default {
 			$userData = $this->_request->getPost ();
 
             $filters = array ('date' => array (new Controller_Filter_PrepareDate ( ) ), 'weight' => array (new Controller_Filter_PrepareFloat ( ) ), 'spiermassa' => array (new Controller_Filter_PrepareFloat ( ) ), 'fat' => array (new Controller_Filter_PrepareFloat ( ) ), 'fat_p' => array (new Controller_Filter_PrepareFloat ( ) ), 'damp' => array (new Controller_Filter_PrepareFloat ( ) ), 'bmi' => array (new Controller_Filter_PrepareFloat ( ) ), 'start' =>  array (new Controller_Filter_PrepareFloat ( ) ) );
-			$validators = array ('date' => array ('Date' ), 'weight' => array ('notEmpty', 'Float' ), 'spiermassa' => array ('notEmpty', 'Float' ), 'fat' => array ('notEmpty', 'Float' ), 'fat_p' => array ('notEmpty', 'Float', new Zend_Validate_Between ( 0, 100 ) ), 'damp' => array ('notEmpty', 'Float' ), 'bmi' => array ('notEmpty', 'Float' ), 'start' => array ('Int', 'allowEmpty' => true ) );
+            $validators = array ('date' => array ('Date' ), 'weight' => array ('notEmpty', new Zend_Validate_Float(array('locale' => 'us') ) ), 'spiermassa' => array ('notEmpty', new Zend_Validate_Float(array('locale' => 'us') ) ), 'fat' => array ('notEmpty', new Zend_Validate_Float(array('locale' => 'us') ) ), 'fat_p' => array ('notEmpty', new Zend_Validate_Float(array('locale' => 'us') ), new Zend_Validate_Between ( 0, 100 ) ), 'damp' => array ('notEmpty', new Zend_Validate_Float(array('locale' => 'us') ) ), 'bmi' => array ('notEmpty', new Zend_Validate_Float(array('locale' => 'us') ) ), 'start' => array ('Int', 'allowEmpty' => true ) );
 
 			$input = new Zend_Filter_Input ( $filters, $validators, $userData );
 			foreach ( $userData as $key => $value )
@@ -555,7 +555,7 @@ class Default_CustomerController extends Controller_Default {
 			$userData = $this->_request->getPost ();
 
 			$filters = array ('date' => array (new Controller_Filter_PrepareDate ( ) ), 'weight' => array (new Controller_Filter_PrepareFloat ( ) ), 'spiermassa' => array (new Controller_Filter_PrepareFloat ( ) ), 'fat' => array (new Controller_Filter_PrepareFloat ( ) ), 'fat_p' => array (new Controller_Filter_PrepareFloat ( ) ), 'damp' => array (new Controller_Filter_PrepareFloat ( ) ), 'bmi' => array (new Controller_Filter_PrepareFloat ( ) ), 'start' => array ('StringTrim', 'StripTags' ) );
-			$validators = array ('date' => array ('Date' ), 'weight' => array ('notEmpty', 'Float' ), 'spiermassa' => array ('notEmpty', 'Float' ), 'fat' => array ('notEmpty', 'Float' ), 'fat_p' => array ('notEmpty', 'Float', new Zend_Validate_Between ( 0, 100 ) ), 'damp' => array ('notEmpty', 'Float' ), 'bmi' => array ('notEmpty', 'Float' ), 'start' => array ('Int', 'allowEmpty' => true ) );
+            $validators = array ('date' => array ('Date' ), 'weight' => array ('notEmpty', new Zend_Validate_Float(array('locale' => 'us') ) ), 'spiermassa' => array ('notEmpty', new Zend_Validate_Float(array('locale' => 'us') ) ), 'fat' => array ('notEmpty', new Zend_Validate_Float(array('locale' => 'us') ) ), 'fat_p' => array ('notEmpty', new Zend_Validate_Float(array('locale' => 'us') ), new Zend_Validate_Between ( 0, 100 ) ), 'damp' => array ('notEmpty', new Zend_Validate_Float(array('locale' => 'us') ) ), 'bmi' => array ('notEmpty', new Zend_Validate_Float(array('locale' => 'us') ) ), 'start' => array ('Int', 'allowEmpty' => true ) );
 
 			$input = new Zend_Filter_Input ( $filters, $validators, $userData );
 			foreach ( $userData as $key => $value )

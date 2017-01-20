@@ -1,3 +1,6 @@
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jquery.simplemodal.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jquery.colorpicker.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/agenda.js'); ?>
 <script type="text/javascript">
 	jQuery(document).ready(function(){
 		jQuery("#agenda").agenda({
@@ -11,31 +14,23 @@
 		});
 	});
 
-	Date.format = 'dd-mm-yyyy';
-	$(function(){
-		$('#selectDate').datePicker({startDate:'01/01/1900', createButton:true});
-		$('#selectDate').dpSetOffset(15, 0);
-		$('#selectDate').bind(
-				'dateSelected',
-				function(e, selectedDate, $td) {
-					d=selectedDate.getDate();
-					d = d.toString();
-					if (d.length < 2)
-						d = '0' + d;
-
-					m=selectedDate.getMonth();
-					m++;
-					m = m.toString();
-					if (m.length < 2)
-						m = '0' + m;
-					
-					y=selectedDate.getFullYear();
-					y = y.toString();
-					
-					location.replace("<?=$this->baseUrl?>/location/index/id/<?=$this->currentLocation->userid?>/date/"+y+'-'+m+'-'+d+"/");					
-				}
-			);
-	});
+    $(function(){
+        $.datepicker.setDefaults({
+            dateFormat: 'yy-mm-dd',
+            yearRange: "-100:+0",
+        });
+        $('#dp').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function(selectedDate) {
+                location.replace("<?=$this->baseUrl?>/location/index/id/<?=$this->currentLocation->userid?>/date/"+selectedDate+"/");
+            }
+        });
+        $("#selectDate").click(function() {
+            $("#dp").datepicker("show");
+            return false;
+        });
+    });
 
 	function appointmentOtherClick(locationId) {
 		location.replace("<?=$this->baseUrl?>/location/index/id/"+locationId+"/date/<?=$this->date?>/");		
@@ -71,7 +66,7 @@ week
 dag
 <a
 	href="<?=$this->baseUrl?>/location/index/id/<?=$this->currentLocation->userid?>/date/<?=$this->dayAdd?>/">>></a>
-<span id="selectDate"></span>
+<a id="selectDate" href="#">kies datum</a><input type="hidden" id="dp" />
 |
 <a
 	href="<?=$this->baseUrl?>/location/index/id/<?=$this->currentLocation->userid?>/">vandaag</a>

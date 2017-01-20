@@ -69,8 +69,6 @@ class Default_LocationController extends Controller_Default {
 		$this->view->dayAdd = date ( 'Y-m-d', mktime ( 0, 0, 0, $dateParts [1], $dateParts [2] + 1, $dateParts [0] ) );
 		$this->view->dateToPrint->set ( $timestamp, Zend_Date::TIMESTAMP );
 		$this->view->locationsToShow = $users->getLocations ();
-		
-		$this->view->headcontent = 'location/index/headcontent.phtml';
 	}
 	
 	/**

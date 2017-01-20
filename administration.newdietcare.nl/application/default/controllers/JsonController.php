@@ -391,7 +391,7 @@ class Default_JsonController extends Controller_Json {
 				$realEnd = date ( "H:i", $time );
 				
 				$result = '
-					<form>
+					<form onclick="return false">
 					<div class="appointment_customer"><a href="' . $this->_request->getBaseUrl () . '/customer/view/id/' . $customer->userid . '/">' . ($customer instanceof Model_Table_Row_User ? $customer->getName () : '') . '</a></div>
 					<div class="appointment_location">' . ($location instanceof Model_Table_Row_user ? $location->bedrijfsnaam : '') . '</div>
 					<div class="appointment_employee">' . ($employee instanceof Model_Table_Row_Employee ? $employee->name : '') . '</div>

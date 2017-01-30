@@ -52,7 +52,7 @@ class Model_Table_Invoices extends Model_Table_Abstract {
 	public function getByRequest($params) {
 		$select = $this->select ();
 		$select->setIntegrityCheck ( false );
-		$select->from ( array ('i' => 'ndc_invoices' ), array ('id' => 'i.id', 'date' => 'date_format(i.created,"%d-%m-%Y")', 'time' => 'date_format(i.created,"%H:%i")', 'total' => 'total', 'reduction' => 'reduction', 'totalwithoutreduction' => '(i.total-i.reduction)', 'status' => 'status', 'paymentmethod' => 'paymentmethod', 'burned' => 'burned' ) );
+        $select->from ( array ('i' => 'ndc_invoices' ), array ('id' => 'i.id', 'created' => 'i.created', 'date' => 'date_format(i.created,"%d-%m-%Y")', 'time' => 'date_format(i.created,"%H:%i")', 'total' => 'total', 'reduction' => 'reduction', 'totalwithoutreduction' => '(i.total-i.reduction)', 'status' => 'status', 'paymentmethod' => 'paymentmethod', 'burned' => 'burned' ) );
 		$select->join ( array ('c' => 'users_data' ), 'c.userid=i.customer_id', array ('customer' => 'CONCAT(IF(c.geslacht = "man","Dhr.",IF(c.geslacht = "vrouw","Mw.","")), " ", IF(ISNULL(c.initials),"",c.initials), " ", IF(ISNULL(c.tussenvoegsel),"",c.tussenvoegsel), " ", c.achternaam)' ) );
 		$select->join ( array ('e' => 'ndc_employees' ), 'e.id=i.employee_id', array ('employee' => 'e.name' ) );
 		$select->join ( array ('l' => 'users_data' ), 'l.userid=i.location_id', array ('location' => 'l.bedrijfsnaam' ) );

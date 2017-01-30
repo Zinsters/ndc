@@ -20,59 +20,61 @@
 	$cash = 0;
 	$pin = 0;
 	$inv = 0;
-	foreach ( $this->invoicesNotPayed as $invoice ) {
-		if ($invoice->paymentmethod == 'kas')
-			$cash += $invoice->total - $invoice->reduction; elseif ($invoice->paymentmethod == 'pin')
-			$pin += $invoice->total - $invoice->reduction; else
-			$inv += $invoice->total - $invoice->reduction;
-		?>
-	<tr class="<?=($i ? 'dark' : 'light')?>">
-		<td><?=htmlentities ( $invoice->customer )?></td>
-		<td><?=htmlentities ( $invoice->time )?></td>
-		<td><?=htmlentities ( $invoice->employee )?></td>
-		<td>&#0128;</td>
-		<td class="right"><?=$this->printPrice->filter ( $invoice->total - $invoice->reduction )?></td>
-		<td></td>
-		<td><?=htmlentities ( ucfirst ( $invoice->paymentmethod ) )?></td>
-		<td class="nopadding"><nobr>&nbsp;
-		<?php
-		if ($invoice->status == 'final' || $invoice->status == 'payed') {
-			?>
-		<form
-			action="<?=$this->baseUrl?>/location/invoicepdf/id/<?=$invoice->id?>/"
-			target="_blank"><input type="submit" class="pdf" value=""
-			title="print"></form>
-		<?php
-		}
-		if (isset ( $this->admin ) && $invoice->paymentmethod == 'bank' && $invoice->status == 'final') {
-			?>
-		<form method="post"
-			action="<?=$this->baseUrl?>/location/invoicepayed/id/<?=$invoice->id?>/"
-			onsubmit="return confirm('betaling per bank Ђ <?=$this->printPrice->filter ( $invoice->total - $invoice->reduction )?> ?')"><input
-			type="submit" class="pay" value="" title="bevestig betaling"></form>
-		<?php
-		}
-		if (! $invoice->burned) {
-			?>
-		<form
-			action="<?=$this->baseUrl?>/location/invoice/id/<?=$invoice->id?>/"><input
-			type="submit" class="edit" value="" title="bewerk"></form>
-		<?php
-		}
-		if ($invoice->status == 'open') {
-			?>
-		<form method="post"
-			action="<?=$this->baseUrl?>/location/invoicedel/id/<?=$invoice->id?>/"
-			onsubmit="return confirm('rekening verwijderen?')"><input
-			type="submit" class="delete" value="" title="verwijder"></form>
-		<?php
-		}
-		?>
-		&nbsp;</nobr></td>
-	</tr>
-	<?php
-		$i = ! $i;
-	}
+    if (is_array($this->invoicesNotPayed)) {
+        foreach ( $this->invoicesNotPayed as $invoice ) {
+            if ($invoice->paymentmethod == 'kas')
+                $cash += $invoice->total - $invoice->reduction; elseif ($invoice->paymentmethod == 'pin')
+                $pin += $invoice->total - $invoice->reduction; else
+                $inv += $invoice->total - $invoice->reduction;
+            ?>
+        <tr class="<?=($i ? 'dark' : 'light')?>">
+            <td><?=htmlentities ( $invoice->customer )?></td>
+            <td><?=htmlentities ( $invoice->time )?></td>
+            <td><?=htmlentities ( $invoice->employee )?></td>
+            <td>&#0128;</td>
+            <td class="right"><?=$this->printPrice->filter ( $invoice->total - $invoice->reduction )?></td>
+            <td></td>
+            <td><?=htmlentities ( ucfirst ( $invoice->paymentmethod ) )?></td>
+            <td class="nopadding"><nobr>&nbsp;
+            <?php
+            if ($invoice->status == 'final' || $invoice->status == 'payed') {
+                ?>
+            <form
+                action="<?=$this->baseUrl?>/location/invoicepdf/id/<?=$invoice->id?>/"
+                target="_blank"><input type="submit" class="pdf" value=""
+                title="print"></form>
+            <?php
+            }
+            if (isset ( $this->admin ) && $invoice->paymentmethod == 'bank' && $invoice->status == 'final') {
+                ?>
+            <form method="post"
+                action="<?=$this->baseUrl?>/location/invoicepayed/id/<?=$invoice->id?>/"
+                onsubmit="return confirm('betaling per bank Ђ <?=$this->printPrice->filter ( $invoice->total - $invoice->reduction )?> ?')"><input
+                type="submit" class="pay" value="" title="bevestig betaling"></form>
+            <?php
+            }
+            if (! $invoice->burned) {
+                ?>
+            <form
+                action="<?=$this->baseUrl?>/location/invoice/id/<?=$invoice->id?>/"><input
+                type="submit" class="edit" value="" title="bewerk"></form>
+            <?php
+            }
+            if ($invoice->status == 'open') {
+                ?>
+            <form method="post"
+                action="<?=$this->baseUrl?>/location/invoicedel/id/<?=$invoice->id?>/"
+                onsubmit="return confirm('rekening verwijderen?')"><input
+                type="submit" class="delete" value="" title="verwijder"></form>
+            <?php
+            }
+            ?>
+            &nbsp;</nobr></td>
+        </tr>
+        <?php
+            $i = ! $i;
+        }
+    }
 	?>
 	<tr>
 		<td class="left noborder" colspan="8">
@@ -90,58 +92,60 @@
 	</tr>
 	<?php
 	$i = true;
-	foreach ( $this->invoicesPayed as $invoice ) {
-		if ($invoice->paymentmethod == 'kas')
-			$cash += $invoice->total - $invoice->reduction; elseif ($invoice->paymentmethod == 'pin')
-			$pin += $invoice->total - $invoice->reduction; else
-			$inv += $invoice->total - $invoice->reduction;
-		?>
-	<tr class="<?=($i ? 'dark' : 'light')?>">
-		<td><?=htmlentities ( $invoice->customer )?></td>
-		<td><?=htmlentities ( $invoice->time )?></td>
-		<td><?=htmlentities ( $invoice->employee )?></td>
-		<td>&#0128;</td>
-		<td class="right"><?=$this->printPrice->filter ( $invoice->total - $invoice->reduction )?></td>
-		<td></td>
-		<td><?=htmlentities ( ucfirst ( $invoice->paymentmethod ) )?></td>
-		<td class="nopadding"><nobr>&nbsp;
-		<?php
-		if ($invoice->status == 'final' || $invoice->status == 'payed') {
-			?>
-		<form
-			action="<?=$this->baseUrl?>/location/invoicepdf/id/<?=$invoice->id?>/"
-			target="_blank"><input type="submit" class="pdf" value=""
-			title="print"></form>
-		<?php
-		}
-		if (isset ( $this->admin ) && $invoice->paymentmethod == 'bank' && $invoice->status == 'final') {
-			?>
-		<form method="post"
-			action="<?=$this->baseUrl?>/location/invoicepayed/id/<?=$invoice->id?>/"
-			onsubmit="return confirm('betaling per bank Ђ <?=$this->printPrice->filter ( $invoice->total - $invoice->reduction )?> ?')"><input
-			type="submit" class="pay" value="" title="bevestig betaling"></form>
-		<?php
-		}
-		if (! $invoice->burned) {
-			?>
-		<form
-			action="<?=$this->baseUrl?>/location/invoice/id/<?=$invoice->id?>/"><input
-			type="submit" class="edit" value="" title="bewerk"></form>
-		<?php
-		}
-		if ($invoice->status == 'open') {
-			?>
-		<form method="post"
-			action="<?=$this->baseUrl?>/location/invoicedel/id/<?=$invoice->id?>/"
-			onsubmit="return confirm('rekening verwijderen?')"><input
-			type="submit" class="delete" value="" title="verwijder"></form>
-		<?php
-		}
-		?>
-		&nbsp;</nobr></td>
-	</tr>
-	<?php
-		$i = ! $i;
+    if (is_array($this->invoicesPayed)) {
+        foreach ( $this->invoicesPayed as $invoice ) {
+            if ($invoice->paymentmethod == 'kas')
+                $cash += $invoice->total - $invoice->reduction; elseif ($invoice->paymentmethod == 'pin')
+                $pin += $invoice->total - $invoice->reduction; else
+                $inv += $invoice->total - $invoice->reduction;
+            ?>
+        <tr class="<?=($i ? 'dark' : 'light')?>">
+            <td><?=htmlentities ( $invoice->customer )?></td>
+            <td><?=htmlentities ( $invoice->time )?></td>
+            <td><?=htmlentities ( $invoice->employee )?></td>
+            <td>&#0128;</td>
+            <td class="right"><?=$this->printPrice->filter ( $invoice->total - $invoice->reduction )?></td>
+            <td></td>
+            <td><?=htmlentities ( ucfirst ( $invoice->paymentmethod ) )?></td>
+            <td class="nopadding"><nobr>&nbsp;
+            <?php
+            if ($invoice->status == 'final' || $invoice->status == 'payed') {
+                ?>
+            <form
+                action="<?=$this->baseUrl?>/location/invoicepdf/id/<?=$invoice->id?>/"
+                target="_blank"><input type="submit" class="pdf" value=""
+                title="print"></form>
+            <?php
+            }
+            if (isset ( $this->admin ) && $invoice->paymentmethod == 'bank' && $invoice->status == 'final') {
+                ?>
+            <form method="post"
+                action="<?=$this->baseUrl?>/location/invoicepayed/id/<?=$invoice->id?>/"
+                onsubmit="return confirm('betaling per bank Ђ <?=$this->printPrice->filter ( $invoice->total - $invoice->reduction )?> ?')"><input
+                type="submit" class="pay" value="" title="bevestig betaling"></form>
+            <?php
+            }
+            if (! $invoice->burned) {
+                ?>
+            <form
+                action="<?=$this->baseUrl?>/location/invoice/id/<?=$invoice->id?>/"><input
+                type="submit" class="edit" value="" title="bewerk"></form>
+            <?php
+            }
+            if ($invoice->status == 'open') {
+                ?>
+            <form method="post"
+                action="<?=$this->baseUrl?>/location/invoicedel/id/<?=$invoice->id?>/"
+                onsubmit="return confirm('rekening verwijderen?')"><input
+                type="submit" class="delete" value="" title="verwijder"></form>
+            <?php
+            }
+            ?>
+            &nbsp;</nobr></td>
+        </tr>
+        <?php
+            $i = ! $i;
+        }
 	}
 	?>
 	<tr class="noborder">

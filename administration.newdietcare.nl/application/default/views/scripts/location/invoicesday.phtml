@@ -20,7 +20,7 @@
 	$cash = 0;
 	$pin = 0;
 	$inv = 0;
-    if (is_array($this->invoicesNotPayed)) {
+    if (! empty($this->invoicesNotPayed) && count($this->invoicesNotPayed)) {
         foreach ( $this->invoicesNotPayed as $invoice ) {
             if ($invoice->paymentmethod == 'kas')
                 $cash += $invoice->total - $invoice->reduction; elseif ($invoice->paymentmethod == 'pin')
@@ -92,7 +92,7 @@
 	</tr>
 	<?php
 	$i = true;
-    if (is_array($this->invoicesPayed)) {
+    if (! empty($this->invoicesPayed) && count($this->invoicesPayed)) {
         foreach ( $this->invoicesPayed as $invoice ) {
             if ($invoice->paymentmethod == 'kas')
                 $cash += $invoice->total - $invoice->reduction; elseif ($invoice->paymentmethod == 'pin')

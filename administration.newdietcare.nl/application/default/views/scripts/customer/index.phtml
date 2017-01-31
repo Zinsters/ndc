@@ -4,37 +4,37 @@
 	var stopSelect=false;
 
 	jQuery(document).ready(function(){
-	jQuery("#list").jqGrid({
-		url:'<?=$this->baseUrl?>/json/customerssearch/',
-		datatype: "json",
-		colModel:[
-		  		{label:'Achternaam', name:'achternaam', index:'achternaam', width:160},
-		  		{label:'Voornaam', name:'voornaam', index:'voornaam', width:140},
-		  		{label:'Tussenvoegsel', name:'tussenvoegsel', index:'tussenvoegsel', width:185},
-		  		{label:'Geboortedatum', name:'geboortedatum', index:'geboortedatum', width:195},
-		  		{label:'Adres', name:'thuisadres', index:'thuisadres', width:100},
-		  		{label:'Woonplaats', name:'thuisplaats', index:'thuisplaats', width:160},
-		  		{label:'Postcode', name:'thuispostcode', index:'thuispostcode', width:130},
-		  		{label:'E-mail', name:'email', index:'email', width:100},
-		  		{label:' ', width:30, sortable:false, align:"center"}
-		],
-		viewrecords: true,
-		width: 780,
-		height: "auto",
-		rowNum: 10,
-		pager: '#pager',
-		mtype: "POST",
-		sortname: 'id',
-		sortorder: "asc",
-		multiselect: false,
-		onSelectRow: function(ids) {
-			if (!stopSelect) {
-				if(ids != null)
-					location.href = '<?=$this->baseUrl?>/customer/view/id/'+ids+'/';
-			} else
-				stopSelect=false;
-		}
-	});
+        jQuery("#list").jqGrid({
+            url:'<?=$this->baseUrl?>/json/customerssearch/',
+            datatype: "json",
+            colModel:[
+                    {label:'Achternaam', name:'achternaam', index:'achternaam', width:160},
+                    {label:'Voornaam', name:'voornaam', index:'voornaam', width:140},
+                    {label:'Tussenvoegsel', name:'tussenvoegsel', index:'tussenvoegsel', width:185},
+                    {label:'Geboortedatum', name:'geboortedatum', index:'geboortedatum', width:195},
+                    {label:'Adres', name:'thuisadres', index:'thuisadres', width:100},
+                    {label:'Woonplaats', name:'thuisplaats', index:'thuisplaats', width:160},
+                    {label:'Postcode', name:'thuispostcode', index:'thuispostcode', width:130},
+                    {label:'E-mail', name:'email', index:'email', width:100},
+                    {label:' ', width:30, sortable:false, align:"center"}
+            ],
+            viewrecords: true,
+            width: 780,
+            height: "auto",
+            rowNum: 10,
+            pager: '#pager',
+            mtype: "POST",
+            sortname: 'id',
+            sortorder: "asc",
+            multiselect: false,
+            onSelectRow: function(ids) {
+                if (!stopSelect) {
+                    if(ids != null)
+                        location.href = '<?=$this->baseUrl?>/customer/view/id/'+ids+'/';
+                } else
+                    stopSelect=false;
+            }
+        });
 	});
 
 	var timeoutHnd;

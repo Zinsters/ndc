@@ -1,53 +1,58 @@
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/i18n/grid.locale-nl.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jquery.jqGrid.min.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jqModal.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jqDnR.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jquery.tools.js'); ?>
 <script type="text/javascript">
 	jQuery(document).ready(function(){
-	jQuery("#codeToSearch").focus();
-		
-	jQuery("#list").jqGrid({
-		url:'<?=$this->baseUrl?>/json/productssearch/type/invoice/',
-		datatype: "json",
-		colNames:['Code', 'Product', 'Variant', 'Inhoud', '', 'Prijs'],
-		colModel:[
-		  		{name:'productcode',index:'productcode', width:150},
-		  		{name:'name',index:'name', width:220},
-		  		{name:'category',index:'category', width:150},		  		
-		  		{name:'size',index:'size', width:150},
-		  		{width:20, sortable:false},		  		
-		  		{name:'price',index:'price', width:70, align:"right"}
-		],
-		rowNum:10,
-		imgpath: '<?=$this->baseUrl?>/images/jqGrid',
-		mtype: "POST",		
-		pager: jQuery('#pager'),
-		sortname: 'id',
-		viewrecords: true,
-		sortorder: "asc",
-		multiselect: false, 		
-		width: 760,
-		height: "auto",
-		onSelectRow: function(ids) {
-			if(ids != null)
-				$.getJSON('<?=$this->baseUrl?>/json/getproductbyid/', {id: ids}, onSearchSuccess);
-		
-			triggers.eq(0).overlay().close();
-		}
-	});
+        jQuery("#content").css( "position", "static" );
+        
+        jQuery("#codeToSearch").focus();
 
-	var triggers = $("button.modalInput").overlay({
-	    expose: { 
-	        color: '#333', 
-	        loadSpeed: 200, 
-	        opacity: 0.9 
-	    }, 
+        jQuery("#list").jqGrid({
+            url:'<?=$this->baseUrl?>/json/productssearch/type/invoice/',
+            datatype: "json",
+            colModel:[
+                {label: 'Code', name:'productcode',index:'productcode', width:150},
+                {label: 'Product', name:'name',index:'name', width:220},
+                {label: 'Variant', name:'category',index:'category', width:150},		  		
+                {label: 'Inhoud', name:'size',index:'size', width:150},
+                {label:' ',width:20, sortable:false},		  		
+                {label: 'Prijs', name:'price',index:'price', width:70, align:"right"}
+            ],
+            viewrecords: true,
+            width: 780,
+            height: "auto",
+            rowNum: 10,
+            pager: '#pager',
+            mtype: "POST",
+            sortname: 'id',
+            sortorder: "asc",
+            multiselect: false,
+            onSelectRow: function(ids) {
+                if(ids != null)
+                    $.getJSON('<?=$this->baseUrl?>/json/getproductbyid/', {id: ids}, onSearchSuccess);
 
-	    onClose: function(event) { 
-			$('#hLocation').show();
-			$('#hEmployee').show();
-			jQuery("#codeToSearch").show();
-			jQuery("#codeToSearch").focus();			
-	    },
-	     
-	    closeOnClick: false 
-	});
+                triggers.eq(0).overlay().close();
+            }
+        });
+        
+        var triggers = $("button.modalInput").overlay({
+            expose: { 
+                color: '#333', 
+                loadSpeed: 200, 
+                opacity: 0.9 
+            }, 
+
+            onClose: function(event) { 
+                $('#hLocation').show();
+                $('#hEmployee').show();
+                jQuery("#codeToSearch").show();
+                jQuery("#codeToSearch").focus();			
+            },
+
+            closeOnClick: false 
+        });
 	});
 	
 	/////////////////////

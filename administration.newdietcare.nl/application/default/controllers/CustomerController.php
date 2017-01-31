@@ -786,117 +786,6 @@ class Default_CustomerController extends Controller_Default {
 	 * Invoice must not be burned
 	 *
 	 */
-	public function invoice2Action() {
-		$defaultNamespace = new Zend_Session_Namespace ( 'default' );
-		if (! isset ( $defaultNamespace->currentCustomerId )) {
-			$this->_redirect ( '/customer/' );
-			return;
-		}
-
-		if (! $this->_request->getParam ( 'id' ) && ! isset ( $defaultNamespace->currentLocationId )) {
-			$this->_redirect ( '/' );
-			return;
-		}
-
-		//Display warning is day is not opened or already closed
-		$days = new Model_Table_Days ( );
-
-		$day = $days->getById ( $this->view->currentDay->id );
-		if (! isset ( $this->view->admin )) {
-			if (! $day instanceof Model_Table_Row_Day || $day->date != date ( 'Y-m-d' )) {
-				$this->_helper->viewRenderer->setNoRender ();
-				echo $this->view->render ( 'customer/invoice/notopened.phtml' );
-				return;
-			} elseif ($day->status == 'closed') {
-				$this->_helper->viewRenderer->setNoRender ();
-				echo $this->view->render ( 'customer/invoice/closed.phtml' );
-				return;
-			}
-		}
-
-		$invoices = new Model_Table_Invoices ( );
-		$locations = new Model_Table_Locations ( );
-		if ($this->_request->getParam ( 'id' )) {
-			$invoice = $invoices->getById ( ( int ) $this->_request->getParam ( 'id' ) );
-			if (! $invoice instanceof Model_Table_Row_Invoice || ($invoice->burned && ! isset ( $this->view->admin )) || $invoice->customer_id != $defaultNamespace->currentCustomerId) {
-				$this->_redirect ( '/customer/invoices/' );
-				return;
-			}
-		} else {
-			$invoice = $invoices->getCurrent ( $defaultNamespace->currentCustomerId, $locations->getByUserId ( $defaultNamespace->currentLocationId )->id );
-
-			if (! $invoice instanceof Model_Table_Row_Invoice)
-				$invoice = $invoices->createRow ();
-		}
-
-		if ($this->_request->isPost ()) {
-			$invoicelines = new Model_Table_Invoicelines ( );
-			$products = new Model_Table_Products ( );
-
-			$filter = new Controller_Filter_PrepareFloat ( );
-
-			if (! $invoice->id) {
-				if (! $day instanceof Model_Table_Row_Day) {
-					$this->_helper->viewRenderer->setNoRender ();
-					echo $this->view->render ( 'customer/invoice/notopened.phtml' );
-					return;
-				}
-				$invoice->customer_id = $defaultNamespace->currentCustomerId;
-				$invoice->location_id = $locations->getByUserId ( $defaultNamespace->currentLocationId )->id;
-				$invoice->employee_id = $defaultNamespace->currentEmployeeId;
-				$invoice->day_id = $day->id;
-			}
-
-			$invoice->total = ( float ) $filter->filter ( $this->_request->getPost ( 'total' ) );
-			$invoice->reduction = ( float ) $filter->filter ( $this->_request->getPost ( 'reduction' ) );
-			$invoice->save ();
-
-			$lines = $invoice->findDependentRowset ( 'Model_Table_Invoicelines' );
-			foreach ( $lines as $line )
-				$line->delete ();
-			$newLines = $this->_request->getPost ( 'invoicebody' );
-			$i = 1;
-			foreach ( $newLines as $newLine ) {
-				$invoiceline = $invoicelines->createRow ();
-				$invoiceline->invoice_id = $invoice->id;
-				$invoiceline->product_id = ( int ) $newLine ['product'];
-				$invoiceline->position = $i;
-				$invoiceline->number = ( float ) $filter->filter ( $newLine ['quantity'] );
-				$invoiceline->total_price = ( float ) $filter->filter ( $newLine ['total'] );
-
-				$product = $products->getById ( ( int ) $newLine ['product'] );
-				$invoiceline->vat_percent = $product->getVatPercent ();
-
-				$invoiceline->save ();
-				$i ++;
-			}
-
-			switch ($this->_request->getPost ( 'paymentmethod' )) {
-				case 'cash' :
-					$this->_redirect ( '/customer/cash/id/' . $invoice->id . '/' );
-					return;
-					break;
-				case 'pin' :
-					$this->_redirect ( '/customer/pin/id/' . $invoice->id . '/' );
-					return;
-					break;
-				case 'credit' :
-					$this->_redirect ( '/customer/credit/id/' . $invoice->id . '/' );
-					return;
-					break;
-				default :
-					break;
-			}
-		}
-
-		$this->view->headcontent = 'customer/invoice2/headcontent.phtml';
-		$this->view->invoice = $invoice;
-	}
-
-	/**
-	 * New version of the invoice
-	 *
-	 */
 	public function invoiceAction() {
 		$defaultNamespace = new Zend_Session_Namespace ( 'default' );
 		if (! isset ( $defaultNamespace->currentCustomerId )) {
@@ -909,7 +798,7 @@ class Default_CustomerController extends Controller_Default {
 			return;
 		}
 
-		//Display warning is day is not opened or already closed
+		//Display warning if day is not opened or already closed
 		$days = new Model_Table_Days ( );
 
 		$day = $days->getById ( $this->view->currentDay->id );
@@ -1000,7 +889,6 @@ class Default_CustomerController extends Controller_Default {
 			}
 		}
 
-		$this->view->headcontent = 'customer/invoice/headcontent.phtml';
 		$this->view->invoice = $invoice;
 	}
 

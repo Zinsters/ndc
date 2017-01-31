@@ -9,9 +9,11 @@ date_default_timezone_set('Europe/Amsterdam');
 
 define ( 'APP_FULL_PATH', getcwd () );
 define ( 'MC_FULL_PATH', APP_FULL_PATH . '/application/library' );
-set_include_path ( APP_FULL_PATH . '/application/library/' . PATH_SEPARATOR . APP_FULL_PATH . '/application/library/dompdf/' . PATH_SEPARATOR . APP_FULL_PATH . '/application/library/Excel/' . PATH_SEPARATOR . get_include_path () );
+set_include_path ( APP_FULL_PATH . '/application/library/' . PATH_SEPARATOR . get_include_path () );
 
+// include autoloader
 require_once ('loader.php');
+require_once APP_FULL_PATH . '/application/library/dompdf/autoload.inc.php';
 
 //Zend_Registry object
 $registry = Zend_Registry::getInstance ();

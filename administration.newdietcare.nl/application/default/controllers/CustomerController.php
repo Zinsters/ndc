@@ -1,4 +1,5 @@
 <?php
+use Dompdf\Dompdf;
 
 /**
  * Class Default_CustomerController
@@ -1147,7 +1148,6 @@ class Default_CustomerController extends Controller_Default {
 	 */
 	public function invoicepdfAction() {
 		set_time_limit ( 180 );
-		require_once ("dompdf_config.inc.php");
 
 		$defaultNamespace = new Zend_Session_Namespace ( 'default' );
 		if (! isset ( $defaultNamespace->currentCustomerId )) {

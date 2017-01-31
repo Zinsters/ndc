@@ -5,15 +5,10 @@
  * @param string $className
  * @return boolean.
  */
-function __autoload($className) {
-	if (defined ( "DOMPDF_INC_DIR" )) {
-		$fname = strtolower ( $className ) . ".cls.php";
-		if (file_exists ( DOMPDF_INC_DIR . "/$fname" )) {
-			require_once (DOMPDF_INC_DIR . "/$fname");
-			return;
-		}
-	}
-	
-	$fname = str_replace ( '_', '/', $className ) . '.php';
-	require_once ($fname);
+function autoload($className) {
+    $fname = MC_FULL_PATH . '/' . str_replace ( '_', '/', $className ) . '.php';
+    if (file_exists($fname)) {
+	   require_once ($fname);
+    }
 }
+spl_autoload_register('autoload');

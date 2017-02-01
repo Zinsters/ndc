@@ -1,27 +1,29 @@
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/i18n/grid.locale-nl.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jquery.jqGrid.min.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jqModal.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jqDnR.js'); ?>
 <script type="text/javascript">
-jQuery(document).ready(function(){
-	jQuery("#list").jqGrid({
-		url:'<?=$this->baseUrl?>/json/productstop/',
-		datatype: "json",
-		colNames:['Code', 'Product', 'Aantal', '', 'Verkoopprijs'],
-		colModel:[
-		  		{name:'productcode',index:'productcode', sortable:false, width: 65},
-		  		{name:'name',index:'name', sortable:false, width: 120},
-		  		{name:'number_total',index:'number_total', sortable:false, width: 60},		  		
-		  		{sortable:false, width: 20},
-		  		{name:'total_price_total',index:'total_price_total', sortable:false, width: 100, align:"right"}
-		],
-		rowNum:10,
-		imgpath: '<?=$this->baseUrl?>/images/jqGrid',
-		mtype: "POST",		
-		pager: jQuery('#pager'),
-		sortname: 'id',
-		viewrecords: true,
-		sortorder: "asc",
-		multiselect: false, 		
-		width: 350,
-		height: "auto"
-	});
+    jQuery(document).ready(function(){
+        jQuery("#list").jqGrid({
+            url:'<?=$this->baseUrl?>/json/productstop/',
+            datatype: "json",
+            colModel:[
+                {label: 'Code', name:'productcode',index:'productcode', sortable:false, width: 65},
+                {label: 'Product', name:'name',index:'name', sortable:false, width: 120},
+                {label: 'Aantal', name:'number_total',index:'number_total', sortable:false, width: 60},		  		
+                {label: ' ', sortable:false, width: 20},
+                {label: 'Verkoopprijs', name:'total_price_total',index:'total_price_total', sortable:false, width: 100, align:"right"}
+            ],
+            viewrecords: true,
+            width: 380,
+            height: "auto",
+            rowNum: 10,
+            pager: '#pager',
+            mtype: "POST",
+            sortname: 'id',
+            sortorder: "asc",
+            multiselect: false
+        });
 	});
 	
 	var timeoutHnd;
@@ -42,12 +44,13 @@ jQuery(document).ready(function(){
 		}).trigger("reloadGrid");
 	}
 
-	Date.format = 'dd-mm-yyyy';
 	$(function(){
-		$('#filter_date_start').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
-		$('#filter_date_start').dpSetOffset(20, 0);
-		$('#filter_date_end').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
-		$('#filter_date_end').dpSetOffset(20, 0);
+        $.datepicker.setDefaults({
+            dateFormat: 'dd-mm-yy',
+            yearRange: "-100:+0",
+        });
+        $('#filter_date_start').datepicker({changeMonth: true, changeYear: true});
+        $('#filter_date_end').datepicker({changeMonth: true, changeYear: true});
 	});
 </script>
 

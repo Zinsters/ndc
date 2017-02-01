@@ -1,24 +1,26 @@
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/i18n/grid.locale-nl.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jquery.jqGrid.min.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jqModal.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jqDnR.js'); ?>
 <script type="text/javascript">
 	jQuery(document).ready(function(){
-	jQuery("#list").jqGrid({
-		url:'<?=$this->baseUrl?>/json/employeessetup/',
-		datatype: "json",
-		colNames:['Naam', ''],
-		colModel:[
-		  		{name:'name',index:'name',width:240},
-		  		{width:40,sortable:false}		  		
-		],
-		rowNum:10,
-		imgpath: '<?=$this->baseUrl?>/images/jqGrid',
-		mtype: "POST",		
-		pager: jQuery('#pager'),
-		sortname: 'id',
-		viewrecords: true,
-		sortorder: "asc",
-		multiselect: false, 		
-		width: 280,
-		height: "auto"
-	});
+        jQuery("#list").jqGrid({
+            url:'<?=$this->baseUrl?>/json/employeessetup/',
+            datatype: "json",
+            colModel:[
+                {label: 'Naam', name:'name',index:'name',width:240},
+                {label: ' ', width:40,sortable:false}	
+            ],
+            viewrecords: true,
+            width: 280,
+            height: "auto",
+            rowNum: 10,
+            pager: '#pager',
+            mtype: "POST",
+            sortname: 'id',
+            sortorder: "asc",
+            multiselect: false
+        });
 	});
 
 	/////////////////////

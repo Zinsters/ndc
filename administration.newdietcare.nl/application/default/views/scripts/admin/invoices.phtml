@@ -1,29 +1,31 @@
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/i18n/grid.locale-nl.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jquery.jqGrid.min.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jqModal.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jqDnR.js'); ?>
 <script type="text/javascript">
 	jQuery(document).ready(function(){
-	jQuery("#list").jqGrid({
-		url:'<?=$this->baseUrl?>/json/invoicessearch/',
-		datatype: "json",
-		colNames:['Datum', 'Klant', 'Medewerker', 'Vestiging', 'Prijs', 'Type', ''],
-		colModel:[
-		  		{name:'date',index:'date'},
-		  		{name:'customer',index:'customer'},
-		  		{name:'employee',index:'employee'},		  		
-		  		{name:'location',index:'location'},
-		  		{name:'totalwithoutreduction',index:'totalwithoutreduction'},
-		  		{name:'paymentmethod',index:'paymentmethod'},
-		  		{name:'buttons',sortable:false}		  		
-		],
-		rowNum:10,
-		imgpath: '<?=$this->baseUrl?>/images/jqGrid',
-		mtype: "POST",		
-		pager: jQuery('#pager'),
-		sortname: 'id',
-		viewrecords: true,
-		sortorder: "desc",
-		multiselect: false,
-		width: 760,
-		height: "auto"
-	});
+        jQuery("#list").jqGrid({
+            url:'<?=$this->baseUrl?>/json/invoicessearch/',
+            datatype: "json",
+            colModel:[
+                {label: 'Datum', name:'date',index:'date'},
+                {label: 'Klant', name:'customer',index:'customer'},
+                {label: 'Medewerker', name:'employee',index:'employee'},		  		
+                {label: 'Vestiging', name:'location',index:'location'},
+                {label: 'Prijs', name:'totalwithoutreduction',index:'totalwithoutreduction'},
+                {label: 'Type', name:'paymentmethod',index:'paymentmethod'},
+                {label: ' ', name:'buttons',sortable:false}	
+            ],
+            viewrecords: true,
+            width: 780,
+            height: "auto",
+            rowNum: 10,
+            pager: '#pager',
+            mtype: "POST",
+            sortname: 'id',
+            sortorder: "asc",
+            multiselect: false
+        });
 	});
 	
 	var timeoutHnd;
@@ -47,12 +49,13 @@
 		}).trigger("reloadGrid");
 	}
 	
-	Date.format = 'dd-mm-yyyy';
 	$(function(){
-		$('#filter_date_start').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
-		$('#filter_date_start').dpSetOffset(20, 0);
-		$('#filter_date_end').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
-		$('#filter_date_end').dpSetOffset(20, 0);
+        $.datepicker.setDefaults({
+            dateFormat: 'dd-mm-yy',
+            yearRange: "-100:+0",
+        });
+        $('#filter_date_start').datepicker({changeMonth: true, changeYear: true});
+        $('#filter_date_end').datepicker({changeMonth: true, changeYear: true});
 	});
 </script>
 

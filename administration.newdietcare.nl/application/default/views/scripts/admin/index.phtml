@@ -1,10 +1,12 @@
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jqDnR.js'); ?>
 <script type="text/javascript">
-	Date.format = 'dd-mm-yyyy';
 	$(function(){
-		$('#filter_date_start').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
-		$('#filter_date_start').dpSetOffset(20, 0);
-		$('#filter_date_end').datePicker({startDate:'01/01/1900', createButton:false, clickInput:true});
-		$('#filter_date_end').dpSetOffset(20, 0);
+        $.datepicker.setDefaults({
+            dateFormat: 'dd-mm-yy',
+            yearRange: "-100:+0",
+        });
+        $('#filter_date_start').datepicker({changeMonth: true, changeYear: true});
+        $('#filter_date_end').datepicker({changeMonth: true, changeYear: true});
 	});
 </script>
 

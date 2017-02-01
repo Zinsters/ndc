@@ -1,31 +1,33 @@
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/i18n/grid.locale-nl.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jquery.jqGrid.min.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jqModal.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/scripts/jqDnR.js'); ?>
 <script type="text/javascript">
 	jQuery(document).ready(function(){
-	jQuery("#list").jqGrid({
-		url:'<?=$this->baseUrl?>/json/productssearch/type/orders/',
-		datatype: "json",
-		colNames:['Code', 'Product', 'Categorie', 'Inhoud', 'Leverancier'],
-		colModel:[
-		  		{name:'productcode',index:'productcode', width:150},
-		  		{name:'name',index:'name', width:220},
-		  		{name:'category',index:'category', width:150},		  		
-		  		{name:'size',index:'size', width:150},
-		  		{name:'supplier',index:'supplier', width:110}
-		],
-		rowNum:10,
-		imgpath: '<?=$this->baseUrl?>/images/jqGrid',
-		mtype: "POST",		
-		pager: jQuery('#pager'),
-		sortname: 'id',
-		viewrecords: true,
-		sortorder: "asc",
-		multiselect: false, 		
-		width: 760,
-		height: "auto",
-		onSelectRow: function(ids) {
-			if(ids != null)
-				$.getJSON('<?=$this->baseUrl?>/json/getproductbyid/', {id: ids}, onSelectSuccess);
-		}
-	});
+        jQuery("#list").jqGrid({
+            url:'<?=$this->baseUrl?>/json/productssearch/type/orders/',
+            datatype: "json",
+            colModel:[
+                {label: 'Code', name:'productcode',index:'productcode', width:150},
+                {label: 'Product', name:'name',index:'name', width:220},
+                {label: 'Categorie', name:'category',index:'category', width:150},		  		
+                {label: 'Inhoud', name:'size',index:'size', width:150},
+                {label: 'Leverancier', name:'supplier',index:'supplier', width:110}
+            ],
+            viewrecords: true,
+            width: 780,
+            height: "auto",
+            rowNum: 10,
+            pager: '#pager',
+            mtype: "POST",
+            sortname: 'id',
+            sortorder: "asc",
+            multiselect: false,
+            onSelectRow: function(ids) {
+                if(ids != null)
+                    $.getJSON('<?=$this->baseUrl?>/json/getproductbyid/', {id: ids}, onSelectSuccess);
+            }
+        });
 	});
 
 	/////////////////////

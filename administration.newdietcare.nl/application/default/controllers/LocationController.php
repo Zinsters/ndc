@@ -585,7 +585,6 @@ class Default_LocationController extends Controller_Default {
 		$this->view->locationId = $location->userid;
 		$this->view->orders = $orders->getCreated ( $location->userid );
 		$this->view->orderlines = new Model_Table_Orderlines ( );
-		$this->view->headcontent = 'location/orders/headcontent.phtml';
 	}
 
 }
